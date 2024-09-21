@@ -135,7 +135,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   //GetData
   useEffect(()=>{
     dispatch({type:AuthActionTypes.GETDATA})
-  },[])
+  },[dispatch])
 
   const {mainload} = useSelector((state: RootState)=> state.Auth)
   const isCondensed: boolean =

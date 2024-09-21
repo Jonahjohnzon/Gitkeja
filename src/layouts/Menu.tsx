@@ -46,7 +46,7 @@ const MenuItemWithChildren = ({
   };
 
   return (<>
-    {(item?.role == role || item?.role == "all")&&<li className={classNames("menu-item", { "menuitem-active": open })}>
+    {(item?.role === role || item?.role === "all")&&<li className={classNames("menu-item", { "menuitem-active": open })}>
       <Link
         to="#"
         onClick={toggleMenuItem}
@@ -80,7 +80,7 @@ const MenuItemWithChildren = ({
             {(item.children || []).map((child, i) => {
               return (
                 <React.Fragment key={i}>
-                  {child.children ? (child?.role == role || child?.role == "all")&& (
+                  {child.children ? (child?.role === role || child?.role === "all")&& (
                     <>
                       {/* parent */}
                       <MenuItemWithChildren
@@ -93,7 +93,7 @@ const MenuItemWithChildren = ({
                         toggleMenu={toggleMenu}
                       />
                     </>
-                  ) :(child?.role == role || child?.role == "all")&& (
+                  ) :(child?.role === role || child?.role === "all")&& (
                     <>
                       {/* child */}
                       <MenuItem
@@ -224,7 +224,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
           //
           return (
             <React.Fragment key={idx}>
-              {item.isTitle ? (item?.role == Role || item?.role == "all")&&  (
+              {item.isTitle ? (item?.role === Role || item?.role === "all")&&  (
                 <li
                   className={classNames("menu-title", {
                     "mt-2": idx !== 0,
@@ -243,7 +243,7 @@ const AppMenu = ({ menuItems }: AppMenuProps) => {
                       linkClassName="menu-link"
                       role={Role}
                     />
-                  ) :(item?.role == Role || item?.role == "all")&& (
+                  ) :(item?.role === Role || item?.role === "all")&& (
                     <MenuItem
                       item={item}
                       linkClassName="menu-link"
