@@ -26,10 +26,17 @@ const MENU_ITEMS: MenuItemTypes[] = [
     children: [
       {
         key: "ds-dashboard-1",
-        label: "Adminstrator",
+        label: "Landlord",
         role:"admin",
         url: "/dashboard-1",
         parentKey: "dashboards",
+      },
+      {
+        key: "ds-dashboard-2",
+        label: "Manager",
+        url: "/dashboard-2",
+        parentKey: "dashboards",
+        role:"admin",
       },
       {
         key: "ds-dashboard-3",
