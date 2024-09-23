@@ -46,6 +46,7 @@ const ProjectDetail = React.lazy(
 const ProjectForm = React.lazy(
   () => import("../pages/apps/CRM/Properties/ProjectForm")
 );
+const PropertyForm = React.lazy(()=> import("../pages/apps/CRM/Properties/PropertyForm"))
 // - chat
 const ChatApp = React.lazy(() => import("../pages/apps/Chat/"));
 // - ecommece pages
@@ -451,7 +452,7 @@ const projectAppRoutes = {
     {
       path: "/apps/projects/create",
       name: "Create Project",
-      element: <ProjectForm />,
+      element: <PropertyForm />,
       route: PrivateRoute,
     },
   ],
