@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Row, Col, Card, Dropdown, Button } from "react-bootstrap";
+import { Row, Col, Card, Dropdown, Button, Image } from "react-bootstrap";
 
 // Import sub-components
 import PageTitle from "../../../../../components/PageTitle";
@@ -14,51 +14,51 @@ const RentCollection: React.FC<{ propertyId: number }> = () => <div>Rent Collect
 const MaintenanceRequests: React.FC<{ propertyId: number }> = () => <div>Maintenance Requests Placeholder</div>;
 const LeaseManagement: React.FC<{ propertyId: number }> = () => <div>Lease Management Placeholder</div>;
 
-// Define the Property interface
+// Define the Property interface to match FormData from PropertyForm
 interface Property {
   id: number;
   name: string;
-  address: string;
+  location: string;
   type: string;
-  status: 'Fully Occupied' | 'Partially Occupied' | 'Vacant';
-  totalUnits: number;
-  occupiedUnits: number;
-  monthlyRevenue: number;
-  yearBuilt: number;
-  lastRenovation?: string;
-  propertyManagers: {
-    image: string;
-    name: string;
-  }[];
+  units: number;
+  rentAmount: number;
+  leaseTerms: string;
   description: string;
   amenities: string[];
   nearbyFacilities: string[];
-  maintenanceRequests: number;
-  tenantSatisfaction: number;
+  managers: { name: string; phone: string }[];
+  acquisitionDate: Date;
+  image: string | null;
+  occupiedUnits: number; // Added for occupancy calculation
+  maintenanceRequests: number; // Added for PropertyStatistics
+  tenantSatisfaction: number; // Added for PropertyStatistics
 }
 
 const PropertyDetails: React.FC = () => {
   const [property] = useState<Property>({
     id: 1,
     name: "Sunset Apartments",
-    address: "123 Moi Avenue, Nairobi, Kenya",
+    location: "123 Moi Avenue, Nairobi, Kenya",
     type: "Residential Apartment Complex",
-    status: "Partially Occupied",
-    totalUnits: 50,
-    occupiedUnits: 45,
-    monthlyRevenue: 2500000, // In Kenyan Shillings
-    yearBuilt: 2015,
-    lastRenovation: "2022",
-    propertyManagers: [
-      { name: "John Doe", image: "/path/to/john-doe.jpg" },
-      { name: "Jane Smith", image: "/path/to/jane-smith.jpg" },
-    ],
+    units: 50,
+    rentAmount: 50000, // Per unit in Kenyan Shillings
+    leaseTerms: "12-month lease with option to renew. Security deposit required. Pets allowed with additional fee.",
     description: "Sunset Apartments is a modern residential complex offering comfortable living in the heart of Nairobi. With a range of amenities and excellent location, it's perfect for young professionals and families alike.",
     amenities: ["24/7 Security", "Swimming Pool", "Gym", "Covered Parking", "Children's Play Area"],
-    nearbyFacilities: ["Shopping Mall", "Hospital", "School", "Public Transport"],
+    nearbyFacilities: ["Shopping Mall", "Hospital", "Primary School", "University", "Public Transport"],
+    managers: [
+      { name: "John Doe", phone: "+254 712 345 678" },
+      { name: "Jane Smith", phone: "+254 723 456 789" },
+    ],
+    acquisitionDate: new Date("2015-01-15"),
+    image: "/path/to/property-image.jpg",
+    occupiedUnits: 45,
     maintenanceRequests: 5,
     tenantSatisfaction: 4.2,
   });
+
+  const calculateOccupancyRate = () => ((property.occupiedUnits / property.units) * 100).toFixed(2);
+  const calculateMonthlyRevenue = () => property.rentAmount * property.occupiedUnits;
 
   return (
     <React.Fragment>
@@ -84,25 +84,27 @@ const PropertyDetails: React.FC = () => {
                 </Dropdown.Menu>
               </Dropdown>
               <h4 className="mb-3">Property Overview</h4>
+              {property.image && (
+                <Image src={property.image} alt={property.name} fluid className="mb-3" />
+              )}
               <Row>
                 <Col md={6}>
-                  <p><strong>Address:</strong> {property.address}</p>
+                  <p><strong>Location:</strong> {property.location}</p>
                   <p><strong>Type:</strong> {property.type}</p>
-                  <p><strong>Status:</strong> {property.status}</p>
-                  <p><strong>Year Built:</strong> {property.yearBuilt}</p>
-                  {property.lastRenovation && (
-                    <p><strong>Last Renovation:</strong> {property.lastRenovation}</p>
-                  )}
+                  <p><strong>Total Units:</strong> {property.units}</p>
+                  <p><strong>Occupied Units:</strong> {property.occupiedUnits}</p>
+                  <p><strong>Occupancy Rate:</strong> {calculateOccupancyRate()}%</p>
                 </Col>
                 <Col md={6}>
-                  <p><strong>Total Units:</strong> {property.totalUnits}</p>
-                  <p><strong>Occupied Units:</strong> {property.occupiedUnits}</p>
-                  <p><strong>Occupancy Rate:</strong> {((property.occupiedUnits / property.totalUnits) * 100).toFixed(2)}%</p>
-                  <p><strong>Monthly Revenue:</strong> KES {property.monthlyRevenue.toLocaleString()}</p>
+                  <p><strong>Rent Amount (per unit):</strong> KES {property.rentAmount.toLocaleString()}</p>
+                  <p><strong>Monthly Revenue:</strong> KES {calculateMonthlyRevenue().toLocaleString()}</p>
+                  <p><strong>Acquisition Date:</strong> {property.acquisitionDate.toDateString()}</p>
                 </Col>
               </Row>
               <h5 className="mt-3">Description</h5>
               <p>{property.description}</p>
+              <h5 className="mt-3">Lease Terms</h5>
+              <p>{property.leaseTerms}</p>
               <h5 className="mt-3">Amenities</h5>
               <ul>
                 {property.amenities.map((amenity, index) => (
@@ -115,7 +117,7 @@ const PropertyDetails: React.FC = () => {
                   <li key={index}>{facility}</li>
                 ))}
               </ul>
-              <PropertyManagers managers={property.propertyManagers} />
+              <PropertyManagers managers={property.managers} />
               <div className="mt-4">
                 <Button variant="primary" className="me-2">View All Units</Button>
                 <Button variant="outline-secondary">Schedule Inspection</Button>
@@ -125,9 +127,9 @@ const PropertyDetails: React.FC = () => {
           <Row>
             <Col md={6}>
               <PropertyStatistics
-                totalUnits={property.totalUnits}
+                totalUnits={property.units}
                 occupiedUnits={property.occupiedUnits}
-                monthlyRevenue={property.monthlyRevenue}
+                monthlyRevenue={calculateMonthlyRevenue()}
                 maintenanceRequests={property.maintenanceRequests}
                 tenantSatisfaction={property.tenantSatisfaction}
               />
