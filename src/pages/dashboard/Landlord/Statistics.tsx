@@ -2,7 +2,45 @@ import React from "react";
 import { Row, Col } from "react-bootstrap";
 import StatisticsWidget from "../../../components/StatisticsWidget";
 
-const Statistics = () => {
+interface Dashboard {
+  totalRentCollected:number,
+  occupancyRate:number,
+  maintenanceRequests:number,
+  propertyValue:number,
+  monthlyRentCollection:number,
+  totalRentCollectable:number,
+}
+
+interface StatisticsProps {
+  dashboard: Dashboard; // match prop name with lowercased 'dashboard'
+}
+
+const Statistics = ({dashboard}: StatisticsProps) => {
+
+  //Suffix
+  const formatSuffix = (num: number):string => {
+    if (num >= 1_000_000_000) {
+      return "B"
+    } else if (num >= 1_000_000) {
+      return "M"
+    } else if (num >= 1_000) {
+      return "K"
+    } else {
+      return "";
+    }
+  };
+
+  const formatNumber = (num: number, decimals: number = 1): string => {
+    if (num >= 1_000_000_000) {
+      return (num / 1_000_000_000).toFixed(decimals); // Billions
+    } else if (num >= 1_000_000) {
+      return (num / 1_000_000).toFixed(decimals); // Millions
+    } else if (num >= 1_000) {
+      return (num / 1_000).toFixed(decimals); // Thousands
+    } else {
+      return num.toString(); // No suffix for smaller numbers
+    }
+  };
   return (
     <Row>
       <Col md={6} xl={3}>
@@ -12,7 +50,7 @@ const Statistics = () => {
             prefix: "$",
           }}
           description="Total Rent Collected"
-          stats="58947"
+          stats={dashboard?.totalRentCollectable?.toString()}
           icon="fe-dollar-sign"
         />
       </Col>
@@ -20,7 +58,7 @@ const Statistics = () => {
         <StatisticsWidget
           variant="success"
           description="Occupancy Rate"
-          stats="94.5"
+          stats={dashboard?.occupancyRate?.toString()}
           counterOptions={{
             suffix: "%",
             decimals: 1,
@@ -32,7 +70,7 @@ const Statistics = () => {
         <StatisticsWidget
           variant="info"
           description="Maintenance Requests"
-          stats="28"
+          stats={dashboard?.maintenanceRequests?.toString()}
           icon="fe-tool"
         />
       </Col>
@@ -40,13 +78,13 @@ const Statistics = () => {
         <StatisticsWidget
           variant="warning"
           description="Property Value"
-          stats="5.2"
+          stats={formatNumber(dashboard?.propertyValue).toString()}
           counterOptions={{
             prefix: "$",
-            suffix: "M",
+            suffix: formatSuffix(dashboard?.propertyValue),
             decimals: 1,
           }}
-          icon="fe-trending-up"
+          icon="fe-trending-up" 
         />
       </Col>
     </Row>

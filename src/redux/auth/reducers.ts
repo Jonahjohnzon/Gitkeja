@@ -21,6 +21,81 @@ interface UserData {
   __v:number
 }
 
+interface Tenant {
+  id: number;
+  avatar: string;
+  name: string;
+  unitNumber: string;
+  rentAmount: number;
+  paymentStatus: any;
+  tenancyStartDate: string;
+}
+
+interface Transaction {
+  id: number;
+  transactionType: string;
+  property: string;
+  amount: number;
+  date: string;
+  status: string;
+}
+
+interface Maintenance{
+  pending: number,
+  inProgress: number,
+  completed: number,
+  averageResolutionTime: number
+}
+
+interface LeaseExpiryData {
+  x: string;  // Represents the label (e.g., 'Next 30 days', '31-60 days', etc.)
+  y: number;  // Represents the corresponding value (e.g., the count of expiring leases)
+}
+
+interface dashboard {
+  totalRentCollected?:number,
+  occupancyRate?:number,
+  maintenanceRequests?:number,
+  propertyValue?:number,
+  monthlyRentCollection?:number,
+  totalRentCollectable?:number,
+  latePayment?:number,
+  rentalIncome?:number[],
+  occupancyRates?:number[],
+  toptenant?:Tenant[],
+  recentTransactions?:Transaction[],
+  MaintenanceOverview?:Maintenance,
+  leaseExpiryData?:LeaseExpiryData[]
+}
+
+
+
+const Dashboard:dashboard = {
+  totalRentCollectable:0,
+  occupancyRate:0,
+  maintenanceRequests:0,
+  propertyValue:0,
+  monthlyRentCollection:0,
+  totalRentCollected:0,
+  latePayment:0,
+  rentalIncome:[0,0,0,0,0,0,0,0,0,0,0,0],
+  occupancyRates:[0,0,0,0,0,0,0,0,0,0,0,0],
+  toptenant:[],
+  recentTransactions:[],
+  MaintenanceOverview:{
+    pending: 0,
+    inProgress: 0,
+    completed: 0,
+    averageResolutionTime: 0.0 
+  },
+  leaseExpiryData:[
+    { x: 'Next 30 days', y: 0 },
+    { x: '31-60 days', y: 0 },
+    { x: '61-90 days', y: 0 },
+    { x: 'Beyond 90 days', y: 0 }
+  ]
+  
+}
 interface AuthState {
   user: UserData | null;
   loading: boolean;
@@ -32,7 +107,9 @@ interface AuthState {
   passwordChange: boolean;
   resetPasswordSuccess: boolean | null;
   activationSuccess: boolean | null;
-  mainload:boolean
+  mainload:boolean,
+  dashboard?:dashboard
+
 }
 
 const INIT_STATE: AuthState = {
@@ -46,7 +123,8 @@ const INIT_STATE: AuthState = {
   passwordChange: false,
   resetPasswordSuccess: null,
   activationSuccess: null,
-  mainload:true
+  mainload:true,
+  dashboard:Dashboard
 };
 
 interface AuthActionType {

@@ -2,14 +2,23 @@ import React from 'react';
 import { Card, Dropdown, ProgressBar } from 'react-bootstrap';
 
 // This would typically come from your API
-const maintenanceData = {
-  pending: 15,
-  inProgress: 8,
-  completed: 27,
-  averageResolutionTime: 3.5 // in days
-};
+interface Maintenance{
+  pending: number,
+  inProgress: number,
+  completed: number,
+  averageResolutionTime: number
+}
 
-const MaintenanceOverview: React.FC = () => {
+interface Dashboard {
+  MaintenanceOverview:Maintenance
+}
+
+interface StatisticsProps {
+  dashboard: Dashboard; // match prop name with lowercased 'dashboard'
+}
+
+const MaintenanceOverview = ({dashboard}:StatisticsProps) => {
+  const maintenanceData  = dashboard?.MaintenanceOverview
   const total = maintenanceData.pending + maintenanceData.inProgress + maintenanceData.completed;
 
   return (

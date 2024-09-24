@@ -92,3 +92,5 @@ export const activateUser = (token: string): AuthActionType => ({
   type: AuthActionTypes.ACTIVATE_USER,
   payload: { token },
 });
+
+

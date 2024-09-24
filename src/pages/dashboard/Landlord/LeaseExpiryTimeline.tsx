@@ -3,15 +3,22 @@ import { Card, Dropdown } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
-// This would typically come from your API
-const leaseExpiryData = [
-  { x: 'Next 30 days', y: 5 },
-  { x: '31-60 days', y: 8 },
-  { x: '61-90 days', y: 12 },
-  { x: 'Beyond 90 days', y: 25 }
-];
+interface LeaseExpiryData {
+  x: string;  // Represents the label (e.g., 'Next 30 days', '31-60 days', etc.)
+  y: number;  // Represents the corresponding value (e.g., the count of expiring leases)
+}
 
-const LeaseExpiryTimeline: React.FC = () => {
+
+interface Dashboard {
+  leaseExpiryData: LeaseExpiryData[]
+}
+
+interface StatisticsProps {
+  dashboard: Dashboard; // match prop name with lowercased 'dashboard'
+}
+
+const LeaseExpiryTimeline = ({dashboard}:StatisticsProps) => {
+  const leaseExpiryData = dashboard.leaseExpiryData
   const chartOptions: ApexOptions = {
     chart: {
       type: 'bar',

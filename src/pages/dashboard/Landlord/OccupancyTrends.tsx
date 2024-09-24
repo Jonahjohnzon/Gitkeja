@@ -3,20 +3,24 @@ import Chart from "react-apexcharts";
 import { Card } from "react-bootstrap";
 import { ApexOptions } from "apexcharts";
 
-const OccupancyTrends = () => {
+
+
+interface Dashboard {
+  rentalIncome:number[],
+  occupancyRates:number[]
+}
+
+interface StatisticsProps {
+  dashboard: Dashboard; // match prop name with lowercased 'dashboard'
+}
+const OccupancyTrends = ({dashboard}:StatisticsProps) => {
   // Simulated data - replace with actual data from your backend
   const months = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
     "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
   ];
-  const rentalIncome = [
-    45000, 47000, 48000, 50000, 52000, 53000,
-    55000, 54000, 52000, 50000, 51000, 53000
-  ];
-  const occupancyRates = [
-    92, 94, 95, 97, 98, 98, 
-    99, 98, 96, 95, 96, 97
-  ];
+  const rentalIncome = dashboard.rentalIncome;
+  const occupancyRates = dashboard.occupancyRates;
 
   const apexOpts: ApexOptions = {
     chart: {

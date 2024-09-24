@@ -6,14 +6,32 @@ import { ApexOptions } from "apexcharts";
 // components
 import ChartStatistics from "../../../components/ChartStatistics";
 
-const RentCollectionProgress = () => {
-  // Simulated data - replace with actual data from your backend
-  const totalRent = 50000;
-  const collectedRent = 42500;
-  const outstandingRent = totalRent - collectedRent;
-  const latePayments = 3500;
+interface Dashboard {
+  totalRentCollected:number,
+  totalRentCollectable:number,
+  latePayment:number,
+}
 
-  const collectionPercentage = (collectedRent / totalRent) * 100;
+interface StatisticsProps {
+  dashboard: Dashboard; // match prop name with lowercased 'dashboard'
+}
+
+const RentCollectionProgress = ({dashboard}:StatisticsProps) => {
+  // Simulated data - replace with actual data from your backend
+  const totalRent = dashboard?.totalRentCollectable;
+  const collectedRent = dashboard?.totalRentCollected;
+  const outstandingRent = totalRent - collectedRent;
+  const latePayments = dashboard.latePayment;
+
+
+  const calculateCollectionPercentage = (collectedRent:number, totalRent:number) => {
+    // Check if totalRent is 0 to avoid division by zero
+    if (totalRent === 0) {
+      return collectedRent === 0 ? 0 : NaN; // If both are 0, return 0%, otherwise return NaN
+    }
+    return (collectedRent / totalRent) * 100;
+  };
+  const collectionPercentage = calculateCollectionPercentage(collectedRent,totalRent)
 
   const apexOpts: ApexOptions = {
     chart: {
