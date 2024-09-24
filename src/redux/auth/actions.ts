@@ -12,7 +12,8 @@ export interface AuthActionType {
     | AuthActionTypes.RESET
     | AuthActionTypes.ACTIVATE_USER
     | AuthActionTypes.SIGNUP_USER
-    | AuthActionTypes.UPDATEUSER;
+    | AuthActionTypes.UPDATEUSER
+    | AuthActionTypes.PUTDASHBOARD
   payload: {} | string;
 }
 
@@ -31,12 +32,21 @@ interface UserData {
   updatedAt:string;
   __v:number
 }
+
 export const userUpdate = (
   actionType: string,
   data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.UPDATEUSER,
   payload: { actionType, data },
+});
+
+export const getDashboard =( 
+  actionType: string,
+ data: UserData | {}
+): AuthActionType => ({
+  type: AuthActionTypes.PUTDASHBOARD,
+  payload:{actionType, data}
 });
 
 // common success

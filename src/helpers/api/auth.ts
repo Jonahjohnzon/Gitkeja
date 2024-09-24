@@ -28,9 +28,15 @@ function getData(){
   return api.get(`${baseUrl}`);
 }
 
+
+function getDash(){
+  const baseUrl = "/api/getTotalProperty/";
+  return api.get(`${baseUrl}`);
+}
+
 function activateUser(params: { token: string }) {
   const baseUrl = "/activate/";
   return api.create(`${baseUrl}`, params);
 }
 
-export { login, logout, signup, forgotPassword, activateUser, getData };
+export { login, logout, signup, forgotPassword, activateUser, getData , getDash};

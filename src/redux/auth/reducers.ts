@@ -137,6 +137,7 @@ interface AuthActionType {
 }
 
 const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): AuthState => {
+  console.log(action.payload)
   switch (action.type) {
     case AuthActionTypes.API_RESPONSE_SUCCESS:
       switch (action.payload.actionType) {
@@ -191,7 +192,7 @@ case AuthActionTypes.API_RESPONSE_ERROR:
         error: action.payload.error ?? null,
         userSignUp: false,
         loading: false,
-      };
+      }; 
     case AuthActionTypes.FORGOT_PASSWORD:
       return {
         ...state,
@@ -212,7 +213,10 @@ case AuthActionTypes.API_RESPONSE_ERROR:
 
     case AuthActionTypes.UPDATEUSER:
       return {...state, user:action.payload.data as UserData, mainload:false}
-
+    case AuthActionTypes.PUTDASHBOARD:
+      return {...state, dashboard:{
+        ...state.dashboard,
+        ...action.payload.data as dashboard}}
     case AuthActionTypes.LOGIN_USER:
       return { ...state, loading: true, userLoggedIn: false };
     case AuthActionTypes.LOGOUT_USER:

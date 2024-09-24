@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Row, Col } from "react-bootstrap";
 
 // components
@@ -10,6 +10,7 @@ import TopTenants from "./TopTenants";
 import RecentTransactions from "./RecentTransactions";
 import MaintenanceOverview from "./MaintenanceOverview";
 import LeaseExpiryTimeline from "./LeaseExpiryTimeline";
+import { AuthActionTypes } from "../../../redux/auth/constants";
 import { useDispatch, useSelector } from "react-redux";
 import { AppDispatch, RootState } from "../../../redux/store";
 // data
@@ -21,13 +22,16 @@ const LandlordDashboard = () => {
   const topTenants = dashboard.toptenant
   const recentTransactions = dashboard.recentTransactions
 
+  console.log(dashboard)
   const onDateChange = (date: Date) => {
     if (date) {
       setSelectedDate(date);
     }
   };
 
-
+  useEffect(()=>{
+    dispatch({type:AuthActionTypes.GETDASHBOARD})
+  },[dispatch])
 
   return (
     <>

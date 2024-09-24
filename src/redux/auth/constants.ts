@@ -13,5 +13,7 @@ export enum AuthActionTypes {
   RESET = "@@auth/RESET",
 
   GETDATA = "@@auth/GETDATA",
-  UPDATEUSER = "@@auth/UPDATEUSER"
+  UPDATEUSER = "@@auth/UPDATEUSER",
+  GETDASHBOARD = "@@auth/GETDASHBOARD",
+  PUTDASHBOARD = "@@auth/PUTDASHBOARD"
 }

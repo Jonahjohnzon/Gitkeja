@@ -11,11 +11,12 @@ import {
   signup as signupApi,
   forgotPassword as forgotPasswordApi,
   activateUser as activateUserApi,
-  getData as getDataApi
+  getData as getDataApi,
+  getDash as getDashApi
 } from '../../helpers/';
 
 // actions
-import { authApiResponseSuccess, authApiResponseError, userUpdate } from './actions';
+import { authApiResponseSuccess, authApiResponseError, userUpdate, getDashboard } from './actions';
 
 // constants
 import { AuthActionTypes } from './constants';
@@ -97,9 +98,21 @@ try{
 }
 catch(error:any)
 {
+  console.log(error)
+}
+}
 
-}
-}
+function* getdashboard ():SagaIterator{
+  try{
+    const response = yield call(()=> getDashApi() )
+    const data = response.data
+    yield put(getDashboard(AuthActionTypes.PUTDASHBOARD, data['data']))
+  }
+  catch(error:any)
+  {
+    console.log(error)
+  }
+  }
 
 function* activateUser({ payload: { token = '' } }: UserData): SagaIterator {
   try {
@@ -136,6 +149,10 @@ export function* watchGetData(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETDATA, getData)
 }
 
+export function* watchGetDash(): SagaIterator{
+  yield takeEvery(AuthActionTypes.GETDASHBOARD, getdashboard)
+}
+
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -144,7 +161,8 @@ function* authSaga(): SagaIterator {
     fork(watchSignup),
     fork(watchForgotPassword),
     fork(watchActivateUser),
-    fork(watchGetData)
+    fork(watchGetData),
+    fork(watchGetDash)
   ]);
 }
 
