@@ -1,9 +1,10 @@
 import React from "react";
 import { Card, Button, Badge, Dropdown } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import classNames from "classnames";
+
 // components
 import Table from "../../../../components/Table";
+
 // types
 import { TenantDetails } from "./data";
 
@@ -11,12 +12,14 @@ interface TenantsListViewProps {
   tenantDetails: TenantDetails[];
   onTenantSelect: (tenant: TenantDetails) => void;
   onAddTenant: () => void;
+  properties: { id: number; name: string }[]; // Add this prop for properties
 }
 
 const TenantsListView: React.FC<TenantsListViewProps> = ({ 
   tenantDetails, 
   onTenantSelect,
-  onAddTenant
+  onAddTenant,
+  properties
 }) => {
   // Tenant info column render
   const TenantInfoColumn = ({ row }: { row: any }) => (
@@ -118,20 +121,6 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
       Cell: PaymentStatusColumn,
     },
     {
-      Header: "Tenant Score",
-      accessor: "tenantScore",
-      sort: true,
-      Cell: ({ value }: { value: number }) => (
-        <span className={classNames(
-          { 'text-success': value >= 80 },
-          { 'text-warning': value >= 60 && value < 80 },
-          { 'text-danger': value < 60 }
-        )}>
-          {value}
-        </span>
-      ),
-    },
-    {
       Header: "Action",
       accessor: "action",
       sort: false,
@@ -147,6 +136,8 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
           <Button 
             variant="primary" 
             onClick={onAddTenant}
+            disabled={properties.length === 0}
+            title={properties.length === 0 ? "Add a property first" : "Add New Tenant"}
           >
             Add New Tenant
           </Button>
