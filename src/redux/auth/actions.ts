@@ -14,6 +14,7 @@ export interface AuthActionType {
     | AuthActionTypes.SIGNUP_USER
     | AuthActionTypes.UPDATEUSER
     | AuthActionTypes.PUTDASHBOARD
+    | AuthActionTypes.POSTPROPERTY
   payload: {} | string;
 }
 
@@ -31,6 +32,21 @@ interface UserData {
   verified:boolean;
   updatedAt:string;
   __v:number
+}
+
+interface FormData {
+  name: string;
+  location: string;
+  type: string;
+  units: number;
+  rentAmount: number;
+  leaseTerms: string;
+  description: string;
+  amenities: string[];
+  nearbyFacilities: string[];
+  managers: { name: string; phone: string }[];
+  acquisitionDate: Date;
+  image: File | null;
 }
 
 export const userUpdate = (
@@ -87,6 +103,24 @@ export const signupUser = (
   type: AuthActionTypes.SIGNUP_USER,
   payload: { name, email, password },
 });
+
+export const createNewProperty = (
+  name: string,
+  location: string,
+  type: string,
+  units: number,
+  rentAmount?: number,
+  leaseTerms?: string,
+  description?: string,
+  amenities?: string[],
+  nearbyFacilities?: string[],
+  managers?: { name: string, phone: string }[],
+  acquisitionDate?: Date,
+  image?: File | null,
+): AuthActionType =>({
+  type: AuthActionTypes.POSTPROPERTY,
+  payload: { name, location, type,units,rentAmount,leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image }
+})
 
 export const forgotPassword = (username: string): AuthActionType => ({
   type: AuthActionTypes.FORGOT_PASSWORD,

@@ -144,6 +144,7 @@ const VerticalLayout = ({ children }: VerticalLayoutProps) => {
   return (
    <>{!mainload ?<>
       <div id="wrapper">
+
         <Suspense fallback={loading()}>
           <LeftSidebar isCondensed={isCondensed} hideLogo={false} />
         </Suspense>

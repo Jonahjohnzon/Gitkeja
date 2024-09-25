@@ -12,7 +12,8 @@ import {
   forgotPassword as forgotPasswordApi,
   activateUser as activateUserApi,
   getData as getDataApi,
-  getDash as getDashApi
+  getDash as getDashApi,
+  createproperty as createproperty
 } from '../../helpers/';
 
 // actions
@@ -32,6 +33,23 @@ interface UserData {
   type: string;
 }
 
+interface FormData {
+  payload: {
+  name: string;
+  location: string;
+  type: string;
+  units: number;
+  rentAmount?: number;
+  leaseTerms?: string;
+  description?: string;
+  amenities?: string[];
+  nearbyFacilities?: string[];
+  managers?: { name: string; phone: string }[];
+  acquisitionDate?: Date;
+  image?: File | null;};
+  type: string;
+
+}
 const api = new APICore();
 
 function* login({ payload: { email = '', password = '' } }: UserData): SagaIterator {
@@ -77,6 +95,28 @@ function* signup({ payload: { name = '', email = '', password = '' } }: UserData
     yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error.message || 'Signup Failed'));
+  }
+}
+
+function* createProperty({ payload: { name = '', location = '', type = '', units = 0, rentAmount = 0, leaseTerms = '', description = '', amenities = [], nearbyFacilities = [], managers = [] , acquisitionDate = new Date() , image = null  } }: FormData): SagaIterator {
+  try {
+    if (!name || !location || !type) throw new Error('Fullname, email, and password are required');
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTPROPERTY, {
+      propertyLoading:true
+  }));
+    const response = yield call(() => createproperty({ name, location, type, units, rentAmount, leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image}));
+    const data = response.data;
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTPROPERTY, {
+      topMessage:"Property Creation Successful",
+      topDisplay:true,
+      propertyLoading:false,
+      topColor:"primary"}));
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Optional: makes the scrolling smooth
+    });
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
   }
 }
 
@@ -153,6 +193,10 @@ export function* watchGetDash(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETDASHBOARD, getdashboard)
 }
 
+export function* watchPostProperty(): SagaIterator{
+  yield takeEvery(AuthActionTypes.POSTPROPERTY, createProperty)
+}
+
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -162,7 +206,8 @@ function* authSaga(): SagaIterator {
     fork(watchForgotPassword),
     fork(watchActivateUser),
     fork(watchGetData),
-    fork(watchGetDash)
+    fork(watchGetDash),
+    fork(watchPostProperty)
   ]);
 }
 

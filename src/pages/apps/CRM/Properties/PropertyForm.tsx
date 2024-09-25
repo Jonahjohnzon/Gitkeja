@@ -3,12 +3,18 @@ import { useForm, useFieldArray, Controller } from "react-hook-form";
 import { Row, Col, Card, Form, Button, Alert } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Spinner from "../../../../components/Spinner";
+import { RootState } from "../../../../redux/store";
 
 // components
 import PageTitle from "../../../../components/PageTitle";
 import HyperDatepicker from "../../../../components/Datepicker";
 import FileUploader from "../../../../components/FileUploader";
 import { FormInput } from "../../../../components";
+import { useDispatch, useSelector } from "react-redux";
+import { AppDispatch } from "../../../../redux/store";
+import { createNewProperty } from "../../../../redux/actions";
+import TopDisplay from "../../../../layouts/TopDisplay";
 
 interface AmenityTypes {
   id: string;
@@ -69,7 +75,9 @@ const nearbyFacilities: NearbyFacilityTypes[] = [
 const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
 
 const PropertyForm: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const [submitError, setSubmitError] = useState<string | null>(null);
+  const {propertyLoading} = useSelector((state:RootState) => state.Auth)
 
   const schema = yup.object().shape({
     name: yup.string().required("Please enter Property Name").max(100, "Property Name must not exceed 100 characters"),
@@ -115,11 +123,7 @@ const PropertyForm: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     setSubmitError(null);
     try {
-      // Here you would typically send the data to your backend
-      console.log(data);
-      // Simulating an API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      alert("Property added successfully!");
+            dispatch(createNewProperty(data['name'], data['location'], data['type'], data['units'], data['rentAmount'], data['leaseTerms'], data['description'], data['amenities'], data['nearbyFacilities'], data['managers'], data['acquisitionDate'], data['image']))
     } catch (error) {
       setSubmitError("An error occurred while submitting the form. Please try again.");
     }
@@ -165,6 +169,7 @@ const PropertyForm: React.FC = () => {
 
   return (
     <>
+    <TopDisplay/>
       <PageTitle
         breadCrumbItems={[
           { label: "Properties", path: "/apps/properties" },
@@ -369,12 +374,16 @@ const PropertyForm: React.FC = () => {
 
                 <Row className="mt-2">
                   <Col className="text-end">
-                    <Button variant="success" type="submit">
-                      Add Property
+                    <Button variant="success"  type="submit" disabled={propertyLoading}>
+                    {propertyLoading&&<Spinner
+                  className="spinner-grow-sm me-1"
+                  tag="span"
+                  color="white"
+                  type="grow"
+                />}
+                      <span>Add Property</span>
                     </Button>
-                    <Button variant="light" className="ms-1">
-                      Cancel
-                    </Button>
+
                   </Col>
                 </Row>
               </form>

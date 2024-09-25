@@ -108,7 +108,11 @@ interface AuthState {
   resetPasswordSuccess: boolean | null;
   activationSuccess: boolean | null;
   mainload:boolean,
-  dashboard?:dashboard
+  dashboard?:dashboard,
+  topMessage:string,
+  topDisplay:boolean,
+  topColor:string,
+  propertyLoading:boolean
 
 }
 
@@ -124,7 +128,11 @@ const INIT_STATE: AuthState = {
   resetPasswordSuccess: null,
   activationSuccess: null,
   mainload:true,
-  dashboard:Dashboard
+  dashboard:Dashboard,
+  topMessage:"",
+  topDisplay:false,
+  topColor:"primary",
+  propertyLoading:false
 };
 
 interface AuthActionType {
@@ -137,7 +145,6 @@ interface AuthActionType {
 }
 
 const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): AuthState => {
-  console.log(action.payload)
   switch (action.type) {
     case AuthActionTypes.API_RESPONSE_SUCCESS:
       switch (action.payload.actionType) {
@@ -174,6 +181,11 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             activationSuccess: true,
             loading: false,
           };
+        case AuthActionTypes.POSTPROPERTY:
+          return {
+            ...state,
+           ...action.payload.data
+          };
         default:
           return { ...state };
       }
@@ -207,6 +219,13 @@ case AuthActionTypes.API_RESPONSE_ERROR:
         activationSuccess: false,
         loading: false,
       };
+    case AuthActionTypes.POSTPROPERTY:
+      return {
+          ...state,
+          topMessage:"Property Creation Failed",
+          topDisplay:true,
+          topColor:"danger"
+        };
     default:
       return { ...state };
   }
