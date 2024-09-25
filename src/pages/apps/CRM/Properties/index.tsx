@@ -1,17 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Row, Col, Card, Button, ButtonGroup, Dropdown, ProgressBar, OverlayTrigger, Tooltip } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+import { useDispatch } from "react-redux";
+import { AuthActionTypes } from "../../../../redux/auth/constants";
+import { AppDispatch } from "../../../../redux/store";
+import DefaultImage from "../../../../components/DefaultImage";
 
 // components
 import PageTitle from "../../../../components/PageTitle";
 
-// dummy data
-import { properties, PropertyType } from "./data";
+import { PropertyType } from "./data";
 
 // single property
 const SingleProperty = (props: { property: PropertyType }) => {
-  const property = props.property || {};
+
+
+const property = props.property || {};
 
   return (
     <Card className="property-box">
@@ -28,11 +35,11 @@ const SingleProperty = (props: { property: PropertyType }) => {
           </Dropdown.Menu>
         </Dropdown>
         <h4 className="mt-0">
-          <Link to={`/apps/properties/${property.id}`} className="text-dark">
+          <Link to={`/apps/projects/${property._id}/details`} className="text-dark">
             {property.name}
           </Link>
         </h4>
-        <p className="text-muted text-uppercase"><i className="mdi mdi-map-marker"></i> <small>{property.address}</small></p>
+        <p className="text-muted text-uppercase"><i className="mdi mdi-map-marker"></i> <small>{property.location}</small></p>
 
         <div className={classNames("badge", {
           "bg-soft-success text-success": property.status === "Occupied",
@@ -62,7 +69,7 @@ const SingleProperty = (props: { property: PropertyType }) => {
                 overlay={<Tooltip id={manager.name}>{manager.name}</Tooltip>}
               >
                 <Link to="#" className="avatar-group-item">
-                  <img src={manager.image} className="rounded-circle avatar-sm" alt="" />
+                {manager.image?<img src={manager.image} className="rounded-circle  avatar-sm" alt="" />:<DefaultImage username={manager?.name}/>}
                 </Link>
               </OverlayTrigger>
             );
@@ -70,15 +77,22 @@ const SingleProperty = (props: { property: PropertyType }) => {
         </div>
         <p className="mb-2 fw-semibold">
           Occupancy Rate:
-          <span className="float-end">{property.occupancyRate}%</span>
+          <span className="float-end">{property.occupancy}%</span>
         </p>
-        <ProgressBar now={property.occupancyRate} className="mb-1" style={{ height: "7px" }} />
+        <ProgressBar now={property.occupancy} className="mb-1" style={{ height: "7px" }} />
       </Card.Body>
     </Card>
   );
 };
 
 const Properties = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const {propertiesList} = useSelector((state:RootState)=>state.Auth)
+  const PropertiesList: PropertyType[] = propertiesList
+
+  useEffect(()=>{
+    dispatch({type:AuthActionTypes.GETPROPERTY,payload:{limit:9}})
+  },[dispatch])
   return (
     <>
       <PageTitle
@@ -91,7 +105,7 @@ const Properties = () => {
 
       <Row className="mb-2">
         <Col sm={4}>
-          <Link to="/apps/properties/add" className="btn btn-danger rounded-pill waves-effect waves-light mb-3">
+          <Link to="/apps/projects/create" className="btn btn-danger rounded-pill waves-effect waves-light mb-3">
             <i className="mdi mdi-plus"></i> Add Property
           </Link>
         </Col>
@@ -107,9 +121,9 @@ const Properties = () => {
       </Row>
 
       <Row>
-        {(properties || []).map((property, i) => {
+        {(PropertiesList || []).map((property, i) => {
           return (
-            <Col lg={4} key={`prop-${property.id}`}>
+            <Col lg={4} key={`prop-${property._id}`} >
               <SingleProperty property={property} />
             </Col>
           );

@@ -147,13 +147,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
         role:"admin",
       },
       {
-        key: "project-details",
-        label: "Details",
-        url: "/apps/projects/:id/details",
-        parentKey: "apps-projects",
-        role:"admin",
-      },
-      {
         key: "project-create-project",
         label: "Add Property",
         url: "/apps/projects/create",

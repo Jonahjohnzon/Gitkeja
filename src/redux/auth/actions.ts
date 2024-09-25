@@ -15,6 +15,7 @@ export interface AuthActionType {
     | AuthActionTypes.UPDATEUSER
     | AuthActionTypes.PUTDASHBOARD
     | AuthActionTypes.POSTPROPERTY
+    | AuthActionTypes.GETPROPERTY
   payload: {} | string;
 }
 
@@ -62,6 +63,14 @@ export const getDashboard =(
  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.PUTDASHBOARD,
+  payload:{actionType, data}
+});
+
+export const getPropertyApi =( 
+  actionType: string,
+ data: UserData | {}
+): AuthActionType => ({
+  type: AuthActionTypes.API_RESPONSE_SUCCESS,
   payload:{actionType, data}
 });
 

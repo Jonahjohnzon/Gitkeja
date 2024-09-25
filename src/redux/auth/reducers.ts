@@ -1,6 +1,7 @@
 import { Reducer } from 'redux';
 import { AuthActionTypes } from "./constants";
 import { APICore } from "../../helpers/api/apiCore";
+import { PropertyType } from './propertyReducer';
 
 const api = new APICore();
 
@@ -69,6 +70,8 @@ interface dashboard {
 }
 
 
+const PropertyList:PropertyType[] =[]
+
 
 const Dashboard:dashboard = {
   totalRentCollectable:0,
@@ -112,7 +115,8 @@ interface AuthState {
   topMessage:string,
   topDisplay:boolean,
   topColor:string,
-  propertyLoading:boolean
+  propertyLoading:boolean,
+  propertiesList:PropertyType[]
 
 }
 
@@ -132,7 +136,8 @@ const INIT_STATE: AuthState = {
   topMessage:"",
   topDisplay:false,
   topColor:"primary",
-  propertyLoading:false
+  propertyLoading:false,
+  propertiesList:PropertyList
 };
 
 interface AuthActionType {
@@ -186,6 +191,11 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             ...state,
            ...action.payload.data
           };
+        case AuthActionTypes.GETPROPERTY:
+          console.log(action.payload.data)
+          return {
+            ...state,
+            propertiesList:action.payload.data as PropertyType[] }
         default:
           return { ...state };
       }

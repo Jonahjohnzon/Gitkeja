@@ -1,3 +1,3 @@
-import { login, logout, signup, forgotPassword, activateUser,getData, getDash,createproperty } from "./auth";
+import { login, logout, signup, forgotPassword, activateUser,getData, getDash,createproperty,getPropertyData } from "./auth";
 
-export { login, logout, signup, forgotPassword, activateUser,getData , getDash,createproperty};
+export { login, logout, signup, forgotPassword, activateUser,getData , getDash,createproperty,getPropertyData};

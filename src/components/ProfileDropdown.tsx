@@ -19,7 +19,7 @@ interface ProfileDropdownProps {
 
 const ProfileDropdown = (props: ProfileDropdownProps) => {
   const profilePic = props["profile"] || null;
-  const FirstLetter =    props?.username?.charAt(0)?.toUpperCase();
+  
   const [dropdownOpen, setDropdownOpen] = useState<boolean>(false);
 
   /*
@@ -40,7 +40,7 @@ const ProfileDropdown = (props: ProfileDropdownProps) => {
           { show: dropdownOpen }
         )}
       >
-        {profilePic?<img src={profilePic!} className="rounded-circle" alt="" />:<DefaultImage letter={FirstLetter}/>}
+        {profilePic?<img src={profilePic!} className="rounded-circle" alt="" />:<DefaultImage username={props.username}/>}
         <span className="pro-user-name ms-2">
           {props["username"]} <i className="mdi mdi-chevron-down"></i>
         </span>

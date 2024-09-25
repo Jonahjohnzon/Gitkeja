@@ -33,6 +33,11 @@ function getData(){
   return api.get(`${baseUrl}`);
 }
 
+function getPropertyData(params:{ limit: string}){
+  const baseUrl = "/api/getProperty/";
+  return api.get(`${baseUrl}`, params);
+}
+
 
 function getDash(){
   const baseUrl = "/api/getTotalProperty/";
@@ -44,4 +49,4 @@ function activateUser(params: { token: string }) {
   return api.create(`${baseUrl}`, params);
 }
 
-export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty};
+export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData};
