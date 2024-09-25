@@ -1,5 +1,8 @@
-import React, { useState } from "react";
+import React, { useState , useEffect} from "react";
 import { Row, Col, Card, Dropdown, Button, Image } from "react-bootstrap";
+import { useParams } from 'react-router-dom';
+import { format } from 'date-fns';
+
 
 // Import sub-components
 import PageTitle from "../../../../../components/PageTitle";
@@ -7,12 +10,16 @@ import PropertyStatistics from "./PropertyStatistics";
 import PropertyManagers from "./PropertyManagers";
 import TenantCommunications from "./TenantCommunications";
 import PropertyDocuments from "./PropertyDocuments";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../../../redux/store";
+import { AuthActionTypes } from "../../../../../redux/auth/constants";
 
 // Placeholder components (to be implemented later)
 const OccupancyChart: React.FC<{ propertyId: number }> = () => <div>Occupancy Chart Placeholder</div>;
 const RentCollection: React.FC<{ propertyId: number }> = () => <div>Rent Collection Placeholder</div>;
 const MaintenanceRequests: React.FC<{ propertyId: number }> = () => <div>Maintenance Requests Placeholder</div>;
 const LeaseManagement: React.FC<{ propertyId: number }> = () => <div>Lease Management Placeholder</div>;
+
 
 // Define the Property interface to match FormData from PropertyForm
 interface Property {
@@ -35,29 +42,13 @@ interface Property {
 }
 
 const PropertyDetails: React.FC = () => {
-  const [property] = useState<Property>({
-    id: 1,
-    name: "Sunset Apartments",
-    location: "123 Moi Avenue, Nairobi, Kenya",
-    type: "Residential Apartment Complex",
-    units: 50,
-    rentAmount: 50000, // Per unit in Kenyan Shillings
-    leaseTerms: "12-month lease with option to renew. Security deposit required. Pets allowed with additional fee.",
-    description: "Sunset Apartments is a modern residential complex offering comfortable living in the heart of Nairobi. With a range of amenities and excellent location, it's perfect for young professionals and families alike.",
-    amenities: ["24/7 Security", "Swimming Pool", "Gym", "Covered Parking", "Children's Play Area"],
-    nearbyFacilities: ["Shopping Mall", "Hospital", "Primary School", "University", "Public Transport"],
-    managers: [
-      { name: "John Doe", phone: "+254 712 345 678" },
-      { name: "Jane Smith", phone: "+254 723 456 789" },
-    ],
-    acquisitionDate: new Date("2015-01-15"),
-    image: "/path/to/property-image.jpg",
-    occupiedUnits: 45,
-    maintenanceRequests: 5,
-    tenantSatisfaction: 4.2,
-  });
-
-  const calculateOccupancyRate = () => ((property.occupiedUnits / property.units) * 100).toFixed(2);
+  const { id } = useParams();
+  const dispatch = useDispatch<AppDispatch>();
+  const {property} = useSelector((state:RootState)=>state.Auth)
+  
+  useEffect(()=>{
+    dispatch({type:AuthActionTypes.GETPROPERTYID,payload:{propertyId:id}})
+  },[dispatch])
   const calculateMonthlyRevenue = () => property.rentAmount * property.occupiedUnits;
 
   return (
@@ -92,13 +83,13 @@ const PropertyDetails: React.FC = () => {
                   <p><strong>Location:</strong> {property.location}</p>
                   <p><strong>Type:</strong> {property.type}</p>
                   <p><strong>Total Units:</strong> {property.units}</p>
-                  <p><strong>Occupied Units:</strong> {property.occupiedUnits}</p>
-                  <p><strong>Occupancy Rate:</strong> {calculateOccupancyRate()}%</p>
+                  <p><strong>Occupied Units:</strong> {property.occupancyUnits}</p>
+                  <p><strong>Occupancy Rate:</strong> {property.occupancy}%</p>
                 </Col>
                 <Col md={6}>
                   <p><strong>Rent Amount (per unit):</strong> KES {property.rentAmount.toLocaleString()}</p>
                   <p><strong>Monthly Revenue:</strong> KES {calculateMonthlyRevenue().toLocaleString()}</p>
-                  <p><strong>Acquisition Date:</strong> {property.acquisitionDate.toDateString()}</p>
+                  <p><strong>Acquisition Date:</strong> {format(property.acquisitionDate, 'MMMM dd, yyyy' )}</p>
                 </Col>
               </Row>
               <h5 className="mt-3">Description</h5>
@@ -106,15 +97,15 @@ const PropertyDetails: React.FC = () => {
               <h5 className="mt-3">Lease Terms</h5>
               <p>{property.leaseTerms}</p>
               <h5 className="mt-3">Amenities</h5>
-              <ul>
-                {property.amenities.map((amenity, index) => (
-                  <li key={index}>{amenity}</li>
+              <ul >
+                {(property?.amenities || []).map((amenity:string, index:number) => (
+                  <li key={index} className=" fs-5">{amenity}</li>
                 ))}
               </ul>
               <h5 className="mt-3">Nearby Facilities</h5>
-              <ul>
-                {property.nearbyFacilities.map((facility, index) => (
-                  <li key={index}>{facility}</li>
+              <ul >
+                {(property?.nearbyFacilities || []).map((facility:string, index:number) => (
+                  <li key={index}  className=" fs-5">{facility}</li>
                 ))}
               </ul>
               <PropertyManagers managers={property.managers} />

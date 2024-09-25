@@ -18,5 +18,6 @@ export enum AuthActionTypes {
   PUTDASHBOARD = "@@auth/PUTDASHBOARD",
 
   POSTPROPERTY = "@@auth/POSTPROPERTY",
-  GETPROPERTY = "@@auth/ GETPROPERTY"
+  GETPROPERTY = "@@auth/ GETPROPERTY",
+  GETPROPERTYID = "@@auth/ GETPROPERTYID"
 }

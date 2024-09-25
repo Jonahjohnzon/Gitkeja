@@ -1,7 +1,7 @@
 import { Reducer } from 'redux';
 import { AuthActionTypes } from "./constants";
 import { APICore } from "../../helpers/api/apiCore";
-import { PropertyType } from './propertyReducer';
+import { PropertyType,PropertyGetId } from './propertyReducer';
 
 const api = new APICore();
 
@@ -72,6 +72,25 @@ interface dashboard {
 
 const PropertyList:PropertyType[] =[]
 
+const Propertybyid:PropertyGetId = {
+  _id: 1,
+  name: "",
+  location: "",
+  type: "",
+  units: 0,
+  rentAmount: 0, // Per unit in Kenyan Shillings
+  leaseTerms: "",
+  description: "",
+  amenities: [],
+  nearbyFacilities: [],
+  managers: [],
+  acquisitionDate: new Date(),
+  image: "",
+  occupiedUnits: 0,
+  maintenanceRequests:0,
+  tenantSatisfaction: 0,
+  occupancy:0
+}
 
 const Dashboard:dashboard = {
   totalRentCollectable:0,
@@ -117,7 +136,7 @@ interface AuthState {
   topColor:string,
   propertyLoading:boolean,
   propertiesList:PropertyType[]
-
+  property:PropertyGetId
 }
 
 const INIT_STATE: AuthState = {
@@ -137,7 +156,8 @@ const INIT_STATE: AuthState = {
   topDisplay:false,
   topColor:"primary",
   propertyLoading:false,
-  propertiesList:PropertyList
+  propertiesList:PropertyList,
+  property:Propertybyid
 };
 
 interface AuthActionType {
@@ -192,10 +212,13 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
            ...action.payload.data
           };
         case AuthActionTypes.GETPROPERTY:
-          console.log(action.payload.data)
           return {
             ...state,
             propertiesList:action.payload.data as PropertyType[] }
+        case AuthActionTypes.GETPROPERTYID:
+          return {
+            ...state,
+            property:action.payload.data as PropertyGetId }
         default:
           return { ...state };
       }

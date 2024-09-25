@@ -74,6 +74,13 @@ export const getPropertyApi =(
   payload:{actionType, data}
 });
 
+export const getPropertyApiId =( 
+  actionType: string,
+ data: UserData | {}
+): AuthActionType => ({
+  type: AuthActionTypes.API_RESPONSE_SUCCESS,
+  payload:{actionType, data}
+});
 // common success
 export const authApiResponseSuccess = (
   actionType: string,

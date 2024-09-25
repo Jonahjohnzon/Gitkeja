@@ -14,11 +14,12 @@ import {
   getData as getDataApi,
   getDash as getDashApi,
   createproperty,
-  getPropertyData
+  getPropertyData,
+  getPropertyDataId
 } from '../../helpers/';
 
 // actions
-import { authApiResponseSuccess, authApiResponseError, userUpdate, getDashboard, getPropertyApi } from './actions';
+import { authApiResponseSuccess, authApiResponseError, userUpdate, getDashboard, getPropertyApi, getPropertyApiId } from './actions';
 
 // constants
 import { AuthActionTypes } from './constants';
@@ -27,6 +28,13 @@ interface GetProperty {
   type: AuthActionTypes.GETPROPERTY;
   payload:{
   limit? :string
+  };
+}
+
+interface GetPropertyId {
+  type: AuthActionTypes.GETPROPERTY;
+  payload:{
+    propertyId? :string
   };
 }
 interface UserData {
@@ -162,6 +170,20 @@ function* getPropertydata (action: GetProperty):SagaIterator{
   }
   }
 
+  function* getPropertyid (action: GetPropertyId):SagaIterator{
+    try{
+      const { payload: { propertyId = '' } } = action;
+      const response = yield call(()=> getPropertyDataId({propertyId}) )
+      const data = response.data
+      console.log(data)
+      yield put(getPropertyApiId(AuthActionTypes.GETPROPERTYID, data['data']))
+    }
+    catch(error:any)
+    {
+      console.log(error)
+    }
+    }
+
 function* getdashboard ():SagaIterator{
   try{
     const response = yield call(()=> getDashApi() )
@@ -221,6 +243,10 @@ export function* watchPropertyData(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETPROPERTY , getPropertydata)
 }
 
+export function* watchPropertyDataid(): SagaIterator{
+  yield takeEvery(AuthActionTypes.GETPROPERTYID , getPropertyid)
+}
+
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -232,7 +258,8 @@ function* authSaga(): SagaIterator {
     fork(watchGetData),
     fork(watchGetDash),
     fork(watchPostProperty),
-    fork(watchPropertyData)
+    fork(watchPropertyData),
+    fork(watchPropertyDataid)
   ]);
 }
 
