@@ -89,7 +89,8 @@ const Propertybyid:PropertyGetId = {
   occupiedUnits: 0,
   maintenanceRequests:0,
   tenantSatisfaction: 0,
-  occupancy:0
+  occupancy:0,
+  monthlyRevenue:0
 }
 
 const Dashboard:dashboard = {

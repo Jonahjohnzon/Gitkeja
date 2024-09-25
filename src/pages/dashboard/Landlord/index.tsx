@@ -22,7 +22,6 @@ const LandlordDashboard = () => {
   const topTenants = dashboard.toptenant
   const recentTransactions = dashboard.recentTransactions
 
-  console.log(dashboard)
   const onDateChange = (date: Date) => {
     if (date) {
       setSelectedDate(date);

@@ -175,7 +175,6 @@ function* getPropertydata (action: GetProperty):SagaIterator{
       const { payload: { propertyId = '' } } = action;
       const response = yield call(()=> getPropertyDataId({propertyId}) )
       const data = response.data
-      console.log(data)
       yield put(getPropertyApiId(AuthActionTypes.GETPROPERTYID, data['data']))
     }
     catch(error:any)

@@ -21,25 +21,7 @@ const MaintenanceRequests: React.FC<{ propertyId: number }> = () => <div>Mainten
 const LeaseManagement: React.FC<{ propertyId: number }> = () => <div>Lease Management Placeholder</div>;
 
 
-// Define the Property interface to match FormData from PropertyForm
-interface Property {
-  id: number;
-  name: string;
-  location: string;
-  type: string;
-  units: number;
-  rentAmount: number;
-  leaseTerms: string;
-  description: string;
-  amenities: string[];
-  nearbyFacilities: string[];
-  managers: { name: string; phone: string }[];
-  acquisitionDate: Date;
-  image: string | null;
-  occupiedUnits: number; // Added for occupancy calculation
-  maintenanceRequests: number; // Added for PropertyStatistics
-  tenantSatisfaction: number; // Added for PropertyStatistics
-}
+
 
 const PropertyDetails: React.FC = () => {
   const { id } = useParams();
@@ -60,7 +42,7 @@ const PropertyDetails: React.FC = () => {
         ]}
         title={property.name}
       />
-      <Row>
+     {property.name != "" && <Row>
         <Col xl={8}>
           <Card>
             <Card.Body>
@@ -88,7 +70,7 @@ const PropertyDetails: React.FC = () => {
                 </Col>
                 <Col md={6}>
                   <p><strong>Rent Amount (per unit):</strong> KES {property.rentAmount.toLocaleString()}</p>
-                  <p><strong>Monthly Revenue:</strong> KES {calculateMonthlyRevenue().toLocaleString()}</p>
+                  <p><strong>Monthly Revenue:</strong> KES {property.monthlyRevenue}</p>
                   <p><strong>Acquisition Date:</strong> {format(property.acquisitionDate, 'MMMM dd, yyyy' )}</p>
                 </Col>
               </Row>
@@ -137,7 +119,7 @@ const PropertyDetails: React.FC = () => {
           <PropertyDocuments propertyId={property.id} />
           <TenantCommunications propertyId={property.id} />
         </Col>
-      </Row>
+      </Row>}
     </React.Fragment>
   );
 };

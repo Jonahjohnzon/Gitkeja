@@ -30,5 +30,6 @@ export interface PropertyGetId {
         occupiedUnits: number; // Added for occupancy calculation
         maintenanceRequests: number; // Added for PropertyStatistics
         tenantSatisfaction: number; // Added for PropertyStatistics
-        occupancy:number
+        occupancy:number,
+        monthlyRevenue:number;
 }
