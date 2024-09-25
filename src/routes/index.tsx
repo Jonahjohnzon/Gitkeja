@@ -72,7 +72,7 @@ const Checkout = React.lazy(() => import("../pages/apps/Ecommerce/Checkout"));
 const CRMDashboard = React.lazy(() => import("../pages/apps/CRM/Dashboard/"));
 const CRMContacts = React.lazy(() => import("../pages/apps/CRM/Tenants"));
 const Opportunities = React.lazy(
-  () => import("../pages/apps/CRM/Opportunities/")
+  () => import("../pages/apps/CRM/Occupancy")
 );
 const CRMLeads = React.lazy(() => import("../pages/apps/CRM/Leads/"));
 const CRMCustomers = React.lazy(() => import("../pages/apps/CRM/Customers/"));
