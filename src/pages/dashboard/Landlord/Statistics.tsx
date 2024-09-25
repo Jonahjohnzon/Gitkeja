@@ -50,7 +50,7 @@ const Statistics = ({dashboard}: StatisticsProps) => {
             prefix: "$",
           }}
           description="Total Rent Collected"
-          stats={dashboard?.totalRentCollectable?.toString()}
+          stats={dashboard?.totalRentCollected?.toString()}
           icon="fe-dollar-sign"
         />
       </Col>
