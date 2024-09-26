@@ -48,6 +48,23 @@ interface UserData {
   type: string;
 }
 
+interface TenantForm{
+  payload:{
+    propertyId:string,
+    name:string,
+    email:string,
+    phone:string,
+    idPassportNumber:string,
+    unit:string,
+    leaseStartDate:Date,
+    leaseEndDate:Date,
+    rentAmount:number,
+    securityDeposit:number,
+    numberOfOccupants:number,
+    pets:boolean
+  };
+  type:string
+}
 interface FormData {
   payload: {
   name: string;

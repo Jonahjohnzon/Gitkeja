@@ -222,6 +222,7 @@ const AddTenantPage: React.FC = () => {
                     errors={errors}
                   />
                 )}
+
               />
             </Col>
           </Row>
@@ -306,6 +307,7 @@ const AddTenantPage: React.FC = () => {
                     errors={errors}
                   />
                 )}
+
               />
             </Col>
             <Col md={6}>
