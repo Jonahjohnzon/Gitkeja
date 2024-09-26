@@ -157,10 +157,22 @@ function* createTenant({ payload: { name = '', propertyId = '', email = '', unit
   try {
     if (!name || !propertyId || !email) throw new Error('Fullname, email, and password are required');
     yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
-      propertyLoading:true
-  }));
+      tenantLoading:true,
+   }));
+
     const response = yield call(() => createtenant({ name, propertyId, email, unit, rentAmount, leaseStartDate, leaseEndDate, phone, securityDeposit, numberOfOccupants, pets, idPassportNumber}));
     const data = response.data;
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor: data.result ? "primary": "danger",
+      topMessage:data.message,
+      topDisplay:true,
+  }));
+    window.scrollTo({
+    top: 0,
+    behavior: 'smooth' // Optional: makes the scrolling smooth
+    });
+    console.log(data)
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
   }

@@ -138,7 +138,8 @@ interface AuthState {
   propertyLoading:boolean,
   propertiesList:PropertyType[]
   property:PropertyGetId,
-  tenantlist:boolean
+  tenantlist:boolean,
+  tenantLoading:boolean,
 }
 
 const INIT_STATE: AuthState = {
@@ -160,7 +161,8 @@ const INIT_STATE: AuthState = {
   propertyLoading:false,
   propertiesList:PropertyList,
   property:Propertybyid,
-  tenantlist:false
+  tenantlist:false,
+  tenantLoading:false
 };
 
 interface AuthActionType {
@@ -210,6 +212,11 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             loading: false,
           };
         case AuthActionTypes.POSTPROPERTY:
+          return {
+            ...state,
+           ...action.payload.data
+          };
+        case AuthActionTypes.POSTTENANT:
           return {
             ...state,
            ...action.payload.data

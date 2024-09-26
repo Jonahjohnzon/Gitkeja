@@ -8,8 +8,10 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { AuthActionTypes } from "../../../../redux/auth/constants";
 import { AppDispatch } from "../../../../redux/store";
-import { useForm, Controller } from "react-hook-form";
 import { createNewTenant } from "../../../../redux/actions";
+import { useForm, Controller } from "react-hook-form";
+import Spinner from "../../../../components/Spinner";
+import TopDisplay from "../../../../layouts/TopDisplay";
 
 interface Property {
   _id: string;
@@ -22,12 +24,12 @@ interface TenantFormData {
   email: string;
   phone: string;
   idPassportNumber: string;
-  unit: string;
+  unitNumber: string;
   leaseStartDate: string;
   leaseEndDate: string;
   rentAmount: number;
   securityDeposit: number;
-  numberOfOccupants: number;
+  occupants: number;
   pets: boolean;
 }
 
@@ -59,7 +61,7 @@ const AddTenantPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
 
-  const { propertiesList, tenantlist, loading, error } = useSelector((state: RootState) => state.Auth);
+  const { propertiesList, tenantLoading, loading, error } = useSelector((state: RootState) => state.Auth);
 
   useEffect(() => {
     dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
@@ -73,12 +75,12 @@ const AddTenantPage: React.FC = () => {
       email: "",
       phone: "",
       idPassportNumber: "",
-      unit: "",
+      unitNumber: "",
       leaseStartDate: "",
       leaseEndDate: "",
       rentAmount: 0,
       securityDeposit: 0,
-      numberOfOccupants: 1,
+      occupants: 1,
       pets: false,
     }
   });
@@ -91,12 +93,10 @@ const AddTenantPage: React.FC = () => {
   }, [watch]);
 
   const onSubmit = (data: TenantFormData) => {
-    try {
-      console.log(data)
-} catch (error) {
-  console.log(error)
-}
+    console.log( data);
+    dispatch(createNewTenant(data['propertyId'], data['name'], data['email'],data['phone'], data['idPassportNumber'], data['unitNumber'], data['leaseStartDate'], data['leaseEndDate'], data['rentAmount'], data['securityDeposit'], data['occupants'],data['pets']))
 
+    
   };
 
   if (loading) {
@@ -116,7 +116,8 @@ const AddTenantPage: React.FC = () => {
   }
 
   return (
-    <Card>
+    <Card className=" mt-2">
+      <TopDisplay/>
       <Card.Body>
         <Card.Title>Add New Tenant</Card.Title>
         <form onSubmit={handleSubmit(onSubmit)}>
@@ -213,7 +214,7 @@ const AddTenantPage: React.FC = () => {
             </Col>
             <Col md={6}>
               <Controller
-                name="unit"
+                name="unitNumber"
                 control={control}
                 render={({ field }) => (
                   <FormInput
@@ -225,7 +226,6 @@ const AddTenantPage: React.FC = () => {
                     errors={errors}
                   />
                 )}
-
               />
             </Col>
           </Row>
@@ -298,7 +298,7 @@ const AddTenantPage: React.FC = () => {
           <Row>
             <Col md={6}>
               <Controller
-                name="numberOfOccupants"
+                name="occupants"
                 control={control}
                 render={({ field }) => (
                   <FormInput
@@ -310,7 +310,6 @@ const AddTenantPage: React.FC = () => {
                     errors={errors}
                   />
                 )}
-
               />
             </Col>
             <Col md={6}>
@@ -330,13 +329,18 @@ const AddTenantPage: React.FC = () => {
                 )}
               />
             </Col>
-
           </Row>
           <div className="text-end">
-            <Button variant="success" type="submit" className="waves-effect waves-light me-1">
-              Add Tenant
-            </Button>
-            <Button variant="danger" className="waves-effect waves-light" onClick={() => navigate('/apps/crm/tenants')}>
+          <Button variant="success"  type="submit" className="waves-effect waves-light me-1" disabled={tenantLoading}>
+                    {(tenantLoading)&&<Spinner
+                  className="spinner-grow-sm me-2"
+                  tag="span"
+                  color="white"
+                  type="grow"
+                />}
+                      <span>Add Tenant</span>
+                    </Button>
+            <Button variant="danger" className="waves-effect waves-light " onClick={() => navigate('/apps/crm/tenants')}>
               Cancel
             </Button>
           </div>
