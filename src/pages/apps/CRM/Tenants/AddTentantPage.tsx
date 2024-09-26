@@ -1,187 +1,328 @@
-import React,{useEffect} from "react";
+import React, { useEffect } from "react";
 import { Card, Button, Row, Col, Alert } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { VerticalForm, FormInput } from "../../../../components";
+import { FormInput } from "../../../../components";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../redux/store";
-import { useDispatch } from "react-redux";
 import { AuthActionTypes } from "../../../../redux/auth/constants";
 import { AppDispatch } from "../../../../redux/store";
 import classNames from "classnames";
-
+import { useForm, Controller } from "react-hook-form";
 
 interface Property {
-  id: number;
+  _id: string;
   name: string;
 }
 
+interface TenantFormData {
+  propertyId: string;
+  name: string;
+  email: string;
+  phone: string;
+  idPassportNumber: string;
+  unitNumber: string;
+  leaseStartDate: string;
+  leaseEndDate: string;
+  rentAmount: number;
+  securityDeposit: number;
+  occupants: number;
+  pets: boolean;
+}
+
+const schema = yup.object().shape({
+  propertyId: yup.string().required("Please select a property"),
+  name: yup.string().required("Please enter name"),
+  email: yup.string().required("Please enter email").email("Please enter valid email"),
+  phone: yup.string().required("Please enter phone").matches(/^\d{10}$/, "Phone number is not valid"),
+  idPassportNumber: yup.string().required("Please enter ID or Passport number"),
+  unitNumber: yup.string().required("Please enter unit number"),
+  leaseStartDate: yup.date().required("Please enter lease start date"),
+  leaseEndDate: yup.date()
+    .required("Please enter lease end date")
+    .min(yup.ref('leaseStartDate'), "End date can't be before start date"),
+  rentAmount: yup.number()
+    .required("Please enter rent amount")
+    .positive("Rent amount must be positive"),
+  securityDeposit: yup.number()
+    .required("Please enter security deposit")
+    .positive("Security deposit must be positive"),
+  occupants: yup.number()
+    .required("Please enter number of occupants")
+    .positive("Number of occupants must be positive")
+    .integer("Number of occupants must be an integer"),
+  pets: yup.boolean().required("Please specify if pets are allowed"),
+});
+
 const AddTenantPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-
-  useEffect(()=>{
-    dispatch({type:AuthActionTypes.GETPROPERTY,payload:{limit:1000}})
-  },[dispatch])
-
-
-  const {propertiesList, tenantlist} = useSelector((state:RootState)=>state.Auth)
   const navigate = useNavigate();
 
+  const { propertiesList, tenantlist, loading, error } = useSelector((state: RootState) => state.Auth);
 
+  useEffect(() => {
+    dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
+  }, [dispatch]);
 
-  const schemaResolver = yupResolver(
-    yup.object().shape({
-      propertyId: yup.number().required("Please select a property"),
-      name: yup.string().required("Please enter name"),
-      email: yup.string().required("Please enter email").email("Please enter valid email"),
-      phone: yup.string().required("Please enter phone").matches(/^\d{10}$/, "Phone number is not valid"),
-      idPassportNumber: yup.string().required("Please enter ID or Passport number"),
-      unitNumber: yup.string().required("Please enter unit number"),
-      leaseStartDate: yup.date().required("Please enter lease start date"),
-      leaseEndDate: yup.date().required("Please enter lease end date")
-        .min(yup.ref('leaseStartDate'), "End date can't be before start date"),
-      rentAmount: yup.number().required("Please enter rent amount").positive("Rent amount must be positive"),
-      securityDeposit: yup.number().required("Please enter security deposit").positive("Security deposit must be positive"),
-      occupants: yup.number().required("Please enter number of occupants").positive().integer(),
-      pets: yup.boolean().required("Please specify if pets are allowed"),
-    })
-  );
+  const { control, handleSubmit, formState: { errors }, watch } = useForm<TenantFormData>({
+    resolver: yupResolver(schema),
+    defaultValues: {
+      propertyId: "",
+      name: "",
+      email: "",
+      phone: "",
+      idPassportNumber: "",
+      unitNumber: "",
+      leaseStartDate: "",
+      leaseEndDate: "",
+      rentAmount: 0,
+      securityDeposit: 0,
+      occupants: 1,
+      pets: false,
+    }
+  });
 
-  const handleSubmit = (data: any) => {
+  // Log form values as they change
+  React.useEffect(() => {
+    const subscription = watch((value, { name, type }) => 
+      console.log(`Field ${name} changed to ${value} (type: ${type})`));
+    return () => subscription.unsubscribe();
+  }, [watch]);
+
+  const onSubmit = (data: TenantFormData) => {
     console.log("Form submitted with data:", data);
-    // Here you would typically send the data to your backend
-    // For now, we'll just log it and navigate back to the tenants list
+    dispatch({ type: AuthActionTypes.ADD_TENANT, payload: data });
     navigate('/apps/crm/tenants');
   };
 
+  if (loading) {
+    return <Alert variant="info">Loading...</Alert>;
+  }
+
+  if (error) {
+    return <Alert variant="danger">{error}</Alert>;
+  }
+
+  if (!propertiesList || propertiesList.length === 0) {
+    return (
+      <Alert variant="warning">
+        No properties available. Please <Alert.Link href="/apps/projects/create">add a property</Alert.Link> first.
+      </Alert>
+    );
+  }
+
   return (
-    <> {tenantlist&&
-    <>
-    {propertiesList.length > 0 ? <Card>
+    <Card>
       <Card.Body>
         <Card.Title>Add New Tenant</Card.Title>
-        <VerticalForm onSubmit={handleSubmit} resolver={schemaResolver} defaultValues={{}}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="Property"
-                type="select"
+              <Controller
                 name="propertyId"
-                containerClass={"mb-3"}
-              >
-                <option value="">Select a property</option>
-                {propertiesList.map((property:any) => (
-                  <option key={property._id} value={property._id}>
-                    {property.name}
-                  </option>
-                ))}
-              </FormInput>
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Property"
+                    type="select"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  >
+                    <option value="">Select a property</option>
+                    {propertiesList.map((property: Property) => (
+                      <option key={property._id} value={property._id}>
+                        {property.name}
+                      </option>
+                    ))}
+                  </FormInput>
+                )}
+              />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Name"
-                type="text"
+              <Controller
                 name="name"
-                placeholder="Enter tenant's full name"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Name"
+                    type="text"
+                    placeholder="Enter tenant's full name"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="Email address"
-                type="email"
+              <Controller
                 name="email"
-                placeholder="Enter email"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Email"
+                    type="email"
+                    placeholder="Enter email address"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Phone"
-                type="text"
+              <Controller
                 name="phone"
-                placeholder="Enter phone number"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Phone"
+                    type="tel"
+                    placeholder="Enter phone number"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="ID/Passport Number"
-                type="text"
+              <Controller
                 name="idPassportNumber"
-                placeholder="Enter ID or Passport number"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="ID/Passport Number"
+                    type="text"
+                    placeholder="Enter ID or Passport number"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Unit Number"
-                type="text"
+              <Controller
                 name="unitNumber"
-                placeholder="Enter unit number"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Unit Number"
+                    type="text"
+                    placeholder="Enter unit number"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="Lease Start Date"
-                type="date"
+              <Controller
                 name="leaseStartDate"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Lease Start Date"
+                    type="date"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Lease End Date"
-                type="date"
+              <Controller
                 name="leaseEndDate"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Lease End Date"
+                    type="date"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="Rent Amount"
-                type="number"
+              <Controller
                 name="rentAmount"
-                placeholder="Enter monthly rent amount"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Rent Amount"
+                    type="number"
+                    placeholder="Enter monthly rent amount"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Security Deposit"
-                type="number"
+              <Controller
                 name="securityDeposit"
-                placeholder="Enter security deposit amount"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Security Deposit"
+                    type="number"
+                    placeholder="Enter security deposit amount"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
           <Row>
             <Col md={6}>
-              <FormInput
-                label="Number of Occupants"
-                type="number"
+              <Controller
                 name="occupants"
-                placeholder="Enter number of occupants"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field }) => (
+                  <FormInput
+                    label="Number of Occupants"
+                    type="number"
+                    placeholder="Enter number of occupants"
+                    containerClass={"mb-3"}
+                    {...field}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
             <Col md={6}>
-              <FormInput
-                label="Pets Allowed"
-                type="checkbox"
+              <Controller
                 name="pets"
-                containerClass={"mb-3"}
+                control={control}
+                render={({ field: { value, onChange, ...field } }) => (
+                  <FormInput
+                    label="Pets Allowed"
+                    type="checkbox"
+                    containerClass={"mb-3"}
+                    {...field}
+                    checked={value}
+                    onChange={(e) => onChange(e.target.checked)}
+                    errors={errors}
+                  />
+                )}
               />
             </Col>
           </Row>
@@ -193,22 +334,9 @@ const AddTenantPage: React.FC = () => {
               Cancel
             </Button>
           </div>
-        </VerticalForm>
+        </form>
       </Card.Body>
-    </Card>:<>
-    <Alert
-                variant={"danger"}
-                className={classNames(
-                  "bg-" + "danger",
-                  "border-0",
-                  " mt-2",
-                  "text-white"
-                )}
-              >
-                Create Property First 
-              </Alert>
-    </>}
-    </>}</>
+    </Card>
   );
 };
 
