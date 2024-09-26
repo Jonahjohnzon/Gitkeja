@@ -27,6 +27,7 @@ const AddTenantPage: React.FC = () => {
       name: yup.string().required("Please enter name"),
       email: yup.string().required("Please enter email").email("Please enter valid email"),
       phone: yup.string().required("Please enter phone").matches(/^\d{10}$/, "Phone number is not valid"),
+      idPassportNumber: yup.string().required("Please enter ID or Passport number"),
       unitNumber: yup.string().required("Please enter unit number"),
       leaseStartDate: yup.date().required("Please enter lease start date"),
       leaseEndDate: yup.date().required("Please enter lease end date")
@@ -35,7 +36,6 @@ const AddTenantPage: React.FC = () => {
       securityDeposit: yup.number().required("Please enter security deposit").positive("Security deposit must be positive"),
       occupants: yup.number().required("Please enter number of occupants").positive().integer(),
       pets: yup.boolean().required("Please specify if pets are allowed"),
-      parkingSpace: yup.string().nullable(),
     })
   );
 
@@ -100,6 +100,15 @@ const AddTenantPage: React.FC = () => {
           <Row>
             <Col md={6}>
               <FormInput
+                label="ID/Passport Number"
+                type="text"
+                name="idPassportNumber"
+                placeholder="Enter ID or Passport number"
+                containerClass={"mb-3"}
+              />
+            </Col>
+            <Col md={6}>
+              <FormInput
                 label="Unit Number"
                 type="text"
                 name="unitNumber"
@@ -107,6 +116,8 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
+          </Row>
+          <Row>
             <Col md={6}>
               <FormInput
                 label="Lease Start Date"
@@ -115,8 +126,6 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
-          </Row>
-          <Row>
             <Col md={6}>
               <FormInput
                 label="Lease End Date"
@@ -125,6 +134,8 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
+          </Row>
+          <Row>
             <Col md={6}>
               <FormInput
                 label="Rent Amount"
@@ -134,8 +145,6 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
-          </Row>
-          <Row>
             <Col md={6}>
               <FormInput
                 label="Security Deposit"
@@ -145,6 +154,8 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
+          </Row>
+          <Row>
             <Col md={6}>
               <FormInput
                 label="Number of Occupants"
@@ -154,22 +165,11 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               />
             </Col>
-          </Row>
-          <Row>
             <Col md={6}>
               <FormInput
                 label="Pets Allowed"
                 type="checkbox"
                 name="pets"
-                containerClass={"mb-3"}
-              />
-            </Col>
-            <Col md={6}>
-              <FormInput
-                label="Parking Space"
-                type="text"
-                name="parkingSpace"
-                placeholder="Enter parking space number (if applicable)"
                 containerClass={"mb-3"}
               />
             </Col>
