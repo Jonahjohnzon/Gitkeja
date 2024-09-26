@@ -19,5 +19,6 @@ export enum AuthActionTypes {
 
   POSTPROPERTY = "@@auth/POSTPROPERTY",
   GETPROPERTY = "@@auth/ GETPROPERTY",
-  GETPROPERTYID = "@@auth/ GETPROPERTYID"
+  GETPROPERTYID = "@@auth/ GETPROPERTYID",
+  ADD_TENANT = "@@auth/ADD_TENANT" 
 }
