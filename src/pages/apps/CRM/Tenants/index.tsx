@@ -6,7 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from "../../../../components/PageTitle";
 import TenantsListView from "./TenantsListView";
 import Profile from "./Profile";
-import AddTenant from "./AddTentant"; 
 
 // dummy data
 import { tenants, TenantDetails } from "./data";
@@ -20,7 +19,6 @@ const Tenants: React.FC = () => {
   const navigate = useNavigate();
   const [tenantsData, setTenantsData] = useState<TenantDetails[]>(tenants);
   const [selectedTenant, setSelectedTenant] = useState<TenantDetails | null>(null);
-  const [showAddTenant, setShowAddTenant] = useState<boolean>(false);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
@@ -54,32 +52,11 @@ const Tenants: React.FC = () => {
     setSelectedTenant(tenant);
   }, []);
 
-  const handleAddTenant = useCallback((newTenant: TenantDetails) => {
-    setIsLoading(true);
-    setError(null);
-
-    // Simulating an API call
-    setTimeout(() => {
-      try {
-        // In a real application, you would add the new tenant to your backend
-        // and then update the local state with the response
-        const updatedTenants = [...tenantsData, { ...newTenant, id: tenantsData.length + 1 }];
-        setTenantsData(updatedTenants);
-        setShowAddTenant(false);
-        setIsLoading(false);
-      } catch (err) {
-        setError("Failed to add new tenant. Please try again.");
-        setIsLoading(false);
-      }
-    }, 1000);
-  }, [tenantsData]);
-
-  const toggleAddTenantModal = useCallback(() => {
+  const handleAddTenant = useCallback(() => {
     if (properties.length === 0) {
-      // Redirect to property creation page
       navigate('/apps/projects/create');
     } else {
-      setShowAddTenant(prev => !prev);
+      navigate('/apps/crm/tenants/add');
     }
   }, [properties, navigate]);
 
@@ -108,7 +85,6 @@ const Tenants: React.FC = () => {
           <TenantsListView 
             tenantDetails={tenantsData}
             onTenantSelect={handleTenantSelect}
-            onAddTenant={toggleAddTenantModal}
             properties={properties}
           />
         </Col>
@@ -120,13 +96,6 @@ const Tenants: React.FC = () => {
           )}
         </Col>
       </Row>
-
-      <AddTenant 
-        show={showAddTenant}
-        onHide={toggleAddTenantModal}
-        onSubmit={handleAddTenant}
-        properties={properties}
-      />
 
       {isLoading && <div className="text-center">Loading...</div>}
     </>
