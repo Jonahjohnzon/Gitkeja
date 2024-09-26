@@ -1,25 +1,34 @@
-import React from "react";
-import { Card, Button, Row, Col } from "react-bootstrap";
+import React,{useEffect} from "react";
+import { Card, Button, Row, Col, Alert } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { VerticalForm, FormInput } from "../../../../components";
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
+import { RootState } from "../../../../redux/store";
+import { useDispatch } from "react-redux";
+import { AuthActionTypes } from "../../../../redux/auth/constants";
+import { AppDispatch } from "../../../../redux/store";
+import classNames from "classnames";
+
 
 interface Property {
   id: number;
   name: string;
 }
 
-// Dummy data for properties
-const dummyProperties: Property[] = [
-  { id: 1, name: "Sunset Apartments" },
-  { id: 2, name: "Green Valley Condos" },
-  { id: 3, name: "Riverside Townhouses" },
-  { id: 4, name: "Mountain View Villas" },
-];
-
 const AddTenantPage: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
+
+  useEffect(()=>{
+    dispatch({type:AuthActionTypes.GETPROPERTY,payload:{limit:1000}})
+  },[dispatch])
+
+
+  const {propertiesList, tenantlist} = useSelector((state:RootState)=>state.Auth)
   const navigate = useNavigate();
+
+
 
   const schemaResolver = yupResolver(
     yup.object().shape({
@@ -47,7 +56,9 @@ const AddTenantPage: React.FC = () => {
   };
 
   return (
-    <Card>
+    <> {tenantlist&&
+    <>
+    {propertiesList.length > 0 ? <Card>
       <Card.Body>
         <Card.Title>Add New Tenant</Card.Title>
         <VerticalForm onSubmit={handleSubmit} resolver={schemaResolver} defaultValues={{}}>
@@ -60,8 +71,8 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               >
                 <option value="">Select a property</option>
-                {dummyProperties.map((property) => (
-                  <option key={property.id} value={property.id}>
+                {propertiesList.map((property:any) => (
+                  <option key={property._id} value={property._id}>
                     {property.name}
                   </option>
                 ))}
@@ -184,7 +195,20 @@ const AddTenantPage: React.FC = () => {
           </div>
         </VerticalForm>
       </Card.Body>
-    </Card>
+    </Card>:<>
+    <Alert
+                variant={"danger"}
+                className={classNames(
+                  "bg-" + "danger",
+                  "border-0",
+                  " mt-2",
+                  "text-white"
+                )}
+              >
+                Create Property First 
+              </Alert>
+    </>}
+    </>}</>
   );
 };
 

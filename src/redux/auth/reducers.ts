@@ -137,7 +137,8 @@ interface AuthState {
   topColor:string,
   propertyLoading:boolean,
   propertiesList:PropertyType[]
-  property:PropertyGetId
+  property:PropertyGetId,
+  tenantlist:boolean
 }
 
 const INIT_STATE: AuthState = {
@@ -158,7 +159,8 @@ const INIT_STATE: AuthState = {
   topColor:"primary",
   propertyLoading:false,
   propertiesList:PropertyList,
-  property:Propertybyid
+  property:Propertybyid,
+  tenantlist:false
 };
 
 interface AuthActionType {
@@ -215,6 +217,7 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
         case AuthActionTypes.GETPROPERTY:
           return {
             ...state,
+            tenantlist:true,
             propertiesList:action.payload.data as PropertyType[] }
         case AuthActionTypes.GETPROPERTYID:
           return {
