@@ -75,7 +75,6 @@ class APICore {
             .map((key) => key + "=" + params[key])
             .join("&")
         : "";
-        console.log(`${url}?${queryString}`, params)
       response = axios.get(`${url}?${queryString}`, params);
     } else {
       response = axios.get(`${url}`);
