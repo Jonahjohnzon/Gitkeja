@@ -111,14 +111,14 @@ const MENU_ITEMS: MenuItemTypes[] = [
       {
         key: "crm-leads",
         label: "Add Tenant",
-        url: "/apps/crm/leads",
+        url: "/apps/crm/tenants/add",
         parentKey: "apps-crm",
         role:"admin",
       },
       {
         key: "crm-customers",
         label: "Leases",
-        url: "/apps/crm/customers",
+        url: "/apps/crm/leads",
         parentKey: "apps-crm",
         role:"admin",
       },

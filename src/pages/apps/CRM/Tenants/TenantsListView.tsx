@@ -1,6 +1,6 @@
 import React from "react";
 import { Card, Button, Badge, Dropdown } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 // components
 import Table from "../../../../components/Table";
@@ -11,16 +11,16 @@ import { TenantDetails } from "./data";
 interface TenantsListViewProps {
   tenantDetails: TenantDetails[];
   onTenantSelect: (tenant: TenantDetails) => void;
-  onAddTenant: () => void;
-  properties: { id: number; name: string }[]; // Add this prop for properties
+  properties: { id: number; name: string }[];
 }
 
 const TenantsListView: React.FC<TenantsListViewProps> = ({ 
   tenantDetails, 
   onTenantSelect,
-  onAddTenant,
   properties
 }) => {
+  const navigate = useNavigate();
+
   // Tenant info column render
   const TenantInfoColumn = ({ row }: { row: any }) => (
     <>
@@ -128,6 +128,14 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
     },
   ];
 
+  const handleAddTenant = () => {
+    if (properties.length === 0) {
+      navigate('/apps/projects/create');
+    } else {
+      navigate('/apps/crm/tenants/add');
+    }
+  };
+
   return (
     <Card>
       <Card.Body>
@@ -135,7 +143,7 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
           <h4 className="header-title mb-0">Tenants List</h4>
           <Button 
             variant="primary" 
-            onClick={onAddTenant}
+            onClick={handleAddTenant}
             disabled={properties.length === 0}
             title={properties.length === 0 ? "Add a property first" : "Add New Tenant"}
           >

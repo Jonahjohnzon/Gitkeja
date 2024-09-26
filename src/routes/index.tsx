@@ -51,6 +51,9 @@ const ChatApp = React.lazy(() => import("../pages/apps/Chat/"));
 const EcommerceDashboard = React.lazy(
   () => import("../pages/apps/Ecommerce/Dashboard/")
 );
+
+const AddTenantPage = React.lazy(() => import("../../src/pages/apps/CRM/Tenants/AddTentantPage"));
+
 const EcommerceProducts = React.lazy(
   () => import("../pages/apps/Ecommerce/Products")
 );
@@ -352,6 +355,12 @@ const crmAppRoutes = {
       path: "/apps/crm/dashboard",
       name: "Dashboard",
       element: <CRMDashboard />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/crm/tenants/add",
+      name: "Add Tenant",
+      element: <AddTenantPage />,
       route: PrivateRoute,
     },
     {
