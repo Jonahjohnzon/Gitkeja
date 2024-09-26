@@ -23,6 +23,23 @@ function createproperty(params: { name: string; location: string; type: string, 
   return api.create(`${baseUrl}`, params);
 }
 
+function createtenant(params: {    
+  propertyId:string,
+  name:string,
+  email:string,
+  phone:string,
+  idPassportNumber:string,
+  unit:string,
+  leaseStartDate:Date,
+  leaseEndDate:Date,
+  rentAmount:number,
+  securityDeposit:number,
+  numberOfOccupants:number,
+  pets:boolean}){
+  const baseUrl = "/api/createTenant/";
+  return api.create(`${baseUrl}`, params);
+}
+
 function forgotPassword(params: { name: string }) {
   const baseUrl = "/forget-password/";
   return api.create(`${baseUrl}`, params);
@@ -54,4 +71,4 @@ function activateUser(params: { token: string }) {
   return api.create(`${baseUrl}`, params);
 }
 
-export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData,getPropertyDataId};
+export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData,getPropertyDataId, createtenant};

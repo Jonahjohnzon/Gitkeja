@@ -15,7 +15,8 @@ import {
   getDash as getDashApi,
   createproperty,
   getPropertyData,
-  getPropertyDataId
+  getPropertyDataId,
+  createtenant
 } from '../../helpers/';
 
 // actions
@@ -63,7 +64,7 @@ interface TenantForm{
     numberOfOccupants:number,
     pets:boolean
   };
-  type:string
+  type:string;
 }
 interface FormData {
   payload: {
@@ -147,6 +148,19 @@ function* createProperty({ payload: { name = '', location = '', type = '', units
         top: 0,
         behavior: 'smooth' // Optional: makes the scrolling smooth
     });
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
+  }
+}
+
+function* createTenant({ payload: { name = '', propertyId = '', email = '', unit = "", rentAmount = 0, leaseStartDate = new Date(), phone = '', leaseEndDate = new Date(), securityDeposit=0, numberOfOccupants=0, pets=false, idPassportNumber=""  } }: TenantForm): SagaIterator {
+  try {
+    if (!name || !propertyId || !email) throw new Error('Fullname, email, and password are required');
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      propertyLoading:true
+  }));
+    const response = yield call(() => createtenant({ name, propertyId, email, unit, rentAmount, leaseStartDate, leaseEndDate, phone, securityDeposit, numberOfOccupants, pets, idPassportNumber}));
+    const data = response.data;
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
   }
@@ -263,6 +277,10 @@ export function* watchPropertyDataid(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETPROPERTYID , getPropertyid)
 }
 
+
+export function* watchTenant(): SagaIterator{
+  yield takeEvery(AuthActionTypes.POSTTENANT , createTenant)
+}
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -275,7 +293,8 @@ function* authSaga(): SagaIterator {
     fork(watchGetDash),
     fork(watchPostProperty),
     fork(watchPropertyData),
-    fork(watchPropertyDataid)
+    fork(watchPropertyDataid),
+    fork(watchTenant)
   ]);
 }
 
