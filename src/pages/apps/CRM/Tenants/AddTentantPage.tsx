@@ -1,36 +1,25 @@
-import React, { useState, useEffect } from "react";
-import { Card, Button, Row, Col, Alert } from "react-bootstrap";
+import React from "react";
+import { Card, Button, Row, Col } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { VerticalForm, FormInput } from "../../../../components";
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 
 interface Property {
   id: number;
   name: string;
 }
 
+// Dummy data for properties
+const dummyProperties: Property[] = [
+  { id: 1, name: "Sunset Apartments" },
+  { id: 2, name: "Green Valley Condos" },
+  { id: 3, name: "Riverside Townhouses" },
+  { id: 4, name: "Mountain View Villas" },
+];
+
 const AddTenantPage: React.FC = () => {
   const navigate = useNavigate();
-  const [properties, setProperties] = useState<Property[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchProperties = async () => {
-      try {
-        const response = await axios.get('https://keja-app-backend.vercel.app/api/getPropertyname');
-        setProperties(response.data);
-        setLoading(false);
-      } catch (err) {
-        setError("Failed to load properties. Please try again.");
-        setLoading(false);
-      }
-    };
-
-    fetchProperties();
-  }, []);
 
   const schemaResolver = yupResolver(
     yup.object().shape({
@@ -40,10 +29,8 @@ const AddTenantPage: React.FC = () => {
       phone: yup.string().required("Please enter phone").matches(/^\d{10}$/, "Phone number is not valid"),
       unitNumber: yup.string().required("Please enter unit number"),
       leaseStartDate: yup.date().required("Please enter lease start date"),
-      leaseEndDate: yup.date().required("Please enter lease end date").min(
-        yup.ref('leaseStartDate'),
-        "End date can't be before start date"
-      ),
+      leaseEndDate: yup.date().required("Please enter lease end date")
+        .min(yup.ref('leaseStartDate'), "End date can't be before start date"),
       rentAmount: yup.number().required("Please enter rent amount").positive("Rent amount must be positive"),
       securityDeposit: yup.number().required("Please enter security deposit").positive("Security deposit must be positive"),
       occupants: yup.number().required("Please enter number of occupants").positive().integer(),
@@ -52,25 +39,12 @@ const AddTenantPage: React.FC = () => {
     })
   );
 
-  const handleSubmit = async (data: any) => {
-    try {
-      // Here you would typically send the data to your backend
-      // For now, we'll just log it and navigate back
-      console.log("Submitting tenant data:", data);
-      // await axios.post('your_backend_endpoint_for_adding_tenant', data);
-      navigate('/apps/crm/tenants');
-    } catch (err) {
-      setError("Failed to add tenant. Please try again.");
-    }
+  const handleSubmit = (data: any) => {
+    console.log("Form submitted with data:", data);
+    // Here you would typically send the data to your backend
+    // For now, we'll just log it and navigate back to the tenants list
+    navigate('/apps/crm/tenants');
   };
-
-  if (loading) {
-    return <div className="text-center mt-5">Loading...</div>;
-  }
-
-  if (error) {
-    return <Alert variant="danger" className="mt-3">{error}</Alert>;
-  }
 
   return (
     <Card>
@@ -86,7 +60,7 @@ const AddTenantPage: React.FC = () => {
                 containerClass={"mb-3"}
               >
                 <option value="">Select a property</option>
-                {properties.map((property) => (
+                {dummyProperties.map((property) => (
                   <option key={property.id} value={property.id}>
                     {property.name}
                   </option>
