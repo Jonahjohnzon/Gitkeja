@@ -57,8 +57,8 @@ interface TenantForm{
     phone:string,
     idPassportNumber:string,
     unit:string,
-    leaseStartDate:Date,
-    leaseEndDate:Date,
+    leaseStartDate:string,
+    leaseEndDate:string,
     rentAmount:number,
     securityDeposit:number,
     numberOfOccupants:number,
@@ -153,7 +153,7 @@ function* createProperty({ payload: { name = '', location = '', type = '', units
   }
 }
 
-function* createTenant({ payload: { name = '', propertyId = '', email = '', unit = "", rentAmount = 0, leaseStartDate = new Date(), phone = '', leaseEndDate = new Date(), securityDeposit=0, numberOfOccupants=0, pets=false, idPassportNumber=""  } }: TenantForm): SagaIterator {
+function* createTenant({ payload: { name = '', propertyId = '', email = '', unit = "", rentAmount = 0, leaseStartDate = "", phone = '', leaseEndDate = "", securityDeposit=0, numberOfOccupants=0, pets=false, idPassportNumber=""  } }: TenantForm): SagaIterator {
   try {
     if (!name || !propertyId || !email) throw new Error('Fullname, email, and password are required');
     yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {

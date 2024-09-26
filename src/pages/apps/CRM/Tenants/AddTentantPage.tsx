@@ -8,8 +8,8 @@ import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../../../../redux/store";
 import { AuthActionTypes } from "../../../../redux/auth/constants";
 import { AppDispatch } from "../../../../redux/store";
-import classNames from "classnames";
 import { useForm, Controller } from "react-hook-form";
+import { createNewTenant } from "../../../../redux/actions";
 
 interface Property {
   _id: string;
@@ -22,12 +22,12 @@ interface TenantFormData {
   email: string;
   phone: string;
   idPassportNumber: string;
-  unitNumber: string;
+  unit: string;
   leaseStartDate: string;
   leaseEndDate: string;
   rentAmount: number;
   securityDeposit: number;
-  occupants: number;
+  numberOfOccupants: number;
   pets: boolean;
 }
 
@@ -73,12 +73,12 @@ const AddTenantPage: React.FC = () => {
       email: "",
       phone: "",
       idPassportNumber: "",
-      unitNumber: "",
+      unit: "",
       leaseStartDate: "",
       leaseEndDate: "",
       rentAmount: 0,
       securityDeposit: 0,
-      occupants: 1,
+      numberOfOccupants: 1,
       pets: false,
     }
   });
@@ -91,9 +91,12 @@ const AddTenantPage: React.FC = () => {
   }, [watch]);
 
   const onSubmit = (data: TenantFormData) => {
-    console.log("Form submitted with data:", data);
-    dispatch({ type: AuthActionTypes.ADD_TENANT, payload: data });
-    navigate('/apps/crm/tenants');
+    try {
+      console.log(data)
+} catch (error) {
+  console.log(error)
+}
+
   };
 
   if (loading) {
@@ -210,7 +213,7 @@ const AddTenantPage: React.FC = () => {
             </Col>
             <Col md={6}>
               <Controller
-                name="unitNumber"
+                name="unit"
                 control={control}
                 render={({ field }) => (
                   <FormInput
@@ -295,7 +298,7 @@ const AddTenantPage: React.FC = () => {
           <Row>
             <Col md={6}>
               <Controller
-                name="occupants"
+                name="numberOfOccupants"
                 control={control}
                 render={({ field }) => (
                   <FormInput
@@ -327,6 +330,7 @@ const AddTenantPage: React.FC = () => {
                 )}
               />
             </Col>
+
           </Row>
           <div className="text-end">
             <Button variant="success" type="submit" className="waves-effect waves-light me-1">

@@ -16,6 +16,7 @@ export interface AuthActionType {
     | AuthActionTypes.PUTDASHBOARD
     | AuthActionTypes.POSTPROPERTY
     | AuthActionTypes.GETPROPERTY
+    | AuthActionTypes.POSTTENANT
   payload: {} | string;
 }
 
@@ -136,6 +137,24 @@ export const createNewProperty = (
 ): AuthActionType =>({
   type: AuthActionTypes.POSTPROPERTY,
   payload: { name, location, type,units,rentAmount,leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image }
+})
+
+export const createNewTenant = (
+  propertyId:string,
+  name:string,
+  email:string,
+  phone:string,
+  idPassportNumber:string,
+  unit:string,
+  leaseStartDate:string,
+  leaseEndDate:string,
+  rentAmount:number,
+  securityDeposit:number,
+  numberOfOccupants:number,
+  pets:boolean
+): AuthActionType =>({
+  type: AuthActionTypes.POSTTENANT,
+  payload: { name, propertyId,unit, rentAmount,leaseEndDate, leaseStartDate, phone, pets, securityDeposit ,numberOfOccupants, email, idPassportNumber}
 })
 
 export const forgotPassword = (username: string): AuthActionType => ({
