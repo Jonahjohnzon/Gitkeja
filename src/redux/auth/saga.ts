@@ -16,11 +16,12 @@ import {
   createproperty,
   getPropertyData,
   getPropertyDataId,
-  createtenant
+  createtenant,
+  getOccupancy
 } from '../../helpers/';
 
 // actions
-import { authApiResponseSuccess, authApiResponseError, userUpdate, getDashboard, getPropertyApi, getPropertyApiId } from './actions';
+import { authApiResponseSuccess, authApiResponseError, userUpdate, getDashboard, getPropertyApi, getPropertyApiId,getOccupancyApi } from './actions';
 
 // constants
 import { AuthActionTypes } from './constants';
@@ -200,6 +201,18 @@ catch(error:any)
 }
 }
 
+function* getOccupancyData ():SagaIterator{
+  try{
+    const response = yield call(()=> getOccupancy() )
+    const data = response.data
+    yield put(getOccupancyApi(AuthActionTypes.GETOCCUPANCY, data['data']))
+  }
+  catch(error:any)
+  {
+    console.log(error)
+  }
+  }
+
 function* getPropertydata (action: GetProperty):SagaIterator{
   try{
     const { payload: { limit = '' } } = action;
@@ -293,6 +306,11 @@ export function* watchPropertyDataid(): SagaIterator{
 export function* watchTenant(): SagaIterator{
   yield takeEvery(AuthActionTypes.POSTTENANT , createTenant)
 }
+
+export function* watchgetOccupancy(): SagaIterator{
+  yield takeEvery(AuthActionTypes.GETOCCUPANCY , getOccupancyData)
+}
+
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -306,7 +324,8 @@ function* authSaga(): SagaIterator {
     fork(watchPostProperty),
     fork(watchPropertyData),
     fork(watchPropertyDataid),
-    fork(watchTenant)
+    fork(watchTenant),
+    fork( watchgetOccupancy)
   ]);
 }
 

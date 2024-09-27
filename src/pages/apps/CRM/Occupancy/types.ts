@@ -12,7 +12,7 @@ export interface OccupancyReport {
   }
   
   export interface PropertyOccupancy {
-    id: number;
+    _id: number;
     name: string;
     totalUnits: number;
     occupiedUnits: number;

@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col } from 'react-bootstrap';
-
+import { useSelector, useDispatch  } from 'react-redux';
 // components
 import PageTitle from '../../../../components/PageTitle';
 import OccupancyReportsOverview from './OccupancyReportsOverview';
 import OccupancyReportsList from './OccupancyReportsList';
+import { AppDispatch } from "../../../../redux/store";
+
 import PropertyOccupancyDetails from './PropertyOccupancyDetails';
 
 // types
 import { OccupancyReport, PropertyOccupancy } from './types';
+import { RootState } from '../../../../redux/store';
+import { AuthActionTypes } from '../../../../redux/auth/constants';
 
 // Mock data - replace with API calls in production
 const mockOccupancyReports: OccupancyReport[] = [
@@ -37,7 +41,7 @@ const mockOccupancyReports: OccupancyReport[] = [
 
 const mockPropertyOccupancies: PropertyOccupancy[] = [
   {
-    id: 1,
+    _id: 1,
     name: 'Sunset Apartments',
     totalUnits: 50,
     occupiedUnits: 45,
@@ -45,7 +49,7 @@ const mockPropertyOccupancies: PropertyOccupancy[] = [
     averageRent: 1500
   },
   {
-    id: 2,
+    _id: 2,
     name: 'Lakeside Villas',
     totalUnits: 30,
     occupiedUnits: 28,
@@ -56,12 +60,17 @@ const mockPropertyOccupancies: PropertyOccupancy[] = [
 ];
 
 const OccupancyPage: React.FC = () => {
+  const {  OccupancyReport,  OccupancyLoad } = useSelector((state: RootState) => state.Auth);
   const [occupancyReports, setOccupancyReports] = useState<OccupancyReport[]>([]);
   const [propertyOccupancies, setPropertyOccupancies] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const dispatch = useDispatch<AppDispatch>();
+
 
   useEffect(() => {
     // Simulate API call
+    dispatch({ type: AuthActionTypes.GETOCCUPANCY });
+
     const fetchData = async () => {
       try {
         // In a real application, these would be API calls
@@ -77,10 +86,11 @@ const OccupancyPage: React.FC = () => {
     fetchData();
   }, []);
 
-  if (loading) {
-    return <div>Loading...</div>;
+  if (OccupancyLoad) {
+    return <div></div>;
   }
 
+  
   return (
     <>
       <PageTitle
@@ -96,6 +106,7 @@ const OccupancyPage: React.FC = () => {
           <OccupancyReportsOverview
             occupancyReports={occupancyReports}
             propertyOccupancies={propertyOccupancies}
+            OccupancyReportType={OccupancyReport}
           />
         </Col>
       </Row>

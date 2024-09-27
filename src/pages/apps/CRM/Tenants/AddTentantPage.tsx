@@ -116,7 +116,7 @@ const AddTenantPage: React.FC = () => {
   }
 
   return (
-    <Card className=" mt-2">
+    <Card>
       <TopDisplay/>
       <Card.Body>
         <Card.Title>Add New Tenant</Card.Title>

@@ -17,6 +17,7 @@ export interface AuthActionType {
     | AuthActionTypes.POSTPROPERTY
     | AuthActionTypes.GETPROPERTY
     | AuthActionTypes.POSTTENANT
+    | AuthActionTypes.GETOCCUPANCY
   payload: {} | string;
 }
 
@@ -59,6 +60,8 @@ export const userUpdate = (
   payload: { actionType, data },
 });
 
+
+
 export const getDashboard =( 
   actionType: string,
  data: UserData | {}
@@ -76,6 +79,14 @@ export const getPropertyApi =(
 });
 
 export const getPropertyApiId =( 
+  actionType: string,
+ data: UserData | {}
+): AuthActionType => ({
+  type: AuthActionTypes.API_RESPONSE_SUCCESS,
+  payload:{actionType, data}
+});
+
+export const getOccupancyApi =( 
   actionType: string,
  data: UserData | {}
 ): AuthActionType => ({

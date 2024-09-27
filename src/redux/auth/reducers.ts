@@ -22,6 +22,16 @@ interface UserData {
   __v:number
 }
 
+export interface OccupancyReportType {
+  totalProperties:number,
+  totalunits:number,
+  totalOccupancy:number,
+  averageOccupancyRate:number,
+  totalRentCollected:number,
+  occupancyRatesMonthly:number[]
+
+}
+
 interface Tenant {
   id: number;
   avatar: string;
@@ -140,6 +150,17 @@ interface AuthState {
   property:PropertyGetId,
   tenantlist:boolean,
   tenantLoading:boolean,
+  OccupancyReport:OccupancyReportType,
+  OccupancyLoad:boolean
+}
+
+const OccupancyReportState:OccupancyReportType = {
+    totalOccupancy:0,
+    totalunits:0,
+    totalProperties:0,
+    averageOccupancyRate:0,
+    totalRentCollected:0,
+    occupancyRatesMonthly:[0,0,0,0,0,0,0,0,0,0,0,0]
 }
 
 const INIT_STATE: AuthState = {
@@ -162,7 +183,9 @@ const INIT_STATE: AuthState = {
   propertiesList:PropertyList,
   property:Propertybyid,
   tenantlist:false,
-  tenantLoading:false
+  tenantLoading:false,
+  OccupancyReport:OccupancyReportState,
+  OccupancyLoad:true
 };
 
 interface AuthActionType {
@@ -230,6 +253,16 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
           return {
             ...state,
             property:action.payload.data as PropertyGetId }
+
+        case AuthActionTypes.GETOCCUPANCY:
+          return {
+            ...state,
+            OccupancyReport:{
+              ...state.OccupancyReport,
+              ...action.payload.data as OccupancyReportType
+            },
+            OccupancyLoad:false
+          }
         default:
           return { ...state };
       }

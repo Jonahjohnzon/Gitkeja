@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { Card, Row, Col } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -8,31 +8,34 @@ import StatisticsWidget from '../../../../components/StatisticsWidget';
 
 // types
 import { OccupancyReport, PropertyOccupancy } from './types';
+import { OccupancyReportType } from '../../../../redux/auth/reducers';
 
 interface OccupancyReportsOverviewProps {
   occupancyReports: OccupancyReport[];
   propertyOccupancies: PropertyOccupancy[];
+  OccupancyReportType:OccupancyReportType
 }
 
 const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
   occupancyReports,
   propertyOccupancies,
+  OccupancyReportType
 }) => {
   // Calculate summary statistics
-  const stats = useMemo(() => {
-    const totalProperties = propertyOccupancies.length;
-    const totalUnits = propertyOccupancies.reduce((sum, property) => sum + property.totalUnits, 0);
-    const occupiedUnits = propertyOccupancies.reduce((sum, property) => sum + property.occupiedUnits, 0);
-    const overallOccupancyRate = totalUnits > 0 ? (occupiedUnits / totalUnits) * 100 : 0;
-    const totalRentCollected = occupancyReports.reduce((sum, report) => sum + report.rentAmount, 0);
 
+ 
+  const stats = useMemo(() => {
+    const totalProperties = OccupancyReportType.totalProperties;
+    const totalUnits = OccupancyReportType.totalunits;
+    const overallOccupancyRate = OccupancyReportType.averageOccupancyRate;
+    const totalRentCollected = OccupancyReportType.totalRentCollected;
     return {
       totalProperties,
       totalUnits,
       overallOccupancyRate,
       totalRentCollected
     };
-  }, [occupancyReports, propertyOccupancies]);
+  }, [occupancyReports, propertyOccupancies,OccupancyReportType]);
 
   // Prepare data for occupancy trends chart
   const chartData = useMemo(() => {
@@ -43,13 +46,13 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
     }).reverse();
 
     // This is a placeholder. In a real application, you would calculate this from actual data
-    const occupancyTrendsData = last12Months.map(() => Math.floor(Math.random() * 20) + 80);
+    const occupancyTrendsData = OccupancyReportType.occupancyRatesMonthly;
 
     return {
       categories: last12Months,
       series: occupancyTrendsData
     };
-  }, []);
+  }, [OccupancyReportType]);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -91,8 +94,11 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
         </Col>
         <Col sm={6} xl={3}>
           <StatisticsWidget
-            description="Overall Occupancy Rate"
-            stats={`${stats.overallOccupancyRate.toFixed(2)}%`}
+            description="Overall Occupancy Rate"   counterOptions={{
+              suffix: "%",
+              decimals: 2,
+            }}
+            stats={stats.overallOccupancyRate.toString()}
             icon="fe-users"
             variant="success"
           />
@@ -108,7 +114,10 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
         <Col sm={6} xl={3}>
           <StatisticsWidget
             description="Total Rent Collected"
-            stats={`$${stats.totalRentCollected.toLocaleString()}`}
+            counterOptions={{
+              prefix: "$",
+            }}
+            stats={stats.totalRentCollected.toString()}
             icon="fe-dollar-sign"
             variant="warning"
           />

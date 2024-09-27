@@ -370,8 +370,8 @@ const crmAppRoutes = {
       route: PrivateRoute,
     },
     {
-      path: "/apps/crm/opportunities",
-      name: "Opportunities",
+      path: "/apps/crm/occupancyreport",
+      name: "0ccupancy Report",
       element: <Opportunities />,
       route: PrivateRoute,
     },

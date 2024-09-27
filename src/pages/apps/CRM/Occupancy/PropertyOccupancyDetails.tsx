@@ -55,7 +55,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
           <Dropdown.Menu>
             {propertyOccupancies.map((property) => (
               <Dropdown.Item 
-                key={property.id} 
+                key={property._id} 
                 onClick={() => setSelectedProperty(property)}
               >
                 {property.name}
