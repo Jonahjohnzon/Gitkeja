@@ -7,11 +7,11 @@ import { ApexOptions } from 'apexcharts';
 import StatisticsWidget from '../../../../components/StatisticsWidget';
 
 // types
-import { OccupancyReport, PropertyOccupancy } from './types';
+import { OccupancyReportsType, PropertyOccupancy } from './types';
 import { OccupancyReportType } from '../../../../redux/auth/reducers';
 
 interface OccupancyReportsOverviewProps {
-  occupancyReports: OccupancyReport[];
+  occupancyReports: OccupancyReportsType[];
   propertyOccupancies: PropertyOccupancy[];
   OccupancyReportType:OccupancyReportType
 }

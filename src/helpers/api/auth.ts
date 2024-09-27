@@ -55,6 +55,11 @@ function getOccupancy(){
   return api.get(`${baseUrl}`);
 }
 
+function getReport(){
+  const baseUrl = "/api/getTenants/";
+  return api.get(`${baseUrl}`);
+}
+
 function getPropertyData(params:{ limit: string}){
   const baseUrl = "/api/getProperty/";
   return api.get(`${baseUrl}`, params);
@@ -76,4 +81,4 @@ function activateUser(params: { token: string }) {
   return api.create(`${baseUrl}`, params);
 }
 
-export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData,getPropertyDataId, createtenant, getOccupancy};
+export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData,getPropertyDataId, createtenant, getOccupancy, getReport};

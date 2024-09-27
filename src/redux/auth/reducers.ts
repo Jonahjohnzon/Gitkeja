@@ -2,6 +2,7 @@ import { Reducer } from 'redux';
 import { AuthActionTypes } from "./constants";
 import { APICore } from "../../helpers/api/apiCore";
 import { PropertyType,PropertyGetId } from './propertyReducer';
+import { OccupancyReportsType } from '../../pages/apps/CRM/Occupancy/types';
 
 const api = new APICore();
 
@@ -151,7 +152,8 @@ interface AuthState {
   tenantlist:boolean,
   tenantLoading:boolean,
   OccupancyReport:OccupancyReportType,
-  OccupancyLoad:boolean
+  OccupancyLoad:boolean,
+  OccupancyReports:OccupancyReportsType[]
 }
 
 const OccupancyReportState:OccupancyReportType = {
@@ -162,6 +164,8 @@ const OccupancyReportState:OccupancyReportType = {
     totalRentCollected:0,
     occupancyRatesMonthly:[0,0,0,0,0,0,0,0,0,0,0,0]
 }
+
+const OccuReport:OccupancyReportsType[] = []
 
 const INIT_STATE: AuthState = {
   user: api.getLoggedInUser(),
@@ -185,7 +189,8 @@ const INIT_STATE: AuthState = {
   tenantlist:false,
   tenantLoading:false,
   OccupancyReport:OccupancyReportState,
-  OccupancyLoad:true
+  OccupancyLoad:true,
+  OccupancyReports : OccuReport
 };
 
 interface AuthActionType {
@@ -253,6 +258,13 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
           return {
             ...state,
             property:action.payload.data as PropertyGetId }
+        
+        case AuthActionTypes.GETOCCREPORT:
+          console.log(action.payload.data)
+          return {
+            ...state,
+            OccupancyReports:action.payload.data as OccupancyReportsType[]
+          }
 
         case AuthActionTypes.GETOCCUPANCY:
           return {

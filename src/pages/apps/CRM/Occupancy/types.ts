@@ -1,13 +1,13 @@
 // types.ts
 
-export interface OccupancyReport {
+export interface OccupancyReportsType {
     id: number;
     propertyName: string;
     unitNumber: string;
     tenantName: string;
     occupancyStartDate: string;
     occupancyEndDate: string;
-    status: 'Active' | 'Upcoming' | 'Expired';
+    status: 'paid' | 'pending' | 'incomplete';
     rentAmount: number;
   }
   
@@ -32,7 +32,7 @@ export interface OccupancyReport {
   }
   
   export interface OccupancySortOption {
-    field: keyof OccupancyReport;
+    field: keyof OccupancyReportsType;
     direction: 'asc' | 'desc';
   }
   

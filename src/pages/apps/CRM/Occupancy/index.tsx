@@ -10,34 +10,11 @@ import { AppDispatch } from "../../../../redux/store";
 import PropertyOccupancyDetails from './PropertyOccupancyDetails';
 
 // types
-import { OccupancyReport, PropertyOccupancy } from './types';
+import { OccupancyReportsType, PropertyOccupancy } from './types';
 import { RootState } from '../../../../redux/store';
 import { AuthActionTypes } from '../../../../redux/auth/constants';
-
 // Mock data - replace with API calls in production
-const mockOccupancyReports: OccupancyReport[] = [
-  {
-    id: 1,
-    propertyName: 'Sunset Apartments',
-    unitNumber: 'A101',
-    tenantName: 'John Doe',
-    occupancyStartDate: '2024-01-01',
-    occupancyEndDate: '2024-12-31',
-    status: 'Active',
-    rentAmount: 1500
-  },
-  {
-    id: 2,
-    propertyName: 'Lakeside Villas',
-    unitNumber: 'B205',
-    tenantName: 'Jane Smith',
-    occupancyStartDate: '2024-06-01',
-    occupancyEndDate: '2025-05-31',
-    status: 'Upcoming',
-    rentAmount: 1800
-  },
-  // Add more mock data as needed
-];
+
 
 const mockPropertyOccupancies: PropertyOccupancy[] = [
   {
@@ -60,8 +37,8 @@ const mockPropertyOccupancies: PropertyOccupancy[] = [
 ];
 
 const OccupancyPage: React.FC = () => {
-  const {  OccupancyReport,  OccupancyLoad } = useSelector((state: RootState) => state.Auth);
-  const [occupancyReports, setOccupancyReports] = useState<OccupancyReport[]>([]);
+  const {  OccupancyReport,  OccupancyLoad, OccupancyReports } = useSelector((state: RootState) => state.Auth);
+  const occupancyReports = OccupancyReports
   const [propertyOccupancies, setPropertyOccupancies] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch<AppDispatch>();
@@ -70,11 +47,11 @@ const OccupancyPage: React.FC = () => {
   useEffect(() => {
     // Simulate API call
     dispatch({ type: AuthActionTypes.GETOCCUPANCY });
+    dispatch({type: AuthActionTypes.GETOCCREPORT})
 
     const fetchData = async () => {
       try {
         // In a real application, these would be API calls
-        setOccupancyReports(mockOccupancyReports);
         setPropertyOccupancies(mockPropertyOccupancies);
         setLoading(false);
       } catch (error) {
@@ -115,7 +92,6 @@ const OccupancyPage: React.FC = () => {
         <Col xl={8}>
           <OccupancyReportsList
             occupancyReports={occupancyReports}
-            setOccupancyReports={setOccupancyReports}
           />
         </Col>
         <Col xl={4}>

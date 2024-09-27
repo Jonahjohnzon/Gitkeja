@@ -1,62 +1,35 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, Button, Form, Table, Modal, Dropdown } from 'react-bootstrap';
 import { format } from 'date-fns';
 
 // types
-import { OccupancyReport } from './types';
+import { OccupancyReportsType } from './types';
 
 interface OccupancyReportsListProps {
-  occupancyReports: OccupancyReport[];
-  setOccupancyReports: React.Dispatch<React.SetStateAction<OccupancyReport[]>>;
+  occupancyReports: OccupancyReportsType[];
 }
 
 const OccupancyReportsList: React.FC<OccupancyReportsListProps> = ({
   occupancyReports,
-  setOccupancyReports,
 }) => {
-  const [filteredReports, setFilteredReports] = useState<OccupancyReport[]>(occupancyReports);
+  const filteredReports = occupancyReports;
   const [showModal, setShowModal] = useState(false);
-  const [newReport, setNewReport] = useState<Partial<OccupancyReport>>({});
+  const [newReport, setNewReport] = useState<Partial<OccupancyReportsType>>({});
   const [filterProperty, setFilterProperty] = useState('');
   const [filterStatus, setFilterStatus] = useState('All');
-  const [sortBy, setSortBy] = useState<keyof OccupancyReport>('occupancyStartDate');
+  const [sortBy, setSortBy] = useState<keyof OccupancyReportsType>('occupancyStartDate');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
 
-  useEffect(() => {
-    let filtered = [...occupancyReports];
 
-    // Apply filters
-    if (filterProperty) {
-      filtered = filtered.filter(report => 
-        report.propertyName.toLowerCase().includes(filterProperty.toLowerCase())
-      );
-    }
-    if (filterStatus !== 'All') {
-      filtered = filtered.filter(report => report.status === filterStatus);
-    }
-
-    // Apply sorting
-    filtered.sort((a, b) => {
-      if (a[sortBy] < b[sortBy]) return sortOrder === 'asc' ? -1 : 1;
-      if (a[sortBy] > b[sortBy]) return sortOrder === 'asc' ? 1 : -1;
-      return 0;
-    });
-
-    setFilteredReports(filtered);
-  }, [occupancyReports, filterProperty, filterStatus, sortBy, sortOrder]);
 
   const handleAddReport = () => {
     const newId = Math.max(...occupancyReports.map(r => r.id)) + 1;
-    const reportToAdd: OccupancyReport = {
-      ...newReport as OccupancyReport,
-      id: newId
-    };
-    setOccupancyReports(prev => [...prev, reportToAdd]);
+
     setShowModal(false);
     setNewReport({});
   };
 
-  const handleSort = (column: keyof OccupancyReport) => {
+  const handleSort = (column: keyof OccupancyReportsType) => {
     if (column === sortBy) {
       setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc');
     } else {
@@ -121,7 +94,7 @@ const OccupancyReportsList: React.FC<OccupancyReportsListProps> = ({
                 <td>{format(new Date(report.occupancyStartDate), 'MMM dd, yyyy')}</td>
                 <td>{format(new Date(report.occupancyEndDate), 'MMM dd, yyyy')}</td>
                 <td>
-                  <span className={`badge bg-${report.status === 'Active' ? 'success' : report.status === 'Upcoming' ? 'warning' : 'danger'}`}>
+                  <span className={`badge bg-${report.status === 'paid' ? 'success' : report.status === 'incomplete' ? 'warning' : 'danger'}`}>
                     {report.status}
                   </span>
                 </td>
@@ -192,7 +165,7 @@ const OccupancyReportsList: React.FC<OccupancyReportsListProps> = ({
                 <Form.Label>Status</Form.Label>
                 <Form.Select
                   value={newReport.status || ''}
-                  onChange={(e) => setNewReport({ ...newReport, status: (e.target as HTMLSelectElement).value as OccupancyReport['status'] })}
+                  onChange={(e) => setNewReport({ ...newReport, status: (e.target as HTMLSelectElement).value as OccupancyReportsType['status'] })}
                 >
                   <option value="Active">Active</option>
                   <option value="Upcoming">Upcoming</option>
