@@ -77,7 +77,7 @@ const CRMContacts = React.lazy(() => import("../pages/apps/CRM/Tenants"));
 const Opportunities = React.lazy(
   () => import("../pages/apps/CRM/Occupancy")
 );
-const CRMLeads = React.lazy(() => import("../pages/apps/CRM/Leads/"));
+const CRMLeads: React.ComponentType = React.lazy(() => import("../pages/apps/CRM/Leases"));
 const CRMCustomers = React.lazy(() => import("../pages/apps/CRM/Customers/"));
 // - email
 const Inbox = React.lazy(() => import("../pages/apps/Email/Inbox"));
@@ -376,8 +376,8 @@ const crmAppRoutes = {
       route: PrivateRoute,
     },
     {
-      path: "/apps/crm/leads",
-      name: "Leads",
+      path: "/apps/crm/leases",
+      name: "Leases",
       element: <CRMLeads />,
       route: PrivateRoute,
     },
