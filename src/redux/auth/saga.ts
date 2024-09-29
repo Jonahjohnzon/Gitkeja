@@ -204,9 +204,16 @@ catch(error:any)
 
 function* getOccupancyData ():SagaIterator{
   try{
+    yield put(getOccupancyApi(AuthActionTypes.GETOCCUPANCY, {
+      OccupancyLoad:true
+    }))
     const response = yield call(()=> getOccupancy() )
     const data = response.data
-    yield put(getOccupancyApi(AuthActionTypes.GETOCCUPANCY, data['data']))
+    const body = {
+      OccupancyReport : data['data'],
+      OccupancyLoad:false
+    }
+    yield put(getOccupancyApi(AuthActionTypes.GETOCCUPANCY, body))
   }
   catch(error:any)
   {
@@ -228,10 +235,19 @@ function* getOccupancyData ():SagaIterator{
 
 function* getPropertydata (action: GetProperty):SagaIterator{
   try{
+    yield put(getPropertyApi(AuthActionTypes.GETPROPERTY, {
+      tenantlist:false,
+      propertiesList:[]
+    }))
     const { payload: { limit = '' } } = action;
     const response = yield call(()=> getPropertyData({limit}) )
     const data = response.data
-    yield put(getPropertyApi(AuthActionTypes.GETPROPERTY, data['data']))
+
+    const body ={
+      tenantlist:true,
+      propertiesList:data['data']
+    }
+    yield put(getPropertyApi(AuthActionTypes.GETPROPERTY, body))
   }
   catch(error:any)
   {

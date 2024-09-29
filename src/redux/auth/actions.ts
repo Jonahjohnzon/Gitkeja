@@ -35,7 +35,9 @@ interface UserData {
   createdAt:string;
   verified:boolean;
   updatedAt:string;
-  __v:number
+  __v:number;
+  data : any;
+  OccupancyLoad:boolean
 }
 
 interface FormData {

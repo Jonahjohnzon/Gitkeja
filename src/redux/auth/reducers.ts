@@ -20,10 +20,21 @@ interface UserData {
   createdAt:string;
   verified:boolean;
   updatedAt:string;
-  __v:number
+  __v:number;
+  data:any
 }
 
 export interface OccupancyReportType {
+  totalProperties:number,
+  totalunits:number,
+  totalOccupancy:number,
+  averageOccupancyRate:number,
+  totalRentCollected:number,
+  occupancyRatesMonthly:number[]
+
+}
+
+export interface OccupancyReportTypes {
   totalProperties:number,
   totalunits:number,
   totalOccupancy:number,
@@ -151,9 +162,10 @@ interface AuthState {
   property:PropertyGetId,
   tenantlist:boolean,
   tenantLoading:boolean,
-  OccupancyReport:OccupancyReportType,
+  OccupancyReport:OccupancyReportType ,
   OccupancyLoad:boolean,
-  OccupancyReports:OccupancyReportsType[]
+  OccupancyReports:OccupancyReportsType[],
+  data:any
 }
 
 const OccupancyReportState:OccupancyReportType = {
@@ -188,9 +200,10 @@ const INIT_STATE: AuthState = {
   property:Propertybyid,
   tenantlist:false,
   tenantLoading:false,
-  OccupancyReport:OccupancyReportState,
+  OccupancyReport:OccupancyReportState ,
   OccupancyLoad:true,
-  OccupancyReports : OccuReport
+  OccupancyReports : OccuReport,
+  data:{}
 };
 
 interface AuthActionType {
@@ -252,15 +265,13 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
         case AuthActionTypes.GETPROPERTY:
           return {
             ...state,
-            tenantlist:true,
-            propertiesList:action.payload.data as PropertyType[] }
+           ...action.payload.data as PropertyType[] }
         case AuthActionTypes.GETPROPERTYID:
           return {
             ...state,
             property:action.payload.data as PropertyGetId }
         
         case AuthActionTypes.GETOCCREPORT:
-          console.log(action.payload.data)
           return {
             ...state,
             OccupancyReports:action.payload.data as OccupancyReportsType[]
@@ -269,11 +280,8 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
         case AuthActionTypes.GETOCCUPANCY:
           return {
             ...state,
-            OccupancyReport:{
-              ...state.OccupancyReport,
-              ...action.payload.data as OccupancyReportType
-            },
-            OccupancyLoad:false
+            ...action.payload.data as OccupancyReportType
+            
           }
         default:
           return { ...state };
