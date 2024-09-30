@@ -85,7 +85,7 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
         <i className="mdi mdi-dots-horizontal"></i>
       </Dropdown.Toggle>
       <Dropdown.Menu>
-        <Dropdown.Item onClick={() => onTenantSelect(row.original)}>View Profile</Dropdown.Item>
+        <Dropdown.Item onClick={() => onTenantSelect(row.original.tenantId)}>View Profile</Dropdown.Item>
         <Dropdown.Item>Edit Lease</Dropdown.Item>
         <Dropdown.Item>Send Reminder</Dropdown.Item>
         <Dropdown.Item className="text-danger">Terminate Lease</Dropdown.Item>
