@@ -6,9 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import PageTitle from "../../../../components/PageTitle";
 import TenantsListView from "./TenantsListView";
 import Profile from "./Profile";
+import { useDispatch, useSelector } from "react-redux";
+import { RootState, AppDispatch } from "../../../../redux/store";
+import { AuthActionTypes } from "../../../../redux/auth/constants";
 
 // dummy data
-import { tenants, TenantDetails } from "./data";
+import { tenants, TenantDetails, TenantDetailsManagement } from "./data";
 
 interface Property {
   id: number;
@@ -16,14 +19,18 @@ interface Property {
 }
 
 const Tenants: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-  const [tenantsData, setTenantsData] = useState<TenantDetails[]>(tenants);
+  const { tenantManagement } = useSelector((state: RootState) => state.Auth);
+  const tenantsData = tenantManagement;
   const [selectedTenant, setSelectedTenant] = useState<TenantDetails | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [error, setError] = useState<string | null>(null);
   const [properties, setProperties] = useState<Property[]>([]);
 
   useEffect(() => {
+    dispatch({ type: AuthActionTypes.GETTENANTLIST });
+
     const fetchProperties = async () => {
       setIsLoading(true);
       try {
@@ -47,6 +54,7 @@ const Tenants: React.FC = () => {
 
     fetchProperties();
   }, []);
+
 
   const handleTenantSelect = useCallback((tenant: TenantDetails) => {
     setSelectedTenant(tenant);
@@ -90,7 +98,7 @@ const Tenants: React.FC = () => {
         </Col>
         <Col lg={12} xl={3}>
           {selectedTenant ? (
-            <Profile tenantDetails={selectedTenant} />
+            <Profile tenantDetail={selectedTenant} />
           ) : (
             <div className="alert alert-info">Select a tenant to view their profile</div>
           )}

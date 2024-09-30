@@ -1,13 +1,31 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Table, Badge, Button } from "react-bootstrap";
 import { TenantDetails } from "./data";
+import axios from "axios";
+import config from "../../../../config";
+import DefaultImage from "../../../../components/DefaultImage";
 
 interface ProfileProps {
-  tenantDetails: TenantDetails;
+  tenantDetail: TenantDetails;
 }
 
-const Profile: React.FC<ProfileProps> = ({ tenantDetails }) => {
-  const getPaymentStatusBadge = (outstandingBalance: number) => {
+
+const Profile: React.FC<ProfileProps> = ({ tenantDetail }) => {
+  const [tenantDetails, settenantDetails] = useState<TenantDetails | null> (null)
+  const [load, setload] = useState(false)
+  const getData = ()=>{
+    setload(false)
+    axios.get(`${config.API_URL}/api/getTenantById?id=${tenantDetail}`).then((resp)=>{
+      settenantDetails(resp.data.data)
+      setload(true)
+    })
+  }
+
+useEffect(()=>{
+getData()
+},[tenantDetail])
+
+  const getPaymentStatusBadge = (outstandingBalance?: number) => {
     if (outstandingBalance === 0) {
       return <Badge bg="success">Paid</Badge>;
     } else {
@@ -28,20 +46,42 @@ const Profile: React.FC<ProfileProps> = ({ tenantDetails }) => {
     }
   };
 
+  const formatToDDMMYY = (dateString?: Date) => {
+    if (!dateString) {
+      return 'Invalid Date'; // Handle undefined or invalid date
+    }
+
+    const date = new Date(dateString);
+    const formattedDate = date.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: '2-digit'
+    });
+    return formattedDate;
+  };
+
+  if(!load)
+  {
+    return(
+      <div>Loading...</div>
+    )
+  }
+
   return (
-    <Card>
-      <Card.Body>
+    <>
+   <Card>
+       <Card.Body>
         <div className="d-flex align-items-start mb-3">
-          <img
+         { (tenantDetails?.avatar) ?<img
             className="d-flex me-3 rounded-circle avatar-lg"
-            src={tenantDetails.avatar}
-            alt={tenantDetails.name}
-          />
+            src={tenantDetails?.avatar}
+            alt={tenantDetails?.name}
+          />:<div className="d-flex me-3 rounded-circle avatar-lg"><DefaultImage username={tenantDetails?.name}   /></div> }
           <div className="w-100">
-            <h4 className="mt-0 mb-1">{tenantDetails.name}</h4>
-            <p className="text-muted">Tenant ID: {tenantDetails.id}</p>
+            <h4 className="mt-0 mb-1">{tenantDetails?.name}</h4>
+            <p className="text-muted">Tenant ID: {tenantDetails?.id}</p>
             <p className="text-muted">
-              <i className="mdi mdi-office-building"></i> Unit: {tenantDetails.unitNumber}
+              <i className="mdi mdi-office-building"></i> Unit: {tenantDetails?.unitNumber}
             </p>
             <Button variant="primary" size="sm" className="me-1">
               Send Message
@@ -57,59 +97,59 @@ const Profile: React.FC<ProfileProps> = ({ tenantDetails }) => {
         </h5>
         <Row>
           <Col md={6}>
-            <p className="text-muted"><strong>Phone:</strong> <span className="ms-2">{tenantDetails.phone}</span></p>
-          </Col>
-          <Col md={6}>
-            <p className="text-muted"><strong>Email:</strong> <span className="ms-2">{tenantDetails.email}</span></p>
+            <p className="text-muted"><strong>Phone:</strong> <span className="ms-2">{tenantDetails?.phone}</span></p>
           </Col>
         </Row>
+        <Col md={6}>
+            <p className="text-muted d-flex"><strong>Email:</strong> <span className="ms-2">{tenantDetails?.email?.toLowerCase()}</span></p>
+          </Col>
         <Row>
           <Col md={6}>
-            <p className="text-muted"><strong>Occupants:</strong> <span className="ms-2">{tenantDetails.occupants}</span></p>
+            <p className="text-muted"><strong>Occupants:</strong> <span className="ms-2">{tenantDetails?.occupants}</span></p>
           </Col>
           <Col md={6}>
-            <p className="text-muted"><strong>Pets:</strong> <span className="ms-2">{tenantDetails.pets ? 'Yes' : 'No'}</span></p>
+            <p className="text-muted"><strong>Pets:</strong> <span className="ms-2">{tenantDetails?.pets ? 'Yes' : 'No'}</span></p>
           </Col>
         </Row>
-        <p className="text-muted"><strong>Parking Space:</strong> <span className="ms-2">{tenantDetails.parkingSpace || 'N/A'}</span></p>
+        <p className="text-muted"><strong>Parking Space:</strong> <span className="ms-2">{tenantDetails?.parkingSpace || 'N/A'}</span></p>
 
         <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
           <i className="mdi mdi-office-building me-1"></i> Lease Information
         </h5>
         <Row>
           <Col md={6}>
-            <p className="text-muted"><strong>Start Date:</strong> <span className="ms-2">{tenantDetails.leaseInfo.startDate}</span></p>
+            <p className="text-muted"><strong>Start Date:</strong> <span className="ms-2">{formatToDDMMYY(tenantDetails?.leaseInfo?.startDate)}</span></p>
           </Col>
           <Col md={6}>
-            <p className="text-muted"><strong>End Date:</strong> <span className="ms-2">{tenantDetails.leaseInfo.endDate}</span></p>
+            <p className="text-muted"><strong>End Date:</strong> <span className="ms-2">{formatToDDMMYY(tenantDetails?.leaseInfo?.endDate)}</span></p>
           </Col>
         </Row>
         <Row>
           <Col md={6}>
-            <p className="text-muted"><strong>Rent Amount:</strong> <span className="ms-2">${tenantDetails.leaseInfo.rentAmount}</span></p>
+            <p className="text-muted"><strong>Rent Amount:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.rentAmount}</span></p>
           </Col>
           <Col md={6}>
-            <p className="text-muted"><strong>Security Deposit:</strong> <span className="ms-2">${tenantDetails.leaseInfo.securityDeposit}</span></p>
+            <p className="text-muted"><strong>Security Deposit:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.securityDeposit}</span></p>
           </Col>
         </Row>
 
         <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
           <i className="mdi mdi-currency-usd me-1"></i> Payment History
         </h5>
-        <Row>
+        {tenantDetails?.paymentHistory && Object.keys(tenantDetails.paymentHistory).length > 0 &&<Row>
           <Col>
-            <p className="text-muted"><strong>Last Payment Date:</strong> <span className="ms-2">{tenantDetails.paymentHistory.lastPaymentDate}</span></p>
-            <p className="text-muted"><strong>Last Payment Amount:</strong> <span className="ms-2">${tenantDetails.paymentHistory.lastPaymentAmount}</span></p>
-            <p className="text-muted"><strong>Payment Method:</strong> <span className="ms-2">{tenantDetails.paymentHistory.paymentMethod}</span></p>
+            <p className="text-muted"><strong>Last Payment Date:</strong> <span className="ms-2">{tenantDetails?.paymentHistory?.lastPaymentDate}</span></p>
+            <p className="text-muted"><strong>Last Payment Amount:</strong> <span className="ms-2">${tenantDetails?.paymentHistory?.lastPaymentAmount}</span></p>
+            <p className="text-muted"><strong>Payment Method:</strong> <span className="ms-2">{tenantDetails?.paymentHistory?.paymentMethod}</span></p>
             <p className="text-muted">
               <strong>Outstanding Balance:</strong> 
               <span className="ms-2">
-                ${tenantDetails.paymentHistory.outstandingBalance} 
-                {getPaymentStatusBadge(tenantDetails.paymentHistory.outstandingBalance)}
+                ${tenantDetails?.paymentHistory?.outstandingBalance} 
+                {getPaymentStatusBadge(tenantDetails?.paymentHistory?.outstandingBalance)}
               </span>
             </p>
           </Col>
-        </Row>
+        </Row>}
 
         <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
           <i className="mdi mdi-tools me-1"></i> Maintenance Requests
@@ -123,7 +163,7 @@ const Profile: React.FC<ProfileProps> = ({ tenantDetails }) => {
             </tr>
           </thead>
           <tbody>
-            {tenantDetails.maintenanceRequests.map((request, index) => (
+            {tenantDetails?.maintenanceRequests?.map((request:any, index:number) => (
               <tr key={index}>
                 <td>{request.issue}</td>
                 <td>{getMaintenanceStatusBadge(request.status)}</td>
@@ -132,21 +172,8 @@ const Profile: React.FC<ProfileProps> = ({ tenantDetails }) => {
             ))}
           </tbody>
         </Table>
-
-        <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
-          <i className="mdi mdi-star me-1"></i> Tenant Score
-        </h5>
-        <p className="text-muted">
-          <strong>Current Score:</strong> 
-          <span className={`ms-2 ${
-            tenantDetails.tenantScore >= 80 ? 'text-success' : 
-            tenantDetails.tenantScore >= 60 ? 'text-warning' : 'text-danger'
-          }`}>
-            {tenantDetails.tenantScore}
-          </span>
-        </p>
-      </Card.Body>
-    </Card>
+      </Card.Body> 
+    </Card></>
   );
 };
 

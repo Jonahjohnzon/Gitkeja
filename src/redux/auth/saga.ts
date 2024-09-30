@@ -280,6 +280,19 @@ function* getdashboard ():SagaIterator{
   }
   }
 
+
+  function* getTenantList ():SagaIterator{
+    try{
+      const response = yield call(()=> getReport() )
+      const data = response.data
+      yield put(getOccupancyApiReport(AuthActionTypes.GETTENANTLIST, data['data']))
+    }
+    catch(error:any)
+    {
+      console.log(error)
+    }
+    }
+
 function* activateUser({ payload: { token = '' } }: UserData): SagaIterator {
   try {
     if (!token) throw new Error('Activation token is required');
@@ -343,6 +356,10 @@ export function* watchgetOccupancyReport(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETOCCREPORT , getOccupancyReport)
 }
 
+export function* watchgetTenantList(): SagaIterator{
+  yield takeEvery(AuthActionTypes.GETTENANTLIST , getTenantList)
+}
+
 // Root saga
 function* authSaga(): SagaIterator {
   yield all([
@@ -358,7 +375,8 @@ function* authSaga(): SagaIterator {
     fork(watchPropertyDataid),
     fork(watchTenant),
     fork( watchgetOccupancy),
-    fork(watchgetOccupancyReport)
+    fork(watchgetOccupancyReport),
+    fork(watchgetTenantList)
   ]);
 }
 

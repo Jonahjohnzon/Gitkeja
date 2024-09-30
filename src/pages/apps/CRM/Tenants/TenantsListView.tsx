@@ -6,10 +6,11 @@ import { Link, useNavigate } from "react-router-dom";
 import Table from "../../../../components/Table";
 
 // types
-import { TenantDetails } from "./data";
+import { TenantDetails, TenantDetailsManagement } from "./data";
+import DefaultImage from "../../../../components/DefaultImage";
 
 interface TenantsListViewProps {
-  tenantDetails: TenantDetails[];
+  tenantDetails: TenantDetailsManagement[];
   onTenantSelect: (tenant: TenantDetails) => void;
   properties: { id: number; name: string }[];
 }
@@ -22,19 +23,22 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
   const navigate = useNavigate();
 
   // Tenant info column render
-  const TenantInfoColumn = ({ row }: { row: any }) => (
+  const TenantInfoColumn = ({ row }: { row: any }) => {
+
+    
+    return(
     <>
-      <img src={row.original.avatar} alt="" className="me-2 rounded-circle" width="32" />
-      <Link to="#" className="text-body fw-semibold" onClick={() => onTenantSelect(row.original)}>
+      <div className=" d-flex align-items-center">{row.original?.avatar?<img src={row.original?.avatar} alt="" className="me-2 rounded-circle" width="32" />:<span className="me-2 rounded-circle"><DefaultImage username={row.original.name} /></span>}
+      <Link to="#" className="text-body fw-semibold" onClick={() => onTenantSelect(row.original?.tenantId)}>
         {row.original.name}
       </Link>
-      <span className="ms-2 text-muted">#{row.original.unitNumber}</span>
+      <span className="ms-2 text-muted">#{row.original.unitNumber}</span></div>
     </>
-  );
+  )};
 
   // Lease status column render
   const LeaseStatusColumn = ({ row }: { row: any }) => {
-    const leaseEndDate = new Date(row.original.leaseInfo.endDate);
+    const leaseEndDate = new Date(row.original.occupancyEndDate);
     const today = new Date();
     const daysUntilLease = Math.ceil((leaseEndDate.getTime() - today.getTime()) / (1000 * 3600 * 24));
     let statusBadge;
@@ -56,23 +60,23 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
   };
 
   // Payment status column render
-  const PaymentStatusColumn = ({ row }: { row: any }) => {
-    const { outstandingBalance } = row.original.paymentHistory;
-    let statusBadge;
+  // const PaymentStatusColumn = ({ row }: { row: any }) => {
+  //   const { outstandingBalance } = row.original.paymentHistory;
+  //   let statusBadge;
 
-    if (outstandingBalance === 0) {
-      statusBadge = <Badge bg="success">Paid</Badge>;
-    } else if (outstandingBalance > 0) {
-      statusBadge = <Badge bg="danger">Outstanding</Badge>;
-    }
+  //   if (outstandingBalance === 0) {
+  //     statusBadge = <Badge bg="success">Paid</Badge>;
+  //   } else if (outstandingBalance > 0) {
+  //     statusBadge = <Badge bg="danger">Outstanding</Badge>;
+  //   }
 
-    return (
-      <>
-        {statusBadge}
-        <small className="ms-1 text-muted">${outstandingBalance.toFixed(2)}</small>
-      </>
-    );
-  };
+  //   return (
+  //     <>
+  //       {statusBadge}
+  //       <small className="ms-1 text-muted">${outstandingBalance.toFixed(2)}</small>
+  //     </>
+  //   );
+  // };
 
   // Action column render
   const ActionColumn = ({ row }: { row: any }) => (
@@ -104,22 +108,22 @@ const TenantsListView: React.FC<TenantsListViewProps> = ({
     },
     {
       Header: "Lease Status",
-      accessor: "leaseInfo.endDate",
+      accessor: "occupancyEndDate",
       sort: true,
       Cell: LeaseStatusColumn,
     },
     {
       Header: "Rent",
-      accessor: "leaseInfo.rentAmount",
+      accessor: "rentAmount",
       sort: true,
       Cell: ({ value }: { value: number }) => `$${value.toFixed(2)}`,
     },
-    {
-      Header: "Payment Status",
-      accessor: "paymentHistory",
-      sort: true,
-      Cell: PaymentStatusColumn,
-    },
+    // {
+    //   Header: "Payment Status",
+    //   accessor: "paymentHistory",
+    //   sort: true,
+    //   Cell: PaymentStatusColumn,
+    // },
     {
       Header: "Action",
       accessor: "action",
