@@ -88,8 +88,8 @@ const Tenants: React.FC = () => {
         </Alert>
       )}
 
-      <Row>
-        <Col lg={12} xl={9}>
+{tenantsData.length > 0 && (<Row>
+       <Col lg={12} xl={9}>
           <TenantsListView 
             tenantDetails={tenantsData}
             onTenantSelect={handleTenantSelect}
@@ -103,7 +103,7 @@ const Tenants: React.FC = () => {
             <div className="alert alert-info">Select a tenant to view their profile</div>
           )}
         </Col>
-      </Row>
+      </Row>)}
 
       {isLoading && <div className="text-center">Loading...</div>}
     </>
