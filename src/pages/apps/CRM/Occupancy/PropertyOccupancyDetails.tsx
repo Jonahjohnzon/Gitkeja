@@ -1,21 +1,57 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, Dropdown, Table, ProgressBar } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 
 // types
 import { PropertyOccupancy } from './types';
+import axios from 'axios';
+import config from '../../../../config';
 
 interface PropertyOccupancyDetailsProps {
   propertyOccupancies: PropertyOccupancy[];
+  propertiesList:any
 }
+
 
 const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
   propertyOccupancies,
+  propertiesList
 }) => {
   const [selectedProperty, setSelectedProperty] = useState<PropertyOccupancy | null>(
     propertyOccupancies[0] || null
-  );
+  )
+
+  const [pid, setPid] = useState(propertiesList[0]._id)
+  const [name, setName] = useState<string | null>(selectedProperty?.name || null)
+
+useEffect(()=>{
+  setSelectedProperty(null)
+axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(resp =>{
+  const result = resp.data
+  if(result.result)
+  {
+    setArray(result.occupancyRates)
+    setSelectedProperty(result.data)
+    setName(result.data.name)
+  }
+})
+},[pid])
+  const [arrayData, setArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
+
+  const chartData = useMemo(() => {
+    const last12Months = Array.from({ length: 12 }, (_, i) => {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      return d.toLocaleString('default', { month: 'short' });
+    }).reverse();
+
+    // This is a placeholder. In a real application, you would calculate this from actual data
+
+    return {
+      categories: last12Months,
+    };
+  }, []);
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -23,7 +59,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
       height: 300,
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      categories: chartData.categories,
     },
     yaxis: {
       title: {
@@ -42,7 +78,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
   // Mock data for the chart - replace with actual data in production
   const series = [{
     name: 'Occupancy Rate',
-    data: Array(12).fill(0).map(() => Math.floor(Math.random() * 30) + 70),
+    data: arrayData
   }];
 
   return (
@@ -50,13 +86,18 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
       <Card.Body>
         <Dropdown className="float-end" align="end">
           <Dropdown.Toggle variant="light" id="dropdown-property">
-            {selectedProperty ? selectedProperty.name : 'Select Property'}
+            {name ? name : 'Select Property'}
           </Dropdown.Toggle>
           <Dropdown.Menu>
-            {propertyOccupancies.map((property) => (
+            {propertiesList.map((property:any) => (
               <Dropdown.Item 
                 key={property._id} 
-                onClick={() => setSelectedProperty(property)}
+                onClick={() => {
+                  setPid(property._id)
+                  setName(property.name)
+                }
+                 
+              }
               >
                 {property.name}
               </Dropdown.Item>
@@ -79,20 +120,20 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
                 </tr>
                 <tr>
                   <th>Occupancy Rate</th>
-                  <td>{(selectedProperty.occupancyRate * 100).toFixed(2)}%</td>
+                  <td>{selectedProperty.occupancyRate}%</td>
                 </tr>
                 <tr>
                   <th>Average Rent</th>
-                  <td>${selectedProperty.averageRent.toFixed(2)}</td>
+                  <td>${selectedProperty.averageRent}</td>
                 </tr>
               </tbody>
             </Table>
 
             <h5>Occupancy Rate</h5>
             <ProgressBar 
-              now={selectedProperty.occupancyRate * 100} 
-              label={`${(selectedProperty.occupancyRate * 100).toFixed(2)}%`}
-              variant={selectedProperty.occupancyRate > 0.9 ? 'success' : selectedProperty.occupancyRate > 0.7 ? 'warning' : 'danger'}
+              now={selectedProperty.occupancyRate} 
+              label={`${selectedProperty.occupancyRate}%`}
+              variant={selectedProperty.occupancyRate > 90 ? 'success' : selectedProperty.occupancyRate > 70 ? 'warning' : 'danger'}
               className="mb-3"
             />
 
@@ -111,7 +152,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
             </div>
           </>
         ) : (
-          <p>No property selected. Please choose a property from the dropdown.</p>
+          <p>Loading...</p>
         )}
       </Card.Body>
     </Card>

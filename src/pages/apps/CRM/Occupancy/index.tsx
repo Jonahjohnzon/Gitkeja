@@ -17,27 +17,12 @@ import { AuthActionTypes } from '../../../../redux/auth/constants';
 
 
 const mockPropertyOccupancies: PropertyOccupancy[] = [
-  {
-    _id: 1,
-    name: 'Sunset Apartments',
-    totalUnits: 50,
-    occupiedUnits: 45,
-    occupancyRate: 0.9,
-    averageRent: 1500
-  },
-  {
-    _id: 2,
-    name: 'Lakeside Villas',
-    totalUnits: 30,
-    occupiedUnits: 28,
-    occupancyRate: 0.93,
-    averageRent: 1800
-  },
+
   // Add more mock data as needed
 ];
 
 const OccupancyPage: React.FC = () => {
-  const {  OccupancyReport,  OccupancyLoad, OccupancyReports } = useSelector((state: RootState) => state.Auth);
+  const {  OccupancyReport,  OccupancyLoad, OccupancyReports , propertiesList} = useSelector((state: RootState) => state.Auth);
   const occupancyReports = OccupancyReports
   const [propertyOccupancies, setPropertyOccupancies] = useState<PropertyOccupancy[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -48,6 +33,7 @@ const OccupancyPage: React.FC = () => {
     // Simulate API call
     dispatch({ type: AuthActionTypes.GETOCCUPANCY });
     dispatch({type: AuthActionTypes.GETOCCREPORT})
+    dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
 
     const fetchData = async () => {
       try {
@@ -67,7 +53,6 @@ const OccupancyPage: React.FC = () => {
     return <div></div>;
   }
 
-  
   return (
     <>
       <PageTitle
@@ -95,7 +80,7 @@ const OccupancyPage: React.FC = () => {
           />
         </Col>
         <Col xl={4}>
-          <PropertyOccupancyDetails propertyOccupancies={propertyOccupancies} />
+          {propertiesList.length > 0 && <PropertyOccupancyDetails propertyOccupancies={propertyOccupancies} propertiesList={propertiesList}/>}
         </Col>
       </Row>
     </>
