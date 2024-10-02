@@ -77,7 +77,7 @@ const property = props.property || {};
         </div>
         <p className="mb-2 fw-semibold">
           Occupancy Rate:
-          <span className="float-end">{property.occupancy}%</span>
+          <span className="float-end">{property.occupancy.toFixed(2)}%</span>
         </p>
         <ProgressBar now={property.occupancy} className="mb-1" style={{ height: "7px" }} />
       </Card.Body>
