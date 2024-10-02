@@ -27,6 +27,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
 
 useEffect(()=>{
   setSelectedProperty(null)
+try{
 axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(resp =>{
   const result = resp.data
   if(result.result)
@@ -36,6 +37,11 @@ axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(res
     setName(result.data.name)
   }
 })
+}
+catch(error)
+{
+  console.log(error)
+}
 },[pid])
   const [arrayData, setArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
 

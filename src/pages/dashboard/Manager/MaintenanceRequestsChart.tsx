@@ -2,19 +2,19 @@ import React from "react";
 import { Card, Dropdown } from "react-bootstrap";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { MaintenanceRequest } from "./data";
 
 interface MaintenanceRequestsChartProps {
-  requests: MaintenanceRequest[];
+  requests: any;
 }
 
 const MaintenanceRequestsChart: React.FC<MaintenanceRequestsChartProps> = ({ requests }) => {
-  const statusCounts = requests.reduce((acc, request) => {
+  const req = requests.getMaintenance
+  const statusCounts = req?.reduce((acc:any, request:any) => {
     acc[request.status] = (acc[request.status] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
-  const priorityCounts = requests.reduce((acc, request) => {
+  const priorityCounts = req?.reduce((acc:any, request:any) => {
     acc[request.priority] = (acc[request.priority] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);

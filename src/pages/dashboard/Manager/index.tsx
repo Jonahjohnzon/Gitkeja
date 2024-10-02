@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Row, Col } from "react-bootstrap";
 
 // components
@@ -13,11 +13,36 @@ import LeaseExpiryWidget from "./LeaseExpiryWidget";
 import VacancyAlertWidget from "./VacancyAlertWidget";
 
 // data
-import { properties, maintenanceRequests, leaseExpirations } from "./data";
+import { maintenanceRequests, leaseExpirations } from "./data";
+import axios from "axios";
+import config from "../../../config";
 
 const PropertyManagerDashboard = () => {
+const  [properties, setProperties] = useState([])
+
+//Single Api Get
+const Get =()=>{
+  try{
+  axios.get(`${config.API_URL}/api/getManagerProperty`).then((resp)=>{
+    const data = resp.data
+    setProperties(data.data)
+  })
+}
+catch(error){
+  console.log(error)
+}
+}
+
+useEffect(()=>{
+  Get()
+},[])
+
+  if(properties.length === 0)
+  {
+    return <div></div>
+  }
   return (
-    <>
+   <>{<>
       <PageTitle
         breadCrumbItems={[
           { label: "Property Management", path: "/property-management" },
@@ -36,7 +61,7 @@ const PropertyManagerDashboard = () => {
           <RentCollectionChart properties={properties} />
         </Col>
         <Col md={6} xl={4}>
-          <MaintenanceRequestsChart requests={maintenanceRequests} />
+          <MaintenanceRequestsChart requests={properties} />
         </Col>
       </Row>
       
@@ -49,15 +74,15 @@ const PropertyManagerDashboard = () => {
         </Col>
       </Row>
       
-      <Row>
-        <Col md={6}>
+       <Row>
+        {/*<Col md={6}>
           <LeaseExpiryWidget leaseExpirations={leaseExpirations} />
-        </Col>
+        </Col> */}
         <Col md={6}>
           <VacancyAlertWidget properties={properties} />
         </Col>
       </Row>
-    </>
+    </>}</> 
   );
 };
 

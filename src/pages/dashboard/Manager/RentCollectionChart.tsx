@@ -2,17 +2,20 @@ import React from "react";
 import { Card, Dropdown } from "react-bootstrap";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { Property } from "./data";
 
 interface RentCollectionChartProps {
-  properties: Property[];
+  properties: any;
 }
 
 const RentCollectionChart: React.FC<RentCollectionChartProps> = ({ properties }) => {
   // For this example, we'll assume the expected rent is 20% higher than collected rent
-  const expectedRent = properties.reduce((sum, property) => sum + property.rentCollected * 1.2, 0);
-  const collectedRent = properties.reduce((sum, property) => sum + property.rentCollected, 0);
-  const collectionRate = (collectedRent / expectedRent) * 100;
+  const totalRentCollected = properties.totalCollected
+  const totalRentAmount = properties.totalRentAmount
+  const rentPercent = Math.ceil((totalRentCollected/totalRentAmount) * 100) | 0
+  const expectedRent = totalRentAmount
+  const collectedRent = totalRentCollected
+  const collectionRate = rentPercent
+
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -60,8 +63,8 @@ const RentCollectionChart: React.FC<RentCollectionChartProps> = ({ properties })
           height={350}
         />
         <div className="text-center mt-2">
-          <h5 className="mb-0">Total Collected: ${collectedRent.toLocaleString()}</h5>
-          <p className="text-muted">Expected: ${expectedRent.toLocaleString()}</p>
+          <h5 className="mb-0">Total Collected: ${collectedRent?.toLocaleString() || 0}</h5>
+          <p className="text-muted">Expected: ${expectedRent?.toLocaleString() || 0}</p>
         </div>
       </Card.Body>
     </Card>

@@ -1,14 +1,13 @@
 import React from "react";
 import { Card, Dropdown, Table } from "react-bootstrap";
-import { Property } from "./data";
 
 interface PropertyPerformanceProps {
-  properties: Property[];
+  properties: any;
 }
 
 const PropertyPerformance: React.FC<PropertyPerformanceProps> = ({ properties }) => {
   // Sort properties by occupancy rate in descending order
-  const sortedProperties = [...properties].sort((a, b) => b.occupancyRate - a.occupancyRate);
+  const sortedProperties = properties?.eachOccupancy
 
   return (
     <Card>
@@ -35,15 +34,15 @@ const PropertyPerformance: React.FC<PropertyPerformanceProps> = ({ properties })
               </tr>
             </thead>
             <tbody>
-              {sortedProperties.map((property) => (
-                <tr key={property.id}>
-                  <td>{property.name}</td>
-                  <td>{(property.occupancyRate * 100).toFixed(1)}%</td>
-                  <td>${property.rentCollected.toLocaleString()}</td>
+              {sortedProperties.map((property:any) => (
+                <tr key={property?._id}>
+                  <td>{property?.name}</td>
+                  <td>{((property?.tenants/property?.units) * 100).toFixed(1)}%</td>
+                  <td>${property?.rentCollected?.toLocaleString()}</td>
                   <td>
-                    {property.maintenanceRequests === 0
+                    {property.maintenanceRequest === 0
                       ? "N/A"
-                      : `${(property.units / property.maintenanceRequests).toFixed(1)} units/request`}
+                      : `${(property?.units / property?.maintenanceRequest).toFixed(1)} units/request`}
                   </td>
                 </tr>
               ))}

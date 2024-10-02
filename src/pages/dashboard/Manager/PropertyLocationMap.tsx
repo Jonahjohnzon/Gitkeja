@@ -1,15 +1,15 @@
 import React from "react";
 import { Card, Dropdown } from "react-bootstrap";
 import { WorldVectorMap } from "../../../components/VectorMap";
-import { Property } from "./data";
 
 interface PropertyLocationMapProps {
-  properties: Property[];
+  properties: any;
 }
 
 const PropertyLocationMap: React.FC<PropertyLocationMapProps> = ({ properties }) => {
   // Ensure markers are always defined, even if empty
-  const markers = properties.map((property, index) => ({
+  const propertiesMap = properties.eachOccupancy
+  const markers = propertiesMap.map((property:any, index:number) => ({
     name: property.name,
     coords: [
       -100 + Math.random() * 200, // Random longitude between -100 and 100

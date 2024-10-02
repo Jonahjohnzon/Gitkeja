@@ -2,14 +2,13 @@ import React from "react";
 import { Card, Dropdown } from "react-bootstrap";
 import Chart from "react-apexcharts";
 import { ApexOptions } from "apexcharts";
-import { Property } from "./data";
 
 interface PropertyOccupancyChartProps {
-  properties: Property[];
+  properties: any;
 }
 
 const PropertyOccupancyChart: React.FC<PropertyOccupancyChartProps> = ({ properties }) => {
-  const sortedProperties = [...properties].sort((a, b) => b.occupancyRate - a.occupancyRate);
+  const sortedProperties = properties?.eachOccupancy
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -36,7 +35,7 @@ const PropertyOccupancyChart: React.FC<PropertyOccupancyChartProps> = ({ propert
       }
     },
     xaxis: {
-      categories: sortedProperties.map(property => property.name),
+      categories: sortedProperties?.map((property:any) => property?.name),
       labels: {
         formatter: function (val) {
           return val + "%";
@@ -60,7 +59,7 @@ const PropertyOccupancyChart: React.FC<PropertyOccupancyChartProps> = ({ propert
 
   const series = [{
     name: 'Occupancy Rate',
-    data: sortedProperties.map(property => +(property.occupancyRate * 100).toFixed(1))
+    data: sortedProperties?.map((property:any) => +((property?.tenants/property?.units) * 100).toFixed(1))
   }];
 
   return (

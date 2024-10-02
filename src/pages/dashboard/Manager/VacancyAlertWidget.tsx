@@ -1,14 +1,13 @@
 import React from "react";
 import { Card, Dropdown, ProgressBar } from "react-bootstrap";
-import { Property } from "./data";
 
 interface VacancyAlertWidgetProps {
-  properties: Property[];
+  properties: any;
 }
 
 const VacancyAlertWidget: React.FC<VacancyAlertWidgetProps> = ({ properties }) => {
   // Sort properties by vacancy rate (highest to lowest)
-  const sortedProperties = [...properties].sort((a, b) => (1 - a.occupancyRate) - (1 - b.occupancyRate));
+  const sortedProperties = properties?.eachOccupancy
 
   // Function to determine alert level based on vacancy rate
   const getAlertLevel = (vacancyRate: number) => {
@@ -31,11 +30,11 @@ const VacancyAlertWidget: React.FC<VacancyAlertWidgetProps> = ({ properties }) =
           </Dropdown.Menu>
         </Dropdown>
         <h4 className="header-title mb-3">Vacancy Alerts</h4>
-        {sortedProperties.slice(0, 5).map((property) => {
-          const vacancyRate = 1 - property.occupancyRate;
+        {sortedProperties.slice(0, 5).map((property:any) => {
+          const vacancyRate = 1 - property.tenants/property.units;
           const alertLevel = getAlertLevel(vacancyRate);
           return (
-            <div key={property.id} className="mb-4">
+            <div key={property._id} className="mb-4">
               <h5 className="mb-1">{property.name}</h5>
               <ProgressBar 
                 now={vacancyRate * 100} 

@@ -1,24 +1,29 @@
 import React from "react";
 import { Row, Col } from "react-bootstrap";
 import StatisticsWidget2 from "../../../components/StatisticsWidget2";
-import { Property } from "./data";
 
 interface PropertyStatisticsProps {
-  properties: Property[];
+  properties: any;
 }
 
 const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) => {
   // Calculate total properties
-  const totalProperties = properties.length;
+  const totalProperties = properties.totalProperties;
 
   // Calculate overall occupancy rate
-  const overallOccupancyRate = properties.reduce((sum, property) => sum + property.occupancyRate, 0) / totalProperties;
+  const overallOccupancyRate = (properties.totalOccupied/properties.totalUnits);
 
   // Calculate total rent collected
-  const totalRentCollected = properties.reduce((sum, property) => sum + property.rentCollected, 0);
+  const totalRentCollected = properties.totalCollected
+
+  //rentPercent
+  const rentPercent = Math.ceil((totalRentCollected/properties.totalRentAmount) * 100) | 0
 
   // Calculate total open maintenance requests
-  const openMaintenanceRequests = properties.reduce((sum, property) => sum + property.maintenanceRequests, 0);
+  const openMaintenanceRequests = properties?.getOpenmaintenance?.statuses?.Open
+  const totalMaintenance = properties?.getOpenmaintenance?.totalMaintenance
+
+  const maintenancePercent = Math.ceil((openMaintenanceRequests/totalMaintenance) * 100) | 0
 
   return (
     <Row>
@@ -26,7 +31,7 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
         <StatisticsWidget2
           variant="blue"
           description="Total Properties"
-          stats={totalProperties.toString()}
+          stats={totalProperties?.toString()}
           icon="fe-home"
           progress={100}
           counterOptions={{
@@ -40,7 +45,7 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
           description="Overall Occupancy Rate"
           stats={(overallOccupancyRate * 100).toFixed(1)}
           icon="fe-users"
-          progress={overallOccupancyRate * 100}
+          progress={Math.ceil(overallOccupancyRate * 100) | 0}
           counterOptions={{
             suffix: "%",
           }}
@@ -50,9 +55,9 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
         <StatisticsWidget2
           variant="warning"
           description="Total Rent Collected"
-          stats={totalRentCollected.toString()}
+          stats={totalRentCollected?.toString()}
           icon="fe-dollar-sign"
-          progress={75} // You might want to calculate this based on expected rent
+          progress={rentPercent} // You might want to calculate this based on expected rent
           counterOptions={{
             prefix: "$",
           }}
@@ -62,9 +67,9 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
         <StatisticsWidget2
           variant="info"
           description="Open Maintenance Requests"
-          stats={openMaintenanceRequests.toString()}
+          stats={openMaintenanceRequests?.toString()}
           icon="fe-tool"
-          progress={(openMaintenanceRequests / (totalProperties * 5)) * 100} // Assuming an average of 5 requests per property is 100%
+          progress={maintenancePercent} // Assuming an average of 5 requests per property is 100%
           counterOptions={{
             suffix: "",
           }}
