@@ -7,23 +7,13 @@ import {
   Tooltip,
   Button,
   Popover,
-  OverlayProps,
 } from "react-bootstrap";
 
 // components
 import PageTitle from "../../components/PageTitle";
 
-interface DirectionsType {
-  placement: OverlayProps["placement"];
-}
-
-const PopoverDirection = () => {
-  const directions: DirectionsType[] = [
-    { placement: "top" },
-    { placement: "bottom" },
-    { placement: "right" },
-    { placement: "left" },
-  ];
+const PopoverDirection: React.FC = () => {
+  const directions = ["top", "bottom", "right", "left"];
 
   const popover = (
     <Popover id="popover-direction">
@@ -42,13 +32,12 @@ const PopoverDirection = () => {
           for housing secondary information.
         </p>
 
-        {(directions || []).map((item) => (
+        {directions.map((direction) => (
           <OverlayTrigger
             trigger="click"
-            key={item.placement}
-            placement={item.placement}
+            key={direction}
             overlay={
-              <Popover popper id={`popover-positioned-${item.placement}`}>
+              <Popover id={`popover-positioned-${direction}`}>
                 <Popover.Body>
                   Vivamus sagittis lacus vel augue laoreet rutrum faucibus.
                 </Popover.Body>
@@ -56,12 +45,12 @@ const PopoverDirection = () => {
             }
           >
             <Button variant="light" className="me-1">
-              Popover on {item.placement}
+              Popover on {direction}
             </Button>
           </OverlayTrigger>
         ))}
 
-        <OverlayTrigger trigger="focus" placement="right" overlay={popover}>
+        <OverlayTrigger trigger="focus" overlay={popover}>
           <Button>Dismissible popover</Button>
         </OverlayTrigger>
       </Card.Body>
@@ -69,13 +58,8 @@ const PopoverDirection = () => {
   );
 };
 
-const TooltipDirection = () => {
-  const directions: DirectionsType[] = [
-    { placement: "top" },
-    { placement: "bottom" },
-    { placement: "right" },
-    { placement: "left" },
-  ];
+const TooltipDirection: React.FC = () => {
+  const directions = ["top", "bottom", "right", "left"];
 
   return (
     <>
@@ -84,18 +68,17 @@ const TooltipDirection = () => {
         Four options are available: top, right, bottom, and left aligned.
       </p>
 
-      {(directions || []).map((item) => (
+      {directions.map((direction) => (
         <OverlayTrigger
-          key={item.placement}
-          placement={item.placement}
+          key={direction}
           overlay={
-            <Tooltip id={`tooltip-${item.placement}`}>
-              Tooltip on <strong>{item.placement}</strong>.
+            <Tooltip id={`tooltip-${direction}`}>
+              Tooltip on <strong>{direction}</strong>.
             </Tooltip>
           }
         >
           <Button variant="light" className="me-1">
-            Tooltip on {item.placement}
+            Tooltip on {direction}
           </Button>
         </OverlayTrigger>
       ))}
@@ -103,7 +86,7 @@ const TooltipDirection = () => {
   );
 };
 
-const TooltipsPopovers = () => {
+const TooltipsPopovers: React.FC = () => {
   return (
     <React.Fragment>
       <PageTitle

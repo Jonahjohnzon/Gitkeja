@@ -64,7 +64,7 @@ const ProductEdit = React.lazy(
   () => import("../pages/apps/Ecommerce/ProductEdit")
 );
 const Customers = React.lazy(() => import("../pages/apps/Ecommerce/Customers"));
-const Orders = React.lazy(() => import("../pages/apps/Ecommerce/RentPayments"));
+const Orders = React.lazy(() => import("../pages/apps/Ecommerce/RentPayments").then(module => ({ default: module.default })));
 const OrderDetails = React.lazy(
   () => import("../pages/apps/Ecommerce/ExpensesAndReports")
 );
