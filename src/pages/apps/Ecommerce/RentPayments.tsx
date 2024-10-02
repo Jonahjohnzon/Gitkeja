@@ -1,20 +1,31 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Tab, Nav, Alert } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Row, Col, Card, Tab, Nav } from 'react-bootstrap';
 import PageTitle from '../../../components/PageTitle';
-import { useRentPaymentsData } from '../../../hooks/useRentPaymentsData';
 import WaterMeterReadingsTab from './WaterMeterReadingsTab';
 import InvoicingTab from './InvoicingTab';
 import ReceiptsTab from './ReceiptsTab';
 import RemindersTab from './RemindersTab';
 import ErrorMessage from '../../../components/ErrorMessage';
 import Loading from '../../../layouts/Loading';
+import { mockRentPayments, mockInvoices, mockReceipts, mockReminders } from '../../../mocks/rentPaymentData';
 
 const RentPayments: React.FC = () => {
   const [activeTab, setActiveTab] = useState('water-meter');
-  const { data, isLoading, error } = useRentPaymentsData();
+  const [error, setError] = useState<string | null>(null);
 
-  if (isLoading) return <Loading/>;
-  if (error) return <ErrorMessage message={error.message} />;
+  // Simulating loading state
+  const [isLoading, setIsLoading] = useState(false);
+
+  // In a real application, you would fetch this data from an API
+  const data = {
+    rentPayments: mockRentPayments,
+    invoices: mockInvoices,
+    receipts: mockReceipts,
+    reminders: mockReminders,
+  };
+
+  if (isLoading) return <Loading />;
+  if (error) return <ErrorMessage message={error} />;
 
   return (
     <>
@@ -47,16 +58,16 @@ const RentPayments: React.FC = () => {
                 </Nav>
                 <Tab.Content>
                   <Tab.Pane eventKey="water-meter">
-                    <WaterMeterReadingsTab data={data} />
+                    <WaterMeterReadingsTab data={data.rentPayments} />
                   </Tab.Pane>
                   <Tab.Pane eventKey="invoicing">
-                    <InvoicingTab data={data} />
+                    <InvoicingTab data={data.rentPayments} />
                   </Tab.Pane>
                   <Tab.Pane eventKey="receipts">
-                    <ReceiptsTab data={data} />
+                    <ReceiptsTab data={data.rentPayments} />
                   </Tab.Pane>
                   <Tab.Pane eventKey="reminders">
-                    <RemindersTab data={data} />
+                    <RemindersTab data={data.rentPayments} />
                   </Tab.Pane>
                 </Tab.Content>
               </Tab.Container>
