@@ -286,7 +286,6 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             
           }
         case AuthActionTypes.GETTENANTLIST:
-          console.log(action.payload.data)
           return  {
             ...state,
             tenantManagement:action.payload.data as TenantDetailsManagement[]

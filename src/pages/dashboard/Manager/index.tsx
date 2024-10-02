@@ -16,6 +16,7 @@ import VacancyAlertWidget from "./VacancyAlertWidget";
 import { maintenanceRequests, leaseExpirations } from "./data";
 import axios from "axios";
 import config from "../../../config";
+import Spinner from "../../../components/Spinner";
 
 const PropertyManagerDashboard = () => {
 const  [properties, setProperties] = useState([])
@@ -39,7 +40,10 @@ useEffect(()=>{
 
   if(properties.length === 0)
   {
-    return <div></div>
+    return  <div className=" w-100 d-flex justify-content-center align-items-center bg-light vh-100">
+            <Spinner size='lg' type='grow'   className="text-secondary m-2"/>
+            <Spinner type="grow" className="spinner-grow-sm m-2"  size='sm'/>
+            </div>
   }
   return (
    <>{<>

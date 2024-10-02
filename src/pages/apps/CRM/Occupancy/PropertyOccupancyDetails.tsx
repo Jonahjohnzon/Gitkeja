@@ -7,19 +7,18 @@ import { ApexOptions } from 'apexcharts';
 import { PropertyOccupancy } from './types';
 import axios from 'axios';
 import config from '../../../../config';
+import Spinner from '../../../../components/Spinner';
 
 interface PropertyOccupancyDetailsProps {
-  propertyOccupancies: PropertyOccupancy[];
   propertiesList:any
 }
 
 
 const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
-  propertyOccupancies,
   propertiesList
 }) => {
   const [selectedProperty, setSelectedProperty] = useState<PropertyOccupancy | null>(
-    propertyOccupancies[0] || null
+    null
   )
 
   const [pid, setPid] = useState(propertiesList[0]._id)
@@ -28,7 +27,7 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
 useEffect(()=>{
   setSelectedProperty(null)
 try{
-axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(resp =>{
+  axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(resp =>{
   const result = resp.data
   if(result.result)
   {
@@ -158,7 +157,9 @@ catch(error)
             </div>
           </>
         ) : (
-          <p>Loading...</p>
+          <div className=" w-100 d-flex justify-content-center align-items-center bg-light h-100">
+          <Spinner type="grow" className="spinner-grow-sm m-2"  size='sm'/>
+          </div>
         )}
       </Card.Body>
     </Card>

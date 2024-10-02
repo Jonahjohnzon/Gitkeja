@@ -93,7 +93,6 @@ const AddTenantPage: React.FC = () => {
   }, [watch]);
 
   const onSubmit = (data: TenantFormData) => {
-    console.log( data);
     dispatch(createNewTenant(data['propertyId'], data['name'], data['email'],data['phone'], data['idPassportNumber'], data['unitNumber'], data['leaseStartDate'], data['leaseEndDate'], data['rentAmount'], data['securityDeposit'], data['occupants'],data['pets']))
 
     

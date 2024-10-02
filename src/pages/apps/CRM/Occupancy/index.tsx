@@ -13,6 +13,8 @@ import PropertyOccupancyDetails from './PropertyOccupancyDetails';
 import { OccupancyReportsType, PropertyOccupancy } from './types';
 import { RootState } from '../../../../redux/store';
 import { AuthActionTypes } from '../../../../redux/auth/constants';
+import Spinner from '../../../../components/Spinner';
+import { getOccupancyApi } from '../../../../redux/actions';
 // Mock data - replace with API calls in production
 
 
@@ -24,33 +26,24 @@ const mockPropertyOccupancies: PropertyOccupancy[] = [
 const OccupancyPage: React.FC = () => {
   const {  OccupancyReport,  OccupancyLoad, OccupancyReports , propertiesList} = useSelector((state: RootState) => state.Auth);
   const occupancyReports = OccupancyReports
-  const [propertyOccupancies, setPropertyOccupancies] = useState<PropertyOccupancy[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
   const dispatch = useDispatch<AppDispatch>();
 
 
   useEffect(() => {
-    // Simulate API call
+    getOccupancyApi(AuthActionTypes.GETOCCUPANCY, {
+      OccupancyLoad:true
+    })    
     dispatch({ type: AuthActionTypes.GETOCCUPANCY });
     dispatch({type: AuthActionTypes.GETOCCREPORT})
     dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
 
-    const fetchData = async () => {
-      try {
-        // In a real application, these would be API calls
-        setPropertyOccupancies(mockPropertyOccupancies);
-        setLoading(false);
-      } catch (error) {
-        console.error('Error fetching data:', error);
-        setLoading(false);
-      }
-    };
-
-    fetchData();
   }, []);
 
   if (OccupancyLoad) {
-    return <div></div>;
+    return  <div className=" w-100 d-flex justify-content-center align-items-center bg-light vh-100">
+            <Spinner size='lg' type='grow'   className="text-secondary m-2"/>
+            <Spinner type="grow" className="spinner-grow-sm m-2"  size='sm'/>
+            </div>
   }
 
   return (
@@ -67,7 +60,6 @@ const OccupancyPage: React.FC = () => {
         <Col>
           <OccupancyReportsOverview
             occupancyReports={occupancyReports}
-            propertyOccupancies={propertyOccupancies}
             OccupancyReportType={OccupancyReport}
           />
         </Col>
@@ -80,7 +72,7 @@ const OccupancyPage: React.FC = () => {
           />
         </Col>
         <Col xl={4}>
-          {propertiesList.length > 0 && <PropertyOccupancyDetails propertyOccupancies={propertyOccupancies} propertiesList={propertiesList}/>}
+          {propertiesList.length > 0 && <PropertyOccupancyDetails  propertiesList={propertiesList}/>}
         </Col>
       </Row>
     </>

@@ -105,7 +105,7 @@ const Tenants: React.FC = () => {
         </Col>
       </Row>)}
 
-      {isLoading && <div className="text-center">Loading...</div>}
+      {isLoading && <div className="text-center"></div>}
     </>
   );
 };

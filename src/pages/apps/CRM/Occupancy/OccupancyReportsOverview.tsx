@@ -12,13 +12,11 @@ import { OccupancyReportType } from '../../../../redux/auth/reducers';
 
 interface OccupancyReportsOverviewProps {
   occupancyReports: OccupancyReportsType[];
-  propertyOccupancies: PropertyOccupancy[];
   OccupancyReportType:OccupancyReportType
 }
 
 const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
   occupancyReports,
-  propertyOccupancies,
   OccupancyReportType
 }) => {
   // Calculate summary statistics
@@ -35,7 +33,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
       overallOccupancyRate,
       totalRentCollected
     };
-  }, [occupancyReports, propertyOccupancies,OccupancyReportType]);
+  }, [occupancyReports,OccupancyReportType]);
 
   // Prepare data for occupancy trends chart
   const chartData = useMemo(() => {

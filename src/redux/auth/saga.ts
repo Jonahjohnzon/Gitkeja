@@ -204,9 +204,6 @@ catch(error:any)
 
 function* getOccupancyData ():SagaIterator{
   try{
-    yield put(getOccupancyApi(AuthActionTypes.GETOCCUPANCY, {
-      OccupancyLoad:true
-    }))
     const response = yield call(()=> getOccupancy() )
     const data = response.data
     const body = {
