@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Card, Tab, Nav } from 'react-bootstrap';
 import PageTitle from '../../../components/PageTitle';
 import WaterMeterReadingsTab from './WaterMeterReadingsTab';
@@ -16,6 +16,9 @@ const RentPayments: React.FC = () => {
   // Simulating loading state
   const [isLoading, setIsLoading] = useState(false);
 
+  //TenateState
+
+
   // In a real application, you would fetch this data from an API
   const data = {
     rentPayments: mockRentPayments,
@@ -24,8 +27,11 @@ const RentPayments: React.FC = () => {
     reminders: mockReminders,
   };
 
+
+
   if (isLoading) return <Loading />;
   if (error) return <ErrorMessage message={error} />;
+
 
   return (
     <>
@@ -58,7 +64,7 @@ const RentPayments: React.FC = () => {
                 </Nav>
                 <Tab.Content>
                   <Tab.Pane eventKey="water-meter">
-                    <WaterMeterReadingsTab data={data.rentPayments} />
+                    <WaterMeterReadingsTab  />
                   </Tab.Pane>
                   <Tab.Pane eventKey="invoicing">
                     <InvoicingTab data={data.rentPayments} />

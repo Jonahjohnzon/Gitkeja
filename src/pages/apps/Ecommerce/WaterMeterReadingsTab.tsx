@@ -1,20 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState,useEffect } from 'react';
 import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import WaterMeterReadingForm from './WaterMeterReadingForm';
-import { RentPayment, WaterMeterReadingData } from '../../../types';
+import { TenantProps, WaterMeterReadingData } from '../../../types';
+import { APICore } from '../../../helpers/api/apiCore';
 
-interface WaterMeterReadingsTabProps {
-  data: RentPayment[];
-}
 
-const WaterMeterReadingsTab: React.FC<WaterMeterReadingsTabProps> = ({ data }) => {
+
+
+const WaterMeterReadingsTab = () => {
+  const api = new APICore()
+  const [data, setData] = useState<TenantProps[]>([])
+
+
+  const Get = async ()=>{
+    try{
+    const {data} = await api.get('/api/getTenantWaterMeter') 
+    if(data['result'])
+    {
+      setData(data['data'])
+    }}
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    Get()
+  },[])
+
   const [showModal, setShowModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
 
-  const handleOpenModal = (payment: RentPayment) => {
+  
+  const [selectedPayment, setSelectedPayment] = useState<TenantProps | null>(null);
+
+
+  const handleOpenModal = (payment: TenantProps) => {
     setSelectedPayment(payment);
     setShowModal(true);
   };
@@ -32,10 +56,9 @@ const WaterMeterReadingsTab: React.FC<WaterMeterReadingsTabProps> = ({ data }) =
 
   // Prepare data for the chart
   const chartData = data
-    .filter(payment => payment.waterMeterReading)
     .map(payment => ({
-      x: format(new Date(payment.waterMeterReading!.readingDate), 'MMM dd'),
-      y: payment.waterMeterReading!.currentReading - payment.waterMeterReading!.previousReading
+      x: format(new Date(payment.readingDate), 'MMM dd'),
+      y: payment.currentReading - payment.previousReading
     }))
     .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
 
@@ -102,17 +125,17 @@ const WaterMeterReadingsTab: React.FC<WaterMeterReadingsTabProps> = ({ data }) =
               {data.map((payment) => (
                 <tr key={payment.id}>
                   <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName}</td>
-                  <td>{payment.waterMeterReading?.previousReading || 'N/A'}</td>
-                  <td>{payment.waterMeterReading?.currentReading || 'N/A'}</td>
+                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
+                  <td>{payment.previousReading || 'N/A'}</td>
+                  <td>{payment.currentReading || 'N/A'}</td>
                   <td>
                     {payment.waterMeterReading
-                      ? payment.waterMeterReading.currentReading - payment.waterMeterReading.previousReading
+                      ? payment.currentReading - payment.previousReading
                       : 'N/A'}
                   </td>
                   <td>
-                    {payment.waterMeterReading
-                      ? format(new Date(payment.waterMeterReading.readingDate), 'MMM dd, yyyy')
+                    {payment
+                      ? format(new Date(payment.readingDate), 'MMM dd, yyyy')
                       : 'N/A'}
                   </td>
                   <td>
@@ -121,7 +144,7 @@ const WaterMeterReadingsTab: React.FC<WaterMeterReadingsTabProps> = ({ data }) =
                       size="sm"
                       onClick={() => handleOpenModal(payment)}
                     >
-                      {payment.waterMeterReading ? 'Update' : 'Add'} Reading
+                      {payment ? 'Update' : 'Add'} Reading
                     </Button>
                   </td>
                 </tr>
@@ -140,7 +163,7 @@ const WaterMeterReadingsTab: React.FC<WaterMeterReadingsTabProps> = ({ data }) =
             <WaterMeterReadingForm
               paymentId={selectedPayment.id}
               onSubmit={handleSubmitReading}
-              initialData={selectedPayment.waterMeterReading}
+              initialData={selectedPayment}
             />
           )}
         </Modal.Body>

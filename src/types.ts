@@ -1,7 +1,7 @@
 // src/types/index.ts
 
 export interface WaterMeterReadingData {
-  paymentId: number;
+  paymentId?: string;
   previousReading: number;
   currentReading: number;
   readingDate: string;
@@ -21,6 +21,20 @@ export interface RentPayment {
   invoiceId?: number;
   receiptId?: number;
   waterMeterReading?: WaterMeterReadingData;
+}
+
+export interface TenantProps {
+  paymentId:string;
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  waterMeterReading?: WaterMeterReadingData;
+  previousReading: number;
+  currentReading: number;
+  readingDate: string;
+  unitNumber:string;
+  previousImage: File | null;
+  currentImage: File | null;
 }
 
 export interface Invoice {

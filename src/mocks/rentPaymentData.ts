@@ -1,6 +1,6 @@
 import { RentPayment, WaterMeterReadingData } from '../types';
 
-const generateMockWaterReading = (paymentId: number): WaterMeterReadingData => ({
+const generateMockWaterReading = (paymentId: string): WaterMeterReadingData => ({
   paymentId,
   previousReading: Math.floor(Math.random() * 1000),
   currentReading: Math.floor(Math.random() * 1000) + 1000,
@@ -21,7 +21,7 @@ export const mockRentPayments: RentPayment[] = [
     paymentMethod: 'M-Pesa',
     invoiceId: 1001,
     receiptId: 2001,
-    waterMeterReading: generateMockWaterReading(1),
+    waterMeterReading: generateMockWaterReading("1"),
   },
   {
     id: 2,
@@ -33,7 +33,7 @@ export const mockRentPayments: RentPayment[] = [
     status: 'Pending',
     paymentMethod: undefined,
     invoiceId: 1002,
-    waterMeterReading: generateMockWaterReading(2),
+    waterMeterReading: generateMockWaterReading("2"),
   },
   {
     id: 3,
@@ -45,7 +45,7 @@ export const mockRentPayments: RentPayment[] = [
     status: 'Overdue',
     paymentMethod: undefined,
     invoiceId: 1003,
-    waterMeterReading: generateMockWaterReading(3),
+    waterMeterReading: generateMockWaterReading("3"),
   },
   {
     id: 4,
@@ -58,7 +58,7 @@ export const mockRentPayments: RentPayment[] = [
     paymentMethod: 'Bank Transfer',
     invoiceId: 1004,
     receiptId: 2002,
-    waterMeterReading: generateMockWaterReading(4),
+    waterMeterReading: generateMockWaterReading("4"),
   },
   {
     id: 5,
@@ -70,7 +70,7 @@ export const mockRentPayments: RentPayment[] = [
     status: 'Pending',
     paymentMethod: undefined,
     invoiceId: 1005,
-    waterMeterReading: generateMockWaterReading(5),
+    waterMeterReading: generateMockWaterReading("5"),
   },
 ];
 

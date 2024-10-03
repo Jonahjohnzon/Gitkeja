@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Form, Button, Image, Row, Col, Alert } from 'react-bootstrap';
-import { WaterMeterReadingData } from '../../../types';
+import { TenantProps} from '../../../types';
 
 interface WaterMeterReadingFormProps {
-  paymentId: number;
-  onSubmit: (readingData: WaterMeterReadingData) => void;
-  initialData?: WaterMeterReadingData;
+  paymentId: string;
+  onSubmit: (readingData: any) => void;
+  initialData?: TenantProps;
 }
 
 const WaterMeterReadingForm: React.FC<WaterMeterReadingFormProps> = ({ paymentId, onSubmit, initialData }) => {
