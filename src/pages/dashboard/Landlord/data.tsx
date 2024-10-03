@@ -11,12 +11,16 @@ export type TransactionStatus = "Completed" | "Pending" | "Failed";
 
 export interface Tenant {
   id: number;
-  avatar: string;
+  profile_image: string;
   name: string;
   unitNumber: string;
   rentAmount: number;
   paymentStatus: PaymentStatus;
   tenancyStartDate: string;
+  unit:string;
+  status:string;
+  leaseStartDate:Date;
+  leaseEndDate:Date
 }
 
 export interface Transaction {
@@ -28,54 +32,7 @@ export interface Transaction {
   status: TransactionStatus;
 }
 
-// Top tenants data
-export const topTenants: Tenant[] = [
-  {
-    id: 1,
-    avatar: avatar1,
-    name: "John Doe",
-    unitNumber: "A101",
-    rentAmount: 1500,
-    paymentStatus: "Paid",
-    tenancyStartDate: "2022-01-01",
-  },
-  {
-    id: 2,
-    avatar: avatar2,
-    name: "Jane Smith",
-    unitNumber: "B205",
-    rentAmount: 1800,
-    paymentStatus: "Pending",
-    tenancyStartDate: "2021-06-15",
-  },
-  {
-    id: 3,
-    avatar: avatar3,
-    name: "Robert Johnson",
-    unitNumber: "C310",
-    rentAmount: 2000,
-    paymentStatus: "Late",
-    tenancyStartDate: "2023-03-01",
-  },
-  {
-    id: 4,
-    avatar: avatar4,
-    name: "Emily Brown",
-    unitNumber: "A205",
-    rentAmount: 1600,
-    paymentStatus: "Paid",
-    tenancyStartDate: "2022-11-01",
-  },
-  {
-    id: 5,
-    avatar: avatar5,
-    name: "Michael Wilson",
-    unitNumber: "B410",
-    rentAmount: 2200,
-    paymentStatus: "Paid",
-    tenancyStartDate: "2023-01-15",
-  },
-];
+
 
 // Recent transactions data
 export const recentTransactions: Transaction[] = [

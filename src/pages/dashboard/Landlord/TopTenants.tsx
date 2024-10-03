@@ -5,12 +5,35 @@ import classNames from "classnames";
 
 // Import the Tenant type from your data file
 import { Tenant } from "./data";
+import DefaultImage from "../../../components/DefaultImage";
 
 interface TopTenantsProps {
   tenants: Tenant[];
 }
 
+function dateDiffInMonths(startDate: Date, endDate: Date): string {
+  const start = new Date(startDate);
+  const end = new Date(endDate);
+
+  // Calculate total difference in milliseconds
+  const diffTime = end.getTime() - start.getTime();
+
+  // Calculate the total difference in days
+  const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+
+  // If the difference is less than 30 days, return days
+  if (diffDays < 30) {
+    return `${diffDays} day${diffDays !== 1 ? 's' : ''}`;
+  }
+
+  // Otherwise, calculate the difference in months (approximation)
+  const diffMonths = Math.floor(diffDays / 30); // Rough approximation, assuming average month length
+  return `${diffMonths} month${diffMonths !== 1 ? 's' : ''}`;
+}
+
+
 const TopTenants = ({ tenants }: TopTenantsProps) => {
+  console.log(tenants)
   return (
     <Card>
       <Card.Body>
@@ -39,32 +62,32 @@ const TopTenants = ({ tenants }: TopTenantsProps) => {
             </thead>
             <tbody>
               {tenants.map((tenant, i) => {
-                const tenancyLength = Math.floor((new Date().getTime() - new Date(tenant.tenancyStartDate).getTime()) / (1000 * 3600 * 24 * 30));
+                const tenancyLength = dateDiffInMonths(tenant.leaseStartDate, tenant.leaseEndDate);
                 return (
                   <tr key={i}>
-                    <td>
-                      <img
-                        src={tenant.avatar}
+                    <td className=" d-flex align-items-center">
+                      {tenant.profile_image?<img
+                        src={tenant.profile_image}
                         alt="contact-img"
-                        title="contact-img"
+                        title="img"
                         className="rounded-circle avatar-sm me-2"
-                      />
-                      <span className="fw-semibold">{tenant.name}</span>
+                      />:<span className="me-2"><DefaultImage username={tenant.name}/></span>}
+                      <span  className="fw-semibold">{tenant.name}</span>
                     </td>
-                    <td>{tenant.unitNumber}</td>
+                    <td>{tenant.unit}</td>
                     <td>${tenant.rentAmount.toLocaleString()}</td>
                     <td>
                       <span
                         className={classNames("badge", {
-                          "bg-success": tenant.paymentStatus === "Paid",
-                          "bg-warning": tenant.paymentStatus === "Pending",
-                          "bg-danger": tenant.paymentStatus === "Late",
+                          "bg-success": tenant.status === "paid",
+                          "bg-warning": tenant.status === "pending",
+                          "bg-danger": tenant.status === "late",
                         })}
                       >
-                        {tenant.paymentStatus}
+                        {tenant.status}
                       </span>
                     </td>
-                    <td>{tenancyLength} months</td>
+                    <td>{tenancyLength}</td>
                     <td>
                       <Link to="#" className="btn btn-xs btn-light">
                         <i className="mdi mdi-eye"></i>
