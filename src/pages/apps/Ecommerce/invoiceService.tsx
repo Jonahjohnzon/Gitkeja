@@ -1,6 +1,7 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
 import { RentPayment, WaterMeterReadingData } from '../../../types';
+import { Paymentprop } from './InvoicingTab';
 
 // Extend jsPDF type to include autoTable method
 interface jsPDFWithAutoTable extends jsPDF {
@@ -16,13 +17,12 @@ export interface Invoice {
   garbageCost: number;
   previousBalance: number;
   dueDate: string;
-  waterMeterReading: WaterMeterReadingData;
+  waterMeterReading: Paymentprop;
 }
 
 // Generate Invoice
 export const generateInvoice = async (
-  payment: RentPayment,
-  waterMeterReading: WaterMeterReadingData
+  payment:  Paymentprop,
 ): Promise<Invoice> => {
   try {
     // Simulate API call
@@ -36,8 +36,8 @@ export const generateInvoice = async (
       waterRate: 100, // KES per unit, this should come from your backend in a real app
       garbageCost: 500, // KES, this should come from your backend in a real app
       previousBalance: 0, // This should come from your backend in a real app
-      dueDate: payment.dueDate,
-      waterMeterReading: waterMeterReading,
+      dueDate: payment.leaseEndDate,
+      waterMeterReading: payment,
     };
 
     return invoice;

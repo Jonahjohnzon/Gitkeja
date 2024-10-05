@@ -1,39 +1,81 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import { RentPayment } from '../../../types';
-import { generateInvoice, sendInvoice, downloadInvoicePDF } from './invoiceService';
-
+import { generateInvoice, downloadInvoicePDF } from './invoiceService';
+import { APICore } from '../../../helpers/api/apiCore';
 interface InvoicingTabProps {
   data: RentPayment[];
 }
 
-const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
-  const [showModal, setShowModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
-  const [loading, setLoading] = useState(false);
+export interface Paymentprop{
+  id:string;
+  tenantName:string;
+  propertyName:string;
+  status:string;
+  amount:number;
+  unitNumber:string;
+  tenantId?:string;
+  leaseEndDate:string;
+  currentReading:number;
+  previousReading:number;
+  previousImage: File | null;
+  currentImage: File | null;
+}
 
-  const handleOpenModal = (payment: RentPayment) => {
+const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
+
+  const Display = {
+    totalRentAmount:[0,0,0,0,0,0,0,0,0,0,0,0],
+    totalsgarbage:[0,0,0,0,0,0,0,0,0,0,0,0],
+    totalswater:[0,0,0,0,0,0,0,0,0,0,0,0]
+  }
+  const api = new APICore()
+  const [showModal, setShowModal] = useState(false);
+  const [selectedPayment, setSelectedPayment] = useState<Paymentprop | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [Invoice, setInvoice] = useState(Display)
+  const [Data,setData] = useState([])
+
+  const handleOpenModal = (payment: Paymentprop) => {
     setSelectedPayment(payment);
     setShowModal(true);
   };
 
+  const Get = async()=>{
+    try{
+      const {data} = await api.get('/api/getTenantInvoice')
+      if(data.result)
+      {
+        setInvoice(data.display)
+        setData(data.data)
+      }
+    }
+    catch(error)
+    {
+
+    }
+  }
+
+  useEffect(()=>{
+    Get()
+  },[])
   const handleCloseModal = () => {
     setShowModal(false);
     setSelectedPayment(null);
   };
 
-  const handleGenerateInvoice = async (payment: RentPayment) => {
-    if (!payment.waterMeterReading) {
+  const handleGenerateInvoice = async (payment: Paymentprop) => {
+    if (!payment) {
       alert('Please enter water meter readings before generating an invoice.');
       return;
     }
 
     setLoading(true);
     try {
-      const invoice = await generateInvoice(payment, payment.waterMeterReading);
+      const invoice = await generateInvoice(payment);
       await downloadInvoicePDF(invoice);
       alert('Invoice generated and downloaded successfully.');
     } catch (error) {
@@ -45,10 +87,9 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
     }
   };
 
-  const handleSendInvoice = async (invoiceId: number) => {
+  const handleSendInvoice = async () => {
     setLoading(true);
     try {
-      await sendInvoice(invoiceId);
       alert('Invoice sent successfully.');
     } catch (error) {
       console.error('Error sending invoice:', error);
@@ -60,7 +101,6 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
 
   // Prepare data for the chart
   const chartData = data.map(payment => ({
-    x: format(new Date(payment.dueDate), 'MMM yyyy'),
     rent: payment.amount,
     water: payment.waterMeterReading ? 
       (payment.waterMeterReading.currentReading - payment.waterMeterReading.previousReading) * 100 : 0, // Assuming 100 KES per unit
@@ -74,7 +114,7 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
       stacked: true
     },
     xaxis: {
-      categories: chartData.map(d => d.x),
+      categories: ['Jan', 'Feb', 'Mar', 'Apr' , 'May' , 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
       title: {
         text: 'Month'
       }
@@ -102,15 +142,15 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
   const series = [
     {
       name: 'Rent',
-      data: chartData.map(d => d.rent)
+      data: Invoice.totalRentAmount
     },
     {
       name: 'Water',
-      data: chartData.map(d => d.water)
+      data: Invoice.totalswater
     },
     {
       name: 'Garbage',
-      data: chartData.map(d => d.garbage)
+      data: Invoice.totalsgarbage
     }
   ];
 
@@ -139,13 +179,13 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
                 <th>Actions</th>
               </tr>
             </thead>
-            <tbody>
-              {data.map((payment) => (
+            {Data.length != 0 && <tbody>
+              {Data.map((payment:Paymentprop) => (
                 <tr key={payment.id}>
                   <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName}</td>
+                  <td>{payment.propertyName}{` `}{payment.unitNumber}</td>
                   <td>${payment.amount.toLocaleString()}</td>
-                  <td>{format(new Date(payment.dueDate), 'MMM dd, yyyy')}</td>
+                  <td>{format(new Date(payment.leaseEndDate), 'MMM dd, yyyy')}</td>
                   <td>{payment.status}</td>
                   <td>
                     <Button
@@ -157,11 +197,11 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
                     >
                       Generate Invoice
                     </Button>
-                    {payment.invoiceId && (
+                    {(
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => handleSendInvoice(payment.invoiceId!)}
+                        onClick={() => handleSendInvoice()}
                         disabled={loading}
                       >
                         Send Invoice
@@ -170,7 +210,7 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
                   </td>
                 </tr>
               ))}
-            </tbody>
+            </tbody>}
           </Table>
         </Col>
       </Row>
@@ -185,10 +225,10 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
               <p><strong>Tenant:</strong> {selectedPayment.tenantName}</p>
               <p><strong>Property:</strong> {selectedPayment.propertyName}</p>
               <p><strong>Amount:</strong> ${selectedPayment.amount.toLocaleString()}</p>
-              <p><strong>Due Date:</strong> {format(new Date(selectedPayment.dueDate), 'MMM dd, yyyy')}</p>
-              {selectedPayment.waterMeterReading && (
+              <p><strong>Due Date:</strong> {format(new Date(selectedPayment.leaseEndDate), 'MMM dd, yyyy')}</p>
+              {selectedPayment && (
                 <>
-                  <p><strong>Water Usage:</strong> {selectedPayment.waterMeterReading.currentReading - selectedPayment.waterMeterReading.previousReading} units</p>
+                  <p><strong>Water Usage:</strong> {selectedPayment.currentReading - selectedPayment.previousReading} units</p>
                 </>
               )}
               <Button 
