@@ -23,6 +23,8 @@ export interface Paymentprop{
   previousReading:number;
   previousImage: File | null;
   currentImage: File | null;
+  garbage: number;
+  water: number;
 }
 
 const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {

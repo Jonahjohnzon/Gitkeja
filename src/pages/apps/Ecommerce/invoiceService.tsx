@@ -33,8 +33,8 @@ export const generateInvoice = async (
       tenantName: payment.tenantName,
       propertyName: payment.propertyName,
       rentAmount: payment.amount,
-      waterRate: 100, // KES per unit, this should come from your backend in a real app
-      garbageCost: 500, // KES, this should come from your backend in a real app
+      waterRate: payment.water, // KES per unit, this should come from your backend in a real app
+      garbageCost: payment.garbage, // KES, this should come from your backend in a real app
       previousBalance: 0, // This should come from your backend in a real app
       dueDate: payment.leaseEndDate,
       waterMeterReading: payment,
