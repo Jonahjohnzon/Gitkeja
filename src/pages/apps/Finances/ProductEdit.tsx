@@ -12,7 +12,7 @@ import "react-draft-wysiwyg/dist/react-draft-wysiwyg.css";
 // components
 import PageTitle from "../../../components/PageTitle";
 import FileUploader from "../../../components/FileUploader";
-import { FormInput } from "../../../components/";
+import { FormInput } from "../../../components";
 
 const ProductEdit = () => {
   const [editorState, setEditorState] = useState<any>();

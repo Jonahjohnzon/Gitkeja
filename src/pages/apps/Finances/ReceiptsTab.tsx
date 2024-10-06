@@ -7,10 +7,10 @@ import { RentPayment } from '../../../types';
 import { generateReceipt, downloadReceiptPDF } from './receiptService';
 
 interface ReceiptsTabProps {
-  data: RentPayment[];
+  data?: RentPayment[]; 
 }
 
-const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data }) => {
+const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data = [] }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
   const [loading, setLoading] = useState(false);

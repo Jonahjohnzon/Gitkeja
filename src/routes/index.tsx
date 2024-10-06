@@ -1,9 +1,17 @@
 import React from "react";
 import { Route, Navigate, RouteProps } from "react-router-dom";
 
+
 // components
 import PrivateRoute from "./PrivateRoute";
+// Finances
+import InvoicingTab from "../pages/apps/Finances/InvoicingTab";
+import WaterMeterReadingsTab from "../pages/apps/Finances/WaterMeterReadingsTab";
+import ReceiptsTab from "../pages/apps/Finances/ReceiptsTab";
+import RemindersTab from "../pages/apps/Finances/RemindersTab";
+import RentPayments from "../pages/apps/Finances/RentPayments";
 // import Root from './Root';
+
 
 // lazy load all the views
 
@@ -49,28 +57,28 @@ const PropertyForm = React.lazy(()=> import("../pages/apps/CRM/Properties/Proper
 const ChatApp = React.lazy(() => import("../pages/apps/Chat/"));
 // - ecommece pages
 const EcommerceDashboard = React.lazy(
-  () => import("../pages/apps/Ecommerce/Dashboard/")
+  () => import("../pages/apps/Finances/Dashboard")
 );
 
 const AddTenantPage = React.lazy(() => import("../../src/pages/apps/CRM/Tenants/AddTentantPage"));
 
 const EcommerceProducts = React.lazy(
-  () => import("../pages/apps/Ecommerce/Products")
+  () => import("../pages/apps/Finances/Products")
 );
 const ProductDetails = React.lazy(
-  () => import("../pages/apps/Ecommerce/ProductDetails")
+  () => import("../pages/apps/Finances/ProductDetails")
 );
 const ProductEdit = React.lazy(
-  () => import("../pages/apps/Ecommerce/ProductEdit")
+  () => import("../pages/apps/Finances/ProductEdit")
 );
-const Customers = React.lazy(() => import("../pages/apps/Ecommerce/Customers"));
-const Orders = React.lazy(() => import("../pages/apps/Ecommerce/RentPayments").then(module => ({ default: module.default })));
+const Customers = React.lazy(() => import("../pages/apps/Finances/Customers"));
+const Orders = React.lazy(() => import("../pages/apps/Finances/RentPayments").then(module => ({ default: module.default })));
 const OrderDetails = React.lazy(
-  () => import("../pages/apps/Ecommerce/ExpensesAndReports")
+  () => import("../pages/apps/Finances/ExpensesAndReports")
 );
-const Sellers = React.lazy(() => import("../pages/apps/Ecommerce/Sellers"));
-const Cart = React.lazy(() => import("../pages/apps/Ecommerce/Cart"));
-const Checkout = React.lazy(() => import("../pages/apps/Ecommerce/Checkout"));
+const Sellers = React.lazy(() => import("../pages/apps/Finances/Sellers"));
+const Cart = React.lazy(() => import("../pages/apps/Finances/Cart"));
+const Checkout = React.lazy(() => import("../pages/apps/Finances/Checkout"));
 // - crm pages
 const CRMDashboard = React.lazy(() => import("../pages/apps/CRM/Dashboard/"));
 const CRMContacts = React.lazy(() => import("../pages/apps/CRM/Tenants"));
@@ -195,6 +203,8 @@ const ChartJs = React.lazy(() => import("../pages/charts/ChartJs"));
 const GoogleMaps = React.lazy(() => import("../pages/maps/GoogleMaps"));
 const VectorMaps = React.lazy(() => import("../pages/maps/VectorMaps"));
 
+
+
 export interface RoutesProps {
   path: RouteProps["path"];
   name?: string;
@@ -281,6 +291,36 @@ const ecommerceAppRoutes = {
   roles: ["Admin"],
   icon: "shopping-cart",
   children: [
+    {
+      path: "/apps/finances/invoicing",
+      name: "Invoicing",
+      element: <InvoicingTab />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/finances/water-utilities",
+      name: "Water & Utilities",
+      element: <WaterMeterReadingsTab />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/finances/receipts",
+      name: "Receipts",
+      element: <ReceiptsTab />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/finances/reminders",
+      name: "Reminders",
+      element: <RemindersTab />,
+      route: PrivateRoute,
+    },
+    {
+      path: "/apps/finances/rent-payments",
+      name: "Rent Payments",
+      element: <RentPayments />,
+      route: PrivateRoute,
+    },
     {
       path: "/apps/ecommerce/dashboard",
       name: "Products",

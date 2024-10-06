@@ -8,7 +8,7 @@ import Select from "react-select";
 import MaskedInput from "react-text-mask";
 
 // components
-import { FormInput } from "../../../../components/";
+import { FormInput } from "../../../../components";
 
 // dafault data
 import { countries } from "./data";

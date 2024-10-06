@@ -2,7 +2,7 @@ import React from "react";
 import { Card, Dropdown, Row, Col } from "react-bootstrap";
 
 // components
-import { WorldVectorMap } from "../../../../components/VectorMap/";
+import { WorldVectorMap } from "../../../../components/VectorMap";
 import ChartStatistics from "../../../../components/ChartStatistics";
 
 const RevenueDetails = () => {

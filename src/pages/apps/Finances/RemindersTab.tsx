@@ -7,10 +7,9 @@ import { RentPayment } from '../../../types';
 import { sendPaymentReminder } from './reminderService';
 
 interface RemindersTabProps {
-  data: RentPayment[];
+  data?: RentPayment[];
 }
-
-const RemindersTab: React.FC<RemindersTabProps> = ({ data }) => {
+const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
   const [loading, setLoading] = useState(false);

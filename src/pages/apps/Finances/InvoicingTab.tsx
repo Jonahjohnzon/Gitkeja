@@ -7,7 +7,7 @@ import { RentPayment } from '../../../types';
 import { generateInvoice, downloadInvoicePDF } from './invoiceService';
 import { APICore } from '../../../helpers/api/apiCore';
 interface InvoicingTabProps {
-  data: RentPayment[];
+  data?: RentPayment[];
 }
 
 export interface Paymentprop{
@@ -27,7 +27,7 @@ export interface Paymentprop{
   water: number;
 }
 
-const InvoicingTab: React.FC<InvoicingTabProps> = ({ data }) => {
+const InvoicingTab: React.FC<InvoicingTabProps> = ({ data = [] }) => {
 
   const Display = {
     totalRentAmount:[0,0,0,0,0,0,0,0,0,0,0,0],

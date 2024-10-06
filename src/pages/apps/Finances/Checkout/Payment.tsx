@@ -5,7 +5,7 @@ import { Link } from "react-router-dom";
 import MaskedInput from "react-text-mask";
 
 // components
-import { FormInput } from "../../../../components/";
+import { FormInput } from "../../../../components";
 
 // Payment
 const Payment = () => {
