@@ -3,8 +3,7 @@ import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
-import { RentPayment } from '../../../types';
-import { generateInvoice, downloadInvoicePDF } from './invoiceService';
+import { generateInvoice, downloadInvoicePDF, generateInvoicePDF, sendInvoice } from './invoiceService';
 import { APICore } from '../../../helpers/api/apiCore';
 
 
@@ -22,6 +21,7 @@ export interface Paymentprop{
   previousImage: File | null;
   currentImage: File | null;
   garbage: number;
+  email:string;
   water: number;
 }
 
@@ -67,7 +67,7 @@ const InvoicingTab: React.FC = () => {
     setSelectedPayment(null);
   };
 
-  const handleGenerateInvoice = async (payment: Paymentprop) => {
+  const handleGenerateInvoice = async (payment: Paymentprop, send = false) => {
     if (!payment) {
       alert('Please enter water meter readings before generating an invoice.');
       return;
@@ -76,6 +76,7 @@ const InvoicingTab: React.FC = () => {
     setLoading(true);
     try {
       const invoice = await generateInvoice(payment);
+  
       await downloadInvoicePDF(invoice);
       alert('Invoice generated and downloaded successfully.');
     } catch (error) {
@@ -87,7 +88,12 @@ const InvoicingTab: React.FC = () => {
     }
   };
 
-  const handleSendInvoice = async () => {
+
+
+  const handleSendInvoice = async (payment: Paymentprop) => {
+    const Invoice = await generateInvoice(payment)
+    const doc = await generateInvoicePDF(Invoice)
+    sendInvoice(payment.email, doc)
     setLoading(true);
     try {
       alert('Invoice sent successfully.');
@@ -195,7 +201,7 @@ const InvoicingTab: React.FC = () => {
                       <Button
                         variant="secondary"
                         size="sm"
-                        onClick={() => handleSendInvoice()}
+                        onClick={() => handleSendInvoice(payment)}
                         disabled={loading}
                       >
                         Send Invoice

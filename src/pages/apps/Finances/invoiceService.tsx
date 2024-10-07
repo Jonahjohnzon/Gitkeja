@@ -1,12 +1,13 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { RentPayment, WaterMeterReadingData } from '../../../types';
 import { Paymentprop } from './InvoicingTab';
+import { APICore } from '../../../helpers/api/apiCore';
 
-// Extend jsPDF type to include autoTable method
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: any) => jsPDF;  
 }
+
+const api = new APICore()
 
 export interface Invoice {
   id: number;
@@ -48,11 +49,16 @@ export const generateInvoice = async (
 };
 
 // Send Invoice
-export const sendInvoice = async (invoiceId: number): Promise<void> => {
+export const sendInvoice = async ( email:string, doc:any): Promise<void> => {
   try {
-    // Simulate API call to send the invoice
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    console.log(`Invoice ${invoiceId} sent successfully`);
+    const pdfBlob = doc.output('blob');
+    const  data =
+    {
+    email:email,
+    doc:pdfBlob
+  }
+    api.createWithFile('/api/sendEmailInvoice', data)
+
   } catch (error) {
     console.error('Error sending invoice:', error);
     throw new Error('Failed to send invoice');
@@ -147,3 +153,5 @@ export const downloadInvoicePDF = async (invoice: Invoice): Promise<void> => {
     throw new Error('Failed to download invoice PDF');
   }
 };
+
+
