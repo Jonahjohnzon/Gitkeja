@@ -6,9 +6,7 @@ import { format } from 'date-fns';
 import { RentPayment } from '../../../types';
 import { generateInvoice, downloadInvoicePDF } from './invoiceService';
 import { APICore } from '../../../helpers/api/apiCore';
-interface InvoicingTabProps {
-  data?: RentPayment[];
-}
+
 
 export interface Paymentprop{
   id:string;
@@ -27,7 +25,7 @@ export interface Paymentprop{
   water: number;
 }
 
-const InvoicingTab: React.FC<InvoicingTabProps> = ({ data = [] }) => {
+const InvoicingTab: React.FC = () => {
 
   const Display = {
     totalRentAmount:[0,0,0,0,0,0,0,0,0,0,0,0],
@@ -101,13 +99,7 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data = [] }) => {
     }
   };
 
-  // Prepare data for the chart
-  const chartData = data.map(payment => ({
-    rent: payment.amount,
-    water: payment.waterMeterReading ? 
-      (payment.waterMeterReading.currentReading - payment.waterMeterReading.previousReading) * 100 : 0, // Assuming 100 KES per unit
-    garbage: 500 // Assuming a fixed garbage collection fee
-  }));
+
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -185,7 +177,7 @@ const InvoicingTab: React.FC<InvoicingTabProps> = ({ data = [] }) => {
               {Data.map((payment:Paymentprop) => (
                 <tr key={payment.id}>
                   <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName}{` `}{payment.unitNumber}</td>
+                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
                   <td>${payment.amount.toLocaleString()}</td>
                   <td>{format(new Date(payment.leaseEndDate), 'MMM dd, yyyy')}</td>
                   <td>{payment.status}</td>

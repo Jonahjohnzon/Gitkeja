@@ -1,20 +1,38 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format, differenceInDays } from 'date-fns';
 import { RentPayment } from '../../../types';
 import { generateReceipt, downloadReceiptPDF } from './receiptService';
+import { APICore } from '../../../helpers/api/apiCore';
 
-interface ReceiptsTabProps {
-  data?: RentPayment[]; 
-}
 
-const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data = [] }) => {
+
+const ReceiptsTab: React.FC = () => {
+  const api = new APICore()
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
   const [loading, setLoading] = useState(false);
+  const [Data, setData] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
+  const [totaRent, setTotalRent] = useState([])
 
+  const Get = async()=>{
+    try{
+      const {data} = await api.get('/api/getRecipt/')
+      if(data.result)
+      {
+        setData(data.data)
+        setTotalRent(data.TotalRents)
+      }
+
+    }
+    catch(error)
+    {}
+  }
+  useEffect(()=>{
+    Get()
+  },[])
   const handleOpenModal = (payment: RentPayment) => {
     setSelectedPayment(payment);
     setShowModal(true);
@@ -45,28 +63,7 @@ const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data = [] }) => {
     }
   };
 
-  // Prepare data for the chart
-  const chartData = data
-    .filter(payment => payment.paymentDate)
-    .map(payment => {
-      const dueDate = new Date(payment.dueDate);
-      const paymentDate = new Date(payment.paymentDate!);
-      const daysDifference = differenceInDays(paymentDate, dueDate);
-      let paymentStatus;
-      if (daysDifference <= 0) {
-        paymentStatus = 'On Time';
-      } else if (daysDifference <= 7) {
-        paymentStatus = 'Late (Within 7 days)';
-      } else {
-        paymentStatus = 'Very Late';
-      }
-      return {
-        x: format(paymentDate, 'MMM dd, yyyy'),
-        y: payment.amount,
-        status: paymentStatus
-      };
-    })
-    .sort((a, b) => new Date(a.x).getTime() - new Date(b.x).getTime());
+
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -128,7 +125,7 @@ const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data = [] }) => {
 
   const series = [{
     name: 'Payment Amount',
-    data: chartData
+    data: Data
   }];
 
   return (
@@ -157,7 +154,7 @@ const ReceiptsTab: React.FC<ReceiptsTabProps> = ({ data = [] }) => {
               </tr>
             </thead>
             <tbody>
-              {data.filter(payment => payment.status === 'Paid').map((payment) => (
+              {totaRent.map((payment:any) => (
                 <tr key={payment.id}>
                   <td>{payment.tenantName}</td>
                   <td>{payment.propertyName}</td>

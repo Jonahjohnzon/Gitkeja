@@ -61,6 +61,6 @@ export interface Reminder {
   propertyName: string;
   amount: number;
   dueDate: string;
-  status: 'Pending' | 'Overdue';
+  status: string
   remindersSent: number;
 }

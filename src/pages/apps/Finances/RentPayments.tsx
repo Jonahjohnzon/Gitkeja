@@ -67,10 +67,10 @@ const RentPayments: React.FC = () => {
                     <WaterMeterReadingsTab  />
                   </Tab.Pane>
                   <Tab.Pane eventKey="invoicing">
-                    <InvoicingTab data={data.rentPayments} />
+                    <InvoicingTab  />
                   </Tab.Pane>
                   <Tab.Pane eventKey="receipts">
-                    <ReceiptsTab data={data.rentPayments} />
+                    <ReceiptsTab  />
                   </Tab.Pane>
                   <Tab.Pane eventKey="reminders">
                     <RemindersTab data={data.rentPayments} />
