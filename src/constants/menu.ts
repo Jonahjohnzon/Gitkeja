@@ -106,6 +106,13 @@ const MENU_ITEMS: MenuItemTypes[] = [
         url: "/apps/finances/rent-payments",
         parentKey: "apps-ecommerce",
       },
+      {
+        key: "ecommerce-rent-payments",
+        label: "Expenses Reports",
+        role: "all",
+        url: "/apps/ecommerce/order/details",
+        parentKey: "apps-ecommerce",
+      },
     ],
   },
   {
