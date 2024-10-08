@@ -95,7 +95,7 @@ interface dashboard {
 
 const PropertyList:PropertyType[] =[]
 
-const Propertybyid:PropertyGetId = {
+export const Propertybyid:PropertyGetId = {
   _id: 1,
   name: "",
   location: "",
@@ -109,11 +109,13 @@ const Propertybyid:PropertyGetId = {
   managers: [],
   acquisitionDate: new Date(),
   image: "",
-  occupiedUnits: 0,
+  occupancyUnits: 0,
   maintenanceRequests:0,
   tenantSatisfaction: 0,
   occupancy:0,
-  monthlyRevenue:0
+  monthlyRevenue:0,
+  garbageFee: 0,
+  utilities: []
 }
 
 const Dashboard:dashboard = {
@@ -160,13 +162,12 @@ interface AuthState {
   topColor:string,
   propertyLoading:boolean,
   propertiesList:PropertyType[]
-  property:PropertyGetId,
   tenantlist:boolean,
   tenantLoading:boolean,
   OccupancyReport:OccupancyReportType ,
   OccupancyLoad:boolean,
   OccupancyReports:OccupancyReportsType[],
-  tenantManagement:TenantDetailsManagement[]
+  tenantManagement:TenantDetailsManagement[],
 }  
 
 
@@ -199,13 +200,12 @@ const INIT_STATE: AuthState = {
   topColor:"primary",
   propertyLoading:false,
   propertiesList:PropertyList,
-  property:Propertybyid,
   tenantlist:false,
   tenantLoading:false,
   OccupancyReport:OccupancyReportState ,
   OccupancyLoad:true,
   OccupancyReports : OccuReport,
-  tenantManagement:[]
+  tenantManagement:[],
 };
 
 interface AuthActionType {
@@ -255,7 +255,6 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             loading: false,
           };
         case AuthActionTypes.POSTPROPERTY:
-          console.log(action.payload )
           return {
             ...state,
            ...action.payload.data
@@ -269,11 +268,6 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
           return {
             ...state,
            ...action.payload.data as PropertyType[] }
-        case AuthActionTypes.GETPROPERTYID:
-          return {
-            ...state,
-            property:action.payload.data as PropertyGetId }
-        
         case AuthActionTypes.GETOCCREPORT:
           return {
             ...state,

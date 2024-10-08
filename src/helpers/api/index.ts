@@ -1,3 +1,3 @@
-import { login, logout, signup, forgotPassword, activateUser,getData, getDash,createproperty,getPropertyData,getPropertyDataId,createtenant, getOccupancy, getReport } from "./auth";
+import { login, logout, signup, forgotPassword, activateUser,getData, getDash,createproperty,getPropertyData,createtenant, getOccupancy, getReport } from "./auth";
 
-export { login, logout, signup, forgotPassword, activateUser,getData , getDash,createproperty,getPropertyData,getPropertyDataId, createtenant, getOccupancy, getReport};
+export { login, logout, signup, forgotPassword, activateUser,getData , getDash,createproperty,getPropertyData, createtenant, getOccupancy, getReport};

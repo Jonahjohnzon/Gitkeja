@@ -15,7 +15,6 @@ import {
   getDash as getDashApi,
   createproperty,
   getPropertyData,
-  getPropertyDataId,
   createtenant,
   getOccupancy,
   getReport
@@ -255,18 +254,7 @@ function* getPropertydata (action: GetProperty):SagaIterator{
   }
   }
 
-  function* getPropertyid (action: GetPropertyId):SagaIterator{
-    try{
-      const { payload: { propertyId = '' } } = action;
-      const response = yield call(()=> getPropertyDataId({propertyId}) )
-      const data = response.data
-      yield put(getPropertyApiId(AuthActionTypes.GETPROPERTYID, data['data']))
-    }
-    catch(error:any)
-    {
-      console.log(error)
-    }
-    }
+
 
 function* getdashboard ():SagaIterator{
   try{
@@ -340,10 +328,6 @@ export function* watchPropertyData(): SagaIterator{
   yield takeEvery(AuthActionTypes.GETPROPERTY , getPropertydata)
 }
 
-export function* watchPropertyDataid(): SagaIterator{
-  yield takeEvery(AuthActionTypes.GETPROPERTYID , getPropertyid)
-}
-
 
 export function* watchTenant(): SagaIterator{
   yield takeEvery(AuthActionTypes.POSTTENANT , createTenant)
@@ -372,7 +356,6 @@ function* authSaga(): SagaIterator {
     fork(watchGetDash),
     fork(watchPostProperty),
     fork(watchPropertyData),
-    fork(watchPropertyDataid),
     fork(watchTenant),
     fork( watchgetOccupancy),
     fork(watchgetOccupancyReport),

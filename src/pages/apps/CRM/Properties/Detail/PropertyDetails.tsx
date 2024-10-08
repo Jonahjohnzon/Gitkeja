@@ -2,7 +2,7 @@ import React, { useState , useEffect} from "react";
 import { Row, Col, Card, Dropdown, Button, Image } from "react-bootstrap";
 import { useParams } from 'react-router-dom';
 import { format } from 'date-fns';
-
+import { APICore } from "../../../../../helpers/api/apiCore";
 
 // Import sub-components
 import PageTitle from "../../../../../components/PageTitle";
@@ -10,9 +10,7 @@ import PropertyStatistics from "./PropertyStatistics";
 import PropertyManagers from "./PropertyManagers";
 import TenantCommunications from "./TenantCommunications";
 import PropertyDocuments from "./PropertyDocuments";
-import { useSelector, useDispatch } from "react-redux";
-import { RootState, AppDispatch } from "../../../../../redux/store";
-import { AuthActionTypes } from "../../../../../redux/auth/constants";
+import { Propertybyid } from "../../../../../redux/auth/reducers";
 
 // Placeholder components (to be implemented later)
 const OccupancyChart: React.FC<{ propertyId: number }> = () => <div>Occupancy Chart Placeholder</div>;
@@ -24,25 +22,41 @@ const LeaseManagement: React.FC<{ propertyId: number }> = () => <div>Lease Manag
 
 
 const PropertyDetails: React.FC = () => {
+  const api = new APICore()
   const { id } = useParams();
-  const dispatch = useDispatch<AppDispatch>();
-  const {property} = useSelector((state:RootState)=>state.Auth)
+  const [property, Setproperty] = useState(Propertybyid)
+  const [propertyIdload, setPropertyIdload] = useState(false)
   
+  const Get =async()=>{
+    try{
+      const baseUrl = "/api/getPropertyById/";
+      const {data} = await api.get(`${baseUrl}`, {propertyId:id});
+      if(data?.result)
+      {
+        Setproperty(data['data'])
+        setPropertyIdload(data['result'])
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
   useEffect(()=>{
-    dispatch({type:AuthActionTypes.GETPROPERTYID,payload:{propertyId:id}})
-  },[dispatch])
-  const calculateMonthlyRevenue = () => property.rentAmount * property.occupiedUnits;
+    Get()
+  },[])
+  const calculateMonthlyRevenue = () => property.rentAmount * property.occupancyUnits;
 
   return (
     <React.Fragment>
-      <PageTitle
+     {(property.name != "" && propertyIdload) && <PageTitle
         breadCrumbItems={[
           { label: "Properties", path: "/apps/properties" },
           { label: property.name, path: "/apps/properties/details", active: true },
         ]}
         title={property.name}
-      />
-     {property.name != "" && <Row>
+      />}
+     {(property.name != "" && propertyIdload) && <Row>
         <Col xl={8}>
           <Card>
             <Card.Body>
@@ -66,7 +80,7 @@ const PropertyDetails: React.FC = () => {
                   <p><strong>Type:</strong> {property.type}</p>
                   <p><strong>Total Units:</strong> {property.units}</p>
                   <p><strong>Occupied Units:</strong> {property.occupancyUnits}</p>
-                  <p><strong>Occupancy Rate:</strong> {property.occupancy}%</p>
+                  <p><strong>Occupancy Rate:</strong> {property.occupancy.toFixed(2)}%</p>
                 </Col>
                 <Col md={6}>
                   <p><strong>Rent Amount (per unit):</strong> KES {property.rentAmount.toLocaleString()}</p>
@@ -101,23 +115,23 @@ const PropertyDetails: React.FC = () => {
             <Col md={6}>
               <PropertyStatistics
                 totalUnits={property.units}
-                occupiedUnits={property.occupiedUnits}
+                occupiedUnits={property.occupancyUnits}
                 monthlyRevenue={calculateMonthlyRevenue()}
                 maintenanceRequests={property.maintenanceRequests}
                 tenantSatisfaction={property.tenantSatisfaction}
               />
             </Col>
             <Col md={6}>
-              <OccupancyChart propertyId={property.id} />
+              <OccupancyChart propertyId={property._id} />
             </Col>
           </Row>
-          <RentCollection propertyId={property.id} />
-          <MaintenanceRequests propertyId={property.id} />
+          <RentCollection propertyId={property._id} />
+          <MaintenanceRequests propertyId={property._id} />
         </Col>
         <Col xl={4}>
-          <LeaseManagement propertyId={property.id} />
-          <PropertyDocuments propertyId={property.id} />
-          <TenantCommunications propertyId={property.id} />
+          <LeaseManagement propertyId={property._id} />
+          <PropertyDocuments propertyId={property._id} />
+          <TenantCommunications propertyId={property._id} />
         </Col>
       </Row>}
     </React.Fragment>

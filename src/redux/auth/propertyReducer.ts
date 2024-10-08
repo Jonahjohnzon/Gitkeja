@@ -27,9 +27,11 @@ export interface PropertyGetId {
         managers: { name: string; phone: string }[];
         acquisitionDate: Date;
         image: string | null;
-        occupiedUnits: number; // Added for occupancy calculation
+        occupancyUnits: number; // Added for occupancy calculation
         maintenanceRequests: number; // Added for PropertyStatistics
         tenantSatisfaction: number; // Added for PropertyStatistics
         occupancy:number,
         monthlyRevenue:number;
+        garbageFee: number;
+        utilities: { name: string; cost: number }[];
 }

@@ -65,10 +65,6 @@ function getPropertyData(params:{ limit: string}){
   return api.get(`${baseUrl}`, params);
 }
 
-function getPropertyDataId(params:{ propertyId: string}){
-  const baseUrl = "/api/getPropertyById/";
-  return api.get(`${baseUrl}`, params);
-}
 
 
 function getDash(){
@@ -81,4 +77,4 @@ function activateUser(params: { token: string }) {
   return api.create(`${baseUrl}`, params);
 }
 
-export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData,getPropertyDataId, createtenant, getOccupancy, getReport};
+export { login, logout, signup, forgotPassword, activateUser, getData , getDash,createproperty,getPropertyData, createtenant, getOccupancy, getReport};

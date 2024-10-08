@@ -19,7 +19,7 @@ const ReceiptsTab: React.FC = () => {
 
   const Get = async()=>{
     try{
-      const {data} = await api.get('/api/getRecipt/')
+      const {data} = await api.get('/api/getReceipt/')
       if(data.result)
       {
         setData(data.data)

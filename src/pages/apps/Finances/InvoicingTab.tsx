@@ -100,6 +100,7 @@ const InvoicingTab: React.FC = () => {
   const handleSendInvoice = async (payment: Paymentprop) => {
 
     try {
+      setLoading(true);
       const Invoice = await generateInvoice(payment)
       const doc = await generateInvoicePDF(Invoice)
       const result = await sendInvoice(payment.email, doc)
@@ -112,7 +113,7 @@ const InvoicingTab: React.FC = () => {
           const data ={topDisplay:true,topMessage:"Invoice sent",topColor:"primary",}
           dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
         }
-      setLoading(true);
+      setLoading(false);
     } catch (error) {
       console.error('Error sending invoice:', error);
       alert('Failed to send invoice. Please try again.');
