@@ -5,6 +5,11 @@ import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import { generateInvoice, downloadInvoicePDF, generateInvoicePDF, sendInvoice } from './invoiceService';
 import { APICore } from '../../../helpers/api/apiCore';
+import TopDisplay from '../../../layouts/TopDisplay';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../redux/store';
+import { AuthActionTypes } from '../../../redux/auth/constants';
+import { authApiResponseSuccess } from '../../../redux/actions';
 
 
 export interface Paymentprop{
@@ -26,6 +31,8 @@ export interface Paymentprop{
 }
 
 const InvoicingTab: React.FC = () => {
+
+  const dispatch = useDispatch<AppDispatch>();
 
   const Display = {
     totalRentAmount:[0,0,0,0,0,0,0,0,0,0,0,0],
@@ -95,9 +102,17 @@ const InvoicingTab: React.FC = () => {
     try {
       const Invoice = await generateInvoice(payment)
       const doc = await generateInvoicePDF(Invoice)
-      sendInvoice(payment.email, doc)
+      const result = await sendInvoice(payment.email, doc)
+      if(result)
+        {
+          window.scrollTo({
+            top: 0,
+            behavior: 'smooth' // Optional: makes the scrolling smooth
+            });
+          const data ={topDisplay:true,topMessage:"Invoice sent",topColor:"primary",}
+          dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
+        }
       setLoading(true);
-      alert('Invoice sent successfully.');
     } catch (error) {
       console.error('Error sending invoice:', error);
       alert('Failed to send invoice. Please try again.');
@@ -157,6 +172,7 @@ const InvoicingTab: React.FC = () => {
 
   return (
     <>
+    <TopDisplay/>
       <Row className="mb-3">
         <Col>
           <Chart

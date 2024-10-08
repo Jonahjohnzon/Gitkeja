@@ -3,11 +3,13 @@ import 'jspdf-autotable';
 import { Paymentprop } from './InvoicingTab';
 import { APICore } from '../../../helpers/api/apiCore';
 
+
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: any) => jsPDF;  
 }
 
 const api = new APICore()
+
 
 export interface Invoice {
   id: number;
@@ -49,7 +51,7 @@ export const generateInvoice = async (
 };
 
 // Send Invoice
-export const sendInvoice = async ( email:string, doc:any): Promise<void> => {
+export const sendInvoice = async ( email:string, doc:any): Promise<Boolean> => {
   try {
     const pdfBlob = doc.output('blob');
     const  data =
@@ -57,8 +59,13 @@ export const sendInvoice = async ( email:string, doc:any): Promise<void> => {
     email:email,
     doc:pdfBlob
   }
-    api.createWithFile('/api/sendEmailInvoice', data)
-
+   const result = await api.createWithFile('/api/sendEmailInvoice', data)
+    
+    if(result?.data?.result)
+    {
+      return  true
+    }
+    return false
   } catch (error) {
     console.error('Error sending invoice:', error);
     throw new Error('Failed to send invoice');

@@ -9,7 +9,7 @@ interface PropertyStatisticsProps {
 const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) => {
   // Calculate total properties
   const totalProperties = properties.totalProperties;
-
+  
   // Calculate overall occupancy rate
   const overallOccupancyRate = (properties.totalOccupied/properties.totalUnits);
 
@@ -23,8 +23,34 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
   const openMaintenanceRequests = properties?.getOpenmaintenance?.statuses?.Open
   const totalMaintenance = properties?.getOpenmaintenance?.totalMaintenance
 
+  //total property value
+  const propertyValue = properties?.totalPropertyAmount
   const maintenancePercent = Math.ceil((openMaintenanceRequests/totalMaintenance) * 100) | 0
 
+    //Suffix
+    const formatSuffix = (num: number):string => {
+      if (num >= 1_000_000_000) {
+        return "B"
+      } else if (num >= 1_000_000) {
+        return "M"
+      } else if (num >= 1_000) {
+        return "K"
+      } else {
+        return "";
+      }
+    };
+
+    const formatNumber = (num: number, decimals: number = 1): string => {
+      if (num >= 1_000_000_000) {
+        return (num / 1_000_000_000).toFixed(decimals); // Billions
+      } else if (num >= 1_000_000) {
+        return (num / 1_000_000).toFixed(decimals); // Millions
+      } else if (num >= 1_000) {
+        return (num / 1_000).toFixed(decimals); // Thousands
+      } else {
+        return num.toString(); // No suffix for smaller numbers
+      }
+    };
   return (
     <Row>
       <Col md={6} xl={3}>
@@ -66,12 +92,14 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
       <Col md={6} xl={3}>
         <StatisticsWidget2
           variant="info"
-          description="Open Maintenance Requests"
-          stats={openMaintenanceRequests?.toString()}
-          icon="fe-tool"
-          progress={maintenancePercent} // Assuming an average of 5 requests per property is 100%
+          description="Total Property Value"
+          stats={formatNumber(propertyValue)?.toString()}
+          icon="fe-trending-up"
+          progress={100} // Assuming an average of 5 requests per property is 100%
           counterOptions={{
-            suffix: "",
+            prefix: "$",
+            suffix: formatSuffix(propertyValue),
+            decimals: 1,
           }}
         />
       </Col>

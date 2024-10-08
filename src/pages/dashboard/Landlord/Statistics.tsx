@@ -19,6 +19,7 @@ const Statistics = ({dashboard}: StatisticsProps) => {
 
   //Suffix
   const formatSuffix = (num: number):string => {
+    console.log(num)
     if (num >= 1_000_000_000) {
       return "B"
     } else if (num >= 1_000_000) {

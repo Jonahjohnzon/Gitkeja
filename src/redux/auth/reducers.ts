@@ -255,6 +255,7 @@ const Auth: Reducer<AuthState, AuthActionType> = (state = INIT_STATE, action): A
             loading: false,
           };
         case AuthActionTypes.POSTPROPERTY:
+          console.log(action.payload )
           return {
             ...state,
            ...action.payload.data

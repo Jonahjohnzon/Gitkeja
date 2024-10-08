@@ -174,7 +174,6 @@ function* createTenant({ payload: { name = '', propertyId = '', email = '', unit
     top: 0,
     behavior: 'smooth' // Optional: makes the scrolling smooth
     });
-    console.log(data)
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
   }
