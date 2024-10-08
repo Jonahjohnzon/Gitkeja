@@ -17,8 +17,7 @@ export interface AuthActionType {
     | AuthActionTypes.POSTPROPERTY
     | AuthActionTypes.GETPROPERTY
     | AuthActionTypes.POSTTENANT
-    | AuthActionTypes.GETOCCUPANCY
-    | AuthActionTypes.API_RESPONSE_SUCCESS
+    | AuthActionTypes.GETOCCUPANCY;
   payload: {} | string;
 }
 
@@ -30,29 +29,14 @@ interface UserData {
   lastName: string;
   role: string;
   token: string;
-  email:string;
+  email: string;
   notification: any;
-  createdAt:string;
-  verified:boolean;
-  updatedAt:string;
-  __v:number;
-  data : any;
-  OccupancyLoad:boolean
-}
-
-interface FormData {
-  name: string;
-  location: string;
-  type: string;
-  units: number;
-  rentAmount: number;
-  leaseTerms: string;
-  description: string;
-  amenities: string[];
-  nearbyFacilities: string[];
-  managers: { name: string; phone: string }[];
-  acquisitionDate: Date;
-  image: File | null;
+  createdAt: string;
+  verified: boolean;
+  updatedAt: string;
+  __v: number;
+  data: any;
+  OccupancyLoad: boolean;
 }
 
 export const userUpdate = (
@@ -63,48 +47,46 @@ export const userUpdate = (
   payload: { actionType, data },
 });
 
-
-
-export const getDashboard =( 
+export const getDashboard = (
   actionType: string,
- data: UserData | {}
+  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.PUTDASHBOARD,
-  payload:{actionType, data}
+  payload: { actionType, data },
 });
 
-export const getPropertyApi =( 
+export const getPropertyApi = (
   actionType: string,
- data: UserData | {}
+  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
-  payload:{actionType, data}
+  payload: { actionType, data },
 });
 
-export const getPropertyApiId =( 
+export const getPropertyApiId = (
   actionType: string,
- data: UserData | {}
+  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
-  payload:{actionType, data}
+  payload: { actionType, data },
 });
 
-export const getOccupancyApi =( 
+export const getOccupancyApi = (
   actionType: string,
- data: UserData | {}
+  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
-  payload:{actionType, data}
+  payload: { actionType, data },
 });
 
-
-export const getOccupancyApiReport =( 
+export const getOccupancyApiReport = (
   actionType: string,
- data: UserData | {}
+  data: UserData | {}
 ): AuthActionType => ({
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
-  payload:{actionType, data}
+  payload: { actionType, data },
 });
+
 // common success
 export const authApiResponseSuccess = (
   actionType: string,
@@ -113,6 +95,7 @@ export const authApiResponseSuccess = (
   type: AuthActionTypes.API_RESPONSE_SUCCESS,
   payload: { actionType, data },
 });
+
 // common error
 export const authApiResponseError = (
   actionType: string,
@@ -149,36 +132,66 @@ export const createNewProperty = (
   location: string,
   type: string,
   units: number,
-  rentAmount?: number,
-  leaseTerms?: string,
-  description?: string,
-  amenities?: string[],
-  nearbyFacilities?: string[],
-  managers?: { name: string, phone: string }[],
-  acquisitionDate?: Date,
-  image?: File | null,
-): AuthActionType =>({
+  rentAmount: number,
+  leaseTerms: string,
+  description: string,
+  amenities: string[],
+  nearbyFacilities: string[],
+  managers: { name: string; phone: string }[],
+  acquisitionDate: Date,
+  image: File | null,
+  garbageFee: number,
+  utilities: { name: string; cost: number }[]
+): AuthActionType => ({
   type: AuthActionTypes.POSTPROPERTY,
-  payload: { name, location, type,units,rentAmount,leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image }
-})
+  payload: {
+    name,
+    location,
+    type,
+    units,
+    rentAmount,
+    leaseTerms,
+    description,
+    amenities,
+    nearbyFacilities,
+    managers,
+    acquisitionDate,
+    image,
+    garbageFee,
+    utilities,
+  },
+});
 
 export const createNewTenant = (
-  propertyId:string,
-  name:string,
-  email:string,
-  phone:string,
-  idPassportNumber:string,
-  unit:string,
-  leaseStartDate:string,
-  leaseEndDate:string,
-  rentAmount:number,
-  securityDeposit:number,
-  numberOfOccupants:number,
-  pets:boolean
-): AuthActionType =>({
+  propertyId: string,
+  name: string,
+  email: string,
+  phone: string,
+  idPassportNumber: string,
+  unit: string,
+  leaseStartDate: string,
+  leaseEndDate: string,
+  rentAmount: number,
+  securityDeposit: number,
+  numberOfOccupants: number,
+  pets: boolean
+): AuthActionType => ({
   type: AuthActionTypes.POSTTENANT,
-  payload: { name, propertyId,unit, rentAmount,leaseEndDate, leaseStartDate, phone, pets, securityDeposit ,numberOfOccupants, email, idPassportNumber}
-})
+  payload: {
+    name,
+    propertyId,
+    unit,
+    rentAmount,
+    leaseEndDate,
+    leaseStartDate,
+    phone,
+    pets,
+    securityDeposit,
+    numberOfOccupants,
+    email,
+    idPassportNumber,
+  },
+});
 
 export const forgotPassword = (username: string): AuthActionType => ({
   type: AuthActionTypes.FORGOT_PASSWORD,
@@ -194,5 +207,3 @@ export const activateUser = (token: string): AuthActionType => ({
   type: AuthActionTypes.ACTIVATE_USER,
   payload: { token },
 });
-
-

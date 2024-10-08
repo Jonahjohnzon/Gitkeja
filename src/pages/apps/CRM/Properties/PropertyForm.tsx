@@ -32,11 +32,13 @@ interface FormData {
   type: string;
   units: number;
   rentAmount: number;
+  garbageFee: number;
   leaseTerms: string;
   description: string;
   amenities: string[];
   nearbyFacilities: string[];
   managers: { name: string; phone: string }[];
+  utilities: { name: string; cost: number }[];
   acquisitionDate: Date;
   image: File | null;
 }
@@ -77,7 +79,7 @@ const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2
 const PropertyForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const [submitError, setSubmitError] = useState<string | null>(null);
-  const {propertyLoading} = useSelector((state:RootState) => state.Auth)
+  const { propertyLoading } = useSelector((state: RootState) => state.Auth);
 
   const schema = yup.object().shape({
     name: yup.string().required("Please enter Property Name").max(100, "Property Name must not exceed 100 characters"),
@@ -85,6 +87,7 @@ const PropertyForm: React.FC = () => {
     type: yup.string().required("Please select Property Type"),
     units: yup.number().required("Please enter Number of Units").positive().integer(),
     rentAmount: yup.number().required("Please enter Rent Amount").positive(),
+    garbageFee: yup.number().required("Please enter Garbage Fee").min(0, "Garbage Fee cannot be negative"),
     leaseTerms: yup.string().required("Please enter Lease Terms & Conditions"),
     description: yup.string().max(1000, "Description must not exceed 1000 characters"),
     amenities: yup.array().of(yup.string()),
@@ -95,6 +98,12 @@ const PropertyForm: React.FC = () => {
         phone: yup.string().required("Manager phone is required").matches(phoneRegExp, 'Phone number is not valid'),
       })
     ).min(1, "At least one manager is required"),
+    utilities: yup.array().of(
+      yup.object().shape({
+        name: yup.string().required("Utility name is required"),
+        cost: yup.number().required("Utility cost is required").min(0, "Cost cannot be negative"),
+      })
+    ),
     acquisitionDate: yup.date().required("Please select Acquisition Date").max(new Date(), "Acquisition Date cannot be in the future"),
     image: yup.mixed().test("fileSize", "File size is too large", (value) => {
       if (!value) return true; // Allow empty files
@@ -106,16 +115,23 @@ const PropertyForm: React.FC = () => {
     resolver: yupResolver(schema),
     defaultValues: {
       managers: [{ name: '', phone: '' }],
+      utilities: [{ name: '', cost: 0 }],
       amenities: [],
       nearbyFacilities: [],
       acquisitionDate: new Date(),
       image: null,
+      garbageFee: 0,
     }
   });
 
-  const { fields, append, remove } = useFieldArray({
+  const { fields: managerFields, append: appendManager, remove: removeManager } = useFieldArray({
     control,
     name: "managers"
+  });
+
+  const { fields: utilityFields, append: appendUtility, remove: removeUtility } = useFieldArray({
+    control,
+    name: "utilities"
   });
 
   const watchAcquisitionDate = watch("acquisitionDate");
@@ -123,7 +139,22 @@ const PropertyForm: React.FC = () => {
   const onSubmit = async (data: FormData) => {
     setSubmitError(null);
     try {
-            dispatch(createNewProperty(data['name'], data['location'], data['type'], data['units'], data['rentAmount'], data['leaseTerms'], data['description'], data['amenities'], data['nearbyFacilities'], data['managers'], data['acquisitionDate'], data['image']))
+      dispatch(createNewProperty(
+        data.name,
+        data.location,
+        data.type,
+        data.units,
+        data.rentAmount,
+        data.leaseTerms,
+        data.description,
+        data.amenities,
+        data.nearbyFacilities,
+        data.managers,
+        data.acquisitionDate,
+        data.image,
+        data.garbageFee,
+        data.utilities
+      ));
     } catch (error) {
       setSubmitError("An error occurred while submitting the form. Please try again.");
     }
@@ -169,7 +200,7 @@ const PropertyForm: React.FC = () => {
 
   return (
     <>
-    <TopDisplay/>
+      <TopDisplay />
       <PageTitle
         breadCrumbItems={[
           { label: "Properties", path: "/apps/properties" },
@@ -177,7 +208,7 @@ const PropertyForm: React.FC = () => {
         ]}
         title={"Add Property"}
       />
-
+  
       <Row>
         <Col>
           <Card>
@@ -199,7 +230,7 @@ const PropertyForm: React.FC = () => {
                         />
                       )}
                     />
-
+  
                     <Controller
                       name="location"
                       control={control}
@@ -213,7 +244,7 @@ const PropertyForm: React.FC = () => {
                         />
                       )}
                     />
-
+  
                     <Form.Group className="mb-3">
                       <Form.Label>Property Type</Form.Label>
                       <Controller
@@ -233,7 +264,7 @@ const PropertyForm: React.FC = () => {
                       />
                       {errors.type && <Form.Control.Feedback type="invalid">{errors.type.message}</Form.Control.Feedback>}
                     </Form.Group>
-
+  
                     <Controller
                       name="units"
                       control={control}
@@ -247,13 +278,27 @@ const PropertyForm: React.FC = () => {
                         />
                       )}
                     />
-
+  
                     <Controller
                       name="rentAmount"
                       control={control}
                       render={({ field }) => (
                         <FormInput
                           label="Rent Amount"
+                          type="number"
+                          containerClass={"mb-3"}
+                          {...field}
+                          errors={errors}
+                        />
+                      )}
+                    />
+  
+                    <Controller
+                      name="garbageFee"
+                      control={control}
+                      render={({ field }) => (
+                        <FormInput
+                          label="Garbage Fee"
                           type="number"
                           containerClass={"mb-3"}
                           {...field}
@@ -273,8 +318,59 @@ const PropertyForm: React.FC = () => {
                       />
                       {errors.acquisitionDate && <Form.Text className="text-danger">{errors.acquisitionDate.message}</Form.Text>}
                     </Form.Group>
-
-                    {fields.map((field, index) => (
+  
+                    <Form.Group className="mb-3">
+                      <Form.Label>Property Image</Form.Label>
+                      <Controller
+                        name="image"
+                        control={control}
+                        render={({ field: { value, onChange, ...field } }) => (
+                          <FileUploader
+                            {...field}
+                            onFileUpload={(files) => onChange(files[0])}
+                            showPreview={true}
+                          />
+                        )}
+                      />
+                      {errors.image && <Form.Text className="text-danger">{errors.image.message}</Form.Text>}
+                    </Form.Group>
+  
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <FormInput
+                          label="Property Description"
+                          type="textarea"
+                          rows="5"
+                          containerClass={"mb-3"}
+                          {...field}
+                          errors={errors}
+                        />
+                      )}
+                    />
+  
+                    <Controller
+                      name="leaseTerms"
+                      control={control}
+                      render={({ field }) => (
+                        <FormInput
+                          label="Lease Terms & Conditions"
+                          type="textarea"
+                          rows="5"
+                          containerClass={"mb-3"}
+                          {...field}
+                          errors={errors}
+                        />
+                      )}
+                    />
+                  </Col>
+                </Row>
+  
+                <Row>
+                  <Col xl={12}>
+                    <h5 className="mb-3">Managers</h5>
+                    {managerFields.map((field, index) => (
                       <Row key={field.id}>
                         <Col>
                           <Controller
@@ -307,83 +403,76 @@ const PropertyForm: React.FC = () => {
                           />
                         </Col>
                         <Col xs="auto" className="d-flex align-items-end mb-3">
-                          <Button variant="danger" onClick={() => remove(index)} disabled={fields.length === 1}>
+                          <Button variant="danger" onClick={() => removeManager(index)} disabled={managerFields.length === 1}>
                             Remove
                           </Button>
                         </Col>
                       </Row>
                     ))}
-                    <Button variant="secondary" onClick={() => append({ name: '', phone: '' })} className="mb-3">
+                    <Button variant="secondary" onClick={() => appendManager({ name: '', phone: '' })} className="mb-3">
                       Add Manager
                     </Button>
-
-                    <Form.Group className="mb-3">
-                      <Form.Label>Property Image</Form.Label>
-                      <Controller
-                        name="image"
-                        control={control}
-                        render={({ field: { value, onChange, ...field } }) => (
-                          <FileUploader
-                            {...field}
-                            onFileUpload={(files) => onChange(files[0])}
-                            showPreview={true}
+  
+                    <h5 className="mb-3">Utilities</h5>
+                    {utilityFields.map((field, index) => (
+                      <Row key={field.id}>
+                        <Col>
+                          <Controller
+                            name={`utilities.${index}.name`}
+                            control={control}
+                            render={({ field }) => (
+                              <FormInput
+                                label={`Utility ${index + 1} Name`}
+                                type="text"
+                                containerClass={"mb-3"}
+                                {...field}
+                                errors={errors}
+                              />
+                            )}
                           />
-                        )}
-                      />
-                      {errors.image && <Form.Text className="text-danger">{errors.image.message}</Form.Text>}
-                    </Form.Group>
-
-                    <Controller
-                      name="description"
-                      control={control}
-                      render={({ field }) => (
-                        <FormInput
-                          label="Property Description"
-                          type="textarea"
-                          rows="5"
-                          containerClass={"mb-3"}
-                          {...field}
-                          errors={errors}
-                        />
-                      )}
-                    />
-
-                    <Controller
-                      name="leaseTerms"
-                      control={control}
-                      render={({ field }) => (
-                        <FormInput
-                          label="Lease Terms & Conditions"
-                          type="textarea"
-                          rows="5"
-                          containerClass={"mb-3"}
-                          {...field}
-                          errors={errors}
-                        />
-                      )}
-                    />
-                  </Col>
-                </Row>
-
-                <Row>
-                  <Col xl={12}>
+                        </Col>
+                        <Col>
+                          <Controller
+                            name={`utilities.${index}.cost`}
+                            control={control}
+                            render={({ field }) => (
+                              <FormInput
+                                label={`Utility ${index + 1} Cost`}
+                                type="number"
+                                containerClass={"mb-3"}
+                                {...field}
+                                errors={errors}
+                              />
+                            )}
+                          />
+                        </Col>
+                        <Col xs="auto" className="d-flex align-items-end mb-3">
+                          <Button variant="danger" onClick={() => removeUtility(index)}>
+                            Remove
+                          </Button>
+                        </Col>
+                      </Row>
+                    ))}
+                    <Button variant="secondary" onClick={() => appendUtility({ name: '', cost: 0 })} className="mb-3">
+                      Add Utility
+                    </Button>
+  
                     <AmenitiesCheckboxes />
                     <NearbyFacilitiesCheckboxes />
                   </Col>
                 </Row>
-
+  
                 <Row className="mt-2">
                   <Col className="text-end">
-                    <Button variant="success"  type="submit" disabled={propertyLoading}>
-                    {propertyLoading&&<Spinner
-                  className="spinner-grow-sm me-1"
-                  tag="span"
-                  color="white"
-                  type="grow"
-                />}
+                    <Button variant="success" type="submit" disabled={propertyLoading}>
+                      {propertyLoading && <Spinner
+                        className="spinner-grow-sm me-1"
+                        tag="span"
+                        color="white"
+                        type="grow"
+                      />}
                       <span>Add Property</span>
                     </Button>
-
                   </Col>
                 </Row>
               </form>
@@ -394,5 +483,4 @@ const PropertyForm: React.FC = () => {
     </>
   );
 };
-
-export default PropertyForm;
+  export default PropertyForm;

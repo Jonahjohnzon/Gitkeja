@@ -52,7 +52,7 @@ const ProjectDetail = React.lazy(
   () => import("../pages/apps/CRM/Properties/Detail/PropertyDetails")
 );
 
-const PropertyForm = React.lazy(()=> import("../pages/apps/CRM/Properties/PropertyForm"))
+const PropertyForm = React.lazy(() => import("../pages/apps/CRM/Properties/PropertyForm").then(module => ({ default: module.default })));
 // - chat
 const ChatApp = React.lazy(() => import("../pages/apps/Chat/"));
 // - ecommece pages
