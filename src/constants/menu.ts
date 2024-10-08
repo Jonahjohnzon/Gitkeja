@@ -178,21 +178,21 @@ const MENU_ITEMS: MenuItemTypes[] = [
   },
   {
     key: "apps-contacts",
-    label: "Contacts",
+    label: "Admin Panel",
     isTitle: false,
     icon: "book",
     role:"admin",
     children: [
       {
         key: "contacts-list",
-        label: "Members List",
+        label: "Managers & Admins",
         url: "/apps/contacts/list",
         parentKey: "apps-contacts",
         role:"admin",
       },
       {
         key: "contacts-profile",
-        label: "Profile",
+        label: "Assign Roles",
         url: "/apps/contacts/profile",
         parentKey: "apps-contacts",
         role:"admin",
