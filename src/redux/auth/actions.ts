@@ -141,7 +141,8 @@ export const createNewProperty = (
   acquisitionDate: Date,
   image: File | null,
   garbageFee: number,
-  utilities: { name: string; cost: number }[]
+  utilities: { name: string; cost: number }[],
+  estimatedPropertyValue:number
 ): AuthActionType => ({
   type: AuthActionTypes.POSTPROPERTY,
   payload: {
@@ -159,6 +160,7 @@ export const createNewProperty = (
     image,
     garbageFee,
     utilities,
+    estimatedPropertyValue
   },
 });
 

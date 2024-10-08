@@ -41,6 +41,7 @@ interface FormData {
   utilities: { name: string; cost: number }[];
   acquisitionDate: Date;
   image: File | null;
+  estimatedPropertyValue:number;
 }
 
 const amenities: AmenityTypes[] = [
@@ -153,7 +154,8 @@ const PropertyForm: React.FC = () => {
         data.acquisitionDate,
         data.image,
         data.garbageFee,
-        data.utilities
+        data.utilities,
+        data.estimatedPropertyValue,
       ));
     } catch (error) {
       setSubmitError("An error occurred while submitting the form. Please try again.");
@@ -299,6 +301,19 @@ const PropertyForm: React.FC = () => {
                       render={({ field }) => (
                         <FormInput
                           label="Garbage Fee"
+                          type="number"
+                          containerClass={"mb-3"}
+                          {...field}
+                          errors={errors}
+                        />
+                      )}
+                    />
+                      <Controller
+                      name="estimatedPropertyValue"
+                      control={control}
+                      render={({ field }) => (
+                        <FormInput
+                          label="Estimated Property Value"
                           type="number"
                           containerClass={"mb-3"}
                           {...field}

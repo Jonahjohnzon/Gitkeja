@@ -18,7 +18,7 @@ function signup(params: { name: string; email: string; password: string }) {
   return api.create(`${baseUrl}`, params);
 }
 
-function createproperty(params: { name: string; location: string; type: string, units: number, rentAmount: number, leaseTerms: string, description: string, amenities: string[], nearbyFacilities: string[], managers: { name: string; phone: string }[], acquisitionDate: Date, image: File | null}){
+function createproperty(params: { name: string; location: string; type: string, units: number, rentAmount: number, leaseTerms: string, description: string, amenities: string[], nearbyFacilities: string[], managers: { name: string; phone: string }[], acquisitionDate: Date, image: File | null,  garbageFee: number,utilities: { name: string; cost: number }[],estimatedPropertyValue:number}){
   const baseUrl = "/api/createProperty/";
   return api.create(`${baseUrl}`, params);
 }

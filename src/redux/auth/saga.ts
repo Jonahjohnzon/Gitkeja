@@ -81,7 +81,11 @@ interface FormData {
   nearbyFacilities?: string[];
   managers?: { name: string; phone: string }[];
   acquisitionDate?: Date;
-  image?: File | null;};
+  image?: File | null;
+  garbageFee: number;
+  utilities: { name: string; cost: number }[];
+  estimatedPropertyValue:number;
+};
   type: string;
 
 }
@@ -133,13 +137,13 @@ function* signup({ payload: { name = '', email = '', password = '' } }: UserData
   }
 }
 
-function* createProperty({ payload: { name = '', location = '', type = '', units = 0, rentAmount = 0, leaseTerms = '', description = '', amenities = [], nearbyFacilities = [], managers = [] , acquisitionDate = new Date() , image = null  } }: FormData): SagaIterator {
+function* createProperty({ payload: { name = '', location = '', type = '', units = 0, rentAmount = 0, leaseTerms = '', description = '', amenities = [], nearbyFacilities = [], managers = [] , acquisitionDate = new Date() , image = null, garbageFee = 0, utilities = [],  estimatedPropertyValue = 0  } }: FormData): SagaIterator {
   try {
     if (!name || !location || !type) throw new Error('Fullname, email, and password are required');
     yield put(authApiResponseSuccess(AuthActionTypes.POSTPROPERTY, {
       propertyLoading:true
   }));
-    const response = yield call(() => createproperty({ name, location, type, units, rentAmount, leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image}));
+    const response = yield call(() => createproperty({ name, location, type, units, rentAmount, leaseTerms, description, amenities, nearbyFacilities, managers, acquisitionDate, image, garbageFee, utilities, estimatedPropertyValue}));
     const data = response.data;
     yield put(authApiResponseSuccess(AuthActionTypes.POSTPROPERTY, {
       topMessage:"Property Creation Successful",

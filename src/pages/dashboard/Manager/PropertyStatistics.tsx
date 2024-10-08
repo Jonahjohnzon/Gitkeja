@@ -19,13 +19,9 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
   //rentPercent
   const rentPercent = Math.ceil((totalRentCollected/properties.totalRentAmount) * 100) | 0
 
-  // Calculate total open maintenance requests
-  const openMaintenanceRequests = properties?.getOpenmaintenance?.statuses?.Open
-  const totalMaintenance = properties?.getOpenmaintenance?.totalMaintenance
 
   //total property value
   const propertyValue = properties?.totalPropertyAmount
-  const maintenancePercent = Math.ceil((openMaintenanceRequests/totalMaintenance) * 100) | 0
 
     //Suffix
     const formatSuffix = (num: number):string => {
