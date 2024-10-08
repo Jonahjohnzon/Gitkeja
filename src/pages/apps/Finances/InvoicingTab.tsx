@@ -91,11 +91,12 @@ const InvoicingTab: React.FC = () => {
 
 
   const handleSendInvoice = async (payment: Paymentprop) => {
-    const Invoice = await generateInvoice(payment)
-    const doc = await generateInvoicePDF(Invoice)
-    sendInvoice(payment.email, doc)
-    setLoading(true);
+
     try {
+      const Invoice = await generateInvoice(payment)
+      const doc = await generateInvoicePDF(Invoice)
+      sendInvoice(payment.email, doc)
+      setLoading(true);
       alert('Invoice sent successfully.');
     } catch (error) {
       console.error('Error sending invoice:', error);
