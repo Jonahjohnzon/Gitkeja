@@ -28,6 +28,7 @@ export interface Paymentprop{
   garbage: number;
   email:string;
   water: number;
+  _id:string
 }
 
 const InvoicingTab: React.FC = () => {
@@ -46,9 +47,27 @@ const InvoicingTab: React.FC = () => {
   const [Invoice, setInvoice] = useState(Display)
   const [Data,setData] = useState([])
 
-  const handleOpenModal = (payment: Paymentprop) => {
-    setSelectedPayment(payment);
-    setShowModal(true);
+  const handleOpenModal = async (payment: Paymentprop) => {
+    //create Invoice
+    try{
+      setLoading(true)
+      const {data} = await api.create('/api/createInvoice',payment) 
+      if(data.result)
+      {
+      setSelectedPayment(data.data);
+      setShowModal(true);
+      setLoading(false)
+      return
+      }
+      
+      setLoading(false)
+
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+
   };
 
   const Get = async()=>{
@@ -91,7 +110,7 @@ const InvoicingTab: React.FC = () => {
       alert('Failed to generate invoice. Please try again.');
     } finally {
       setLoading(false);
-      handleCloseModal();
+     ;
     }
   };
 
@@ -106,10 +125,6 @@ const InvoicingTab: React.FC = () => {
       const result = await sendInvoice(payment.email, doc)
       if(result)
         {
-          window.scrollTo({
-            top: 0,
-            behavior: 'smooth' // Optional: makes the scrolling smooth
-            });
           const data ={topDisplay:true,topMessage:"Invoice sent",topColor:"primary",}
           dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
         }
@@ -173,7 +188,6 @@ const InvoicingTab: React.FC = () => {
 
   return (
     <>
-    <TopDisplay/>
       <Row className="mb-3">
         <Col>
           <Chart
@@ -211,20 +225,10 @@ const InvoicingTab: React.FC = () => {
                       size="sm"
                       onClick={() => handleOpenModal(payment)}
                       disabled={loading}
-                      className="me-2"
+                      className=""
                     >
                       Generate Invoice
                     </Button>
-                    {(
-                      <Button
-                        variant="secondary"
-                        size="sm"
-                        onClick={() => handleSendInvoice(payment)}
-                        disabled={loading}
-                      >
-                        Send Invoice
-                      </Button>
-                    )}
                   </td>
                 </tr>
               ))}
@@ -234,6 +238,7 @@ const InvoicingTab: React.FC = () => {
       </Row>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
+        <TopDisplay/>
         <Modal.Header closeButton>
           <Modal.Title>Generate Invoice</Modal.Title>
         </Modal.Header>
@@ -253,9 +258,19 @@ const InvoicingTab: React.FC = () => {
                 variant="primary" 
                 onClick={() => handleGenerateInvoice(selectedPayment)}
                 disabled={loading}
+                className=' me-2'
               >
-                {loading ? 'Generating...' : 'Generate Invoice'}
+                {loading ? 'Downloading...' : 'Download Invoice'}
               </Button>
+              {(
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleSendInvoice(selectedPayment)}
+                        disabled={loading}
+                      >
+                        Send Invoice
+                      </Button>
+                    )}
             </div>
           )}
         </Modal.Body>

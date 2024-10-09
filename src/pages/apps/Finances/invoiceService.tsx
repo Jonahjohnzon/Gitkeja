@@ -12,7 +12,7 @@ const api = new APICore()
 
 
 export interface Invoice {
-  id: number;
+  id: string;
   tenantName: string;
   propertyName: string;
   rentAmount: number;
@@ -32,7 +32,7 @@ export const generateInvoice = async (
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     const invoice: Invoice = {
-      id: Math.floor(Math.random() * 1000000), // Generate a random ID for demo purposes
+      id: payment._id, // Generate a random ID for demo purposes
       tenantName: payment.tenantName,
       propertyName: payment.propertyName,
       rentAmount: payment.amount,
@@ -91,7 +91,7 @@ export const generateInvoicePDF = async (invoice: Invoice): Promise<jsPDF> => {
   doc.text('Invoice', 14, 30);
 
   doc.setFontSize(12);
-  doc.text(`Invoice Number: ${invoice.id}`, 14, 40);
+  doc.text(`Invoice Id: ${invoice.id}`, 14, 40);
   doc.text(`Date: ${new Date().toLocaleDateString()}`, 14, 46);
   doc.text(`Due Date: ${new Date(invoice.dueDate).toLocaleDateString()}`, 14, 52);
 

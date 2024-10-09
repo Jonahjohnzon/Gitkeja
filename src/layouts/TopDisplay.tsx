@@ -36,9 +36,10 @@ const TopDisplay = () => {
                 className={classNames(
                   "bg-" + topColor,
                   "border-0",
+                  "rounded-0",
                   topColor=== "light" ? "text-dark" : "text-white",
                   topColor === "dark" ? "text-light" : "text-white",
-                  " mt-2"
+                  
                 )}
               >
                 {topMessage}
