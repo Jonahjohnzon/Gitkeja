@@ -2,14 +2,21 @@ import React, { useEffect, useState } from 'react';
 import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { format, differenceInDays } from 'date-fns';
+import { format } from 'date-fns';
 import { RentPayment } from '../../../types';
-import { generateReceipt, downloadReceiptPDF } from './receiptService';
+import { generateReceipt, downloadReceiptPDF,generateReceiptPDF } from './receiptService';
 import { APICore } from '../../../helpers/api/apiCore';
+import { sendReceipt } from './receiptService';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../redux/store';
+import { AuthActionTypes } from '../../../redux/auth/constants';
+import { authApiResponseSuccess } from '../../../redux/actions';
+import TopDisplay from '../../../layouts/TopDisplay';
 
 
 
 const ReceiptsTab: React.FC = () => {
+  const dispatch = useDispatch<AppDispatch>();
   const api = new APICore()
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
@@ -23,19 +30,65 @@ const ReceiptsTab: React.FC = () => {
       if(data.result)
       {
         setData(data.data)
-        setTotalRent(data.TotalRents)
+      }
+      const result = await api.get('/api/getReceiptList/')
+      if(result.data.result)
+      {
+        setTotalRent(result?.data?.data)
       }
 
     }
     catch(error)
     {}
   }
+
+
+const handleSendReceipt = async (payment: any) => {
+
+    try {
+      setLoading(true);
+      const Invoice = await generateReceipt(payment)
+      const doc = await generateReceiptPDF(Invoice)
+      const result = await sendReceipt(payment.email, doc)
+      if(result)
+        {
+          const data ={topDisplay:true,topMessage:"Receipt sent",topColor:"primary",}
+          dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
+        }
+      setLoading(false);
+    } catch (error) {
+      console.error('Error sending invoice:', error);
+      alert('Failed to send invoice. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   useEffect(()=>{
     Get()
   },[])
-  const handleOpenModal = (payment: RentPayment) => {
-    setSelectedPayment(payment);
-    setShowModal(true);
+  const handleOpenModal = async (payment: RentPayment) => {
+        //create Invoice
+        try{
+          setLoading(true)
+          const {data} = await api.create('/api/createReceipt',payment) 
+          if(data.result)
+          {
+          setSelectedPayment(data.data);
+          setShowModal(true);
+          setLoading(false)
+          return
+          }
+          
+          setLoading(false)
+    
+        }
+        catch(error)
+        {
+          console.log(error)
+        }
+
   };
 
   const handleCloseModal = () => {
@@ -43,15 +96,16 @@ const ReceiptsTab: React.FC = () => {
     setSelectedPayment(null);
   };
 
+
   const handleGenerateReceipt = async (payment: RentPayment) => {
-    if (!payment.waterMeterReading) {
+    if (!payment) {
       alert('Please enter water meter readings before generating a receipt.');
       return;
     }
 
     setLoading(true);
     try {
-      const receipt = await generateReceipt(payment, payment.waterMeterReading);
+      const receipt = await generateReceipt(payment);
       await downloadReceiptPDF(receipt);
       alert('Receipt generated and downloaded successfully.');
     } catch (error) {
@@ -59,7 +113,6 @@ const ReceiptsTab: React.FC = () => {
       alert('Failed to generate receipt. Please try again.');
     } finally {
       setLoading(false);
-      handleCloseModal();
     }
   };
 
@@ -156,11 +209,11 @@ const ReceiptsTab: React.FC = () => {
             <tbody>
               {totaRent.map((payment:any) => (
                 <tr key={payment.id}>
-                  <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName}</td>
-                  <td>KES {payment.amount.toLocaleString()}</td>
+                   <td>{payment.tenantName}</td>
+                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
+                  <td>${payment.amount.toLocaleString()}</td>
                   <td>{payment.paymentDate ? format(new Date(payment.paymentDate), 'MMM dd, yyyy') : 'N/A'}</td>
-                  <td>{payment.status}</td>
+                  <td>{payment.status === "paid"? "Completed":payment.status === "Incomplete"?"Incomplete":"Pending"}</td>
                   <td>
                     <Button
                       variant="primary"
@@ -179,6 +232,7 @@ const ReceiptsTab: React.FC = () => {
       </Row>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
+        <TopDisplay/>
         <Modal.Header closeButton>
           <Modal.Title>Generate Receipt</Modal.Title>
         </Modal.Header>
@@ -189,18 +243,28 @@ const ReceiptsTab: React.FC = () => {
               <p><strong>Property:</strong> {selectedPayment.propertyName}</p>
               <p><strong>Amount Paid:</strong> KES {selectedPayment.amount.toLocaleString()}</p>
               <p><strong>Payment Date:</strong> {selectedPayment.paymentDate ? format(new Date(selectedPayment.paymentDate), 'MMM dd, yyyy') : 'N/A'}</p>
-              {selectedPayment.waterMeterReading && (
+              {selectedPayment && (
                 <>
-                  <p><strong>Water Usage:</strong> {selectedPayment.waterMeterReading.currentReading - selectedPayment.waterMeterReading.previousReading} units</p>
-                </>
+                  <p><strong>Water Usage:</strong> {selectedPayment.currentReading - selectedPayment.previousReading} units</p>
+                  </>
               )}
               <Button 
                 variant="primary" 
                 onClick={() => handleGenerateReceipt(selectedPayment)}
                 disabled={loading}
+                className='me-2'
               >
-                {loading ? 'Generating...' : 'Generate Receipt'}
+                {loading ? 'Downloading...' : 'Download Receipt'}
               </Button>
+              {(
+                      <Button
+                        variant="secondary"
+                        onClick={() => handleSendReceipt(selectedPayment)}
+                        disabled={loading}
+                      >
+                        Send Receipt
+                      </Button>
+                    )}
             </div>
           )}
         </Modal.Body>

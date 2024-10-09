@@ -3,20 +3,20 @@ import { Row, Col, Table, Button, Modal, Form } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
-import { RentPayment } from '../../../types';
 import { sendPaymentReminder } from './reminderService';
+import { Mock } from '../../../mocks/rentPaymentData';
 
 interface RemindersTabProps {
-  data?: RentPayment[];
+  data?: Mock[];
 }
 const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
   const [showModal, setShowModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<Mock | null>(null);
   const [loading, setLoading] = useState(false);
   const [reminderMethod, setReminderMethod] = useState<'email' | 'sms' | 'both'>('both');
   const [customMessage, setCustomMessage] = useState('');
 
-  const handleOpenModal = (payment: RentPayment) => {
+  const handleOpenModal = (payment:Mock) => {
     setSelectedPayment(payment);
     setShowModal(true);
   };
@@ -28,7 +28,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
     setCustomMessage('');
   };
 
-  const handleSendReminder = async (payment: RentPayment) => {
+  const handleSendReminder = async (payment: Mock) => {
     setLoading(true);
     try {
       await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });

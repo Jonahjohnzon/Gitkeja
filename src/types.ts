@@ -1,26 +1,27 @@
 // src/types/index.ts
 
 export interface WaterMeterReadingData {
-  paymentId?: string;
-  previousReading: number;
-  currentReading: number;
-  readingDate: string;
-  previousImage: File | null;
-  currentImage: File | null;
+ 
 }
 
 export interface RentPayment {
-  id: number;
-  tenantName: string;
-  propertyName: string;
-  amount: number;
-  dueDate: string;
-  paymentDate: string | null;
-  status: 'Paid' | 'Pending' | 'Overdue';
-  paymentMethod?: string;
-  invoiceId?: number;
-  receiptId?: number;
-  waterMeterReading?: WaterMeterReadingData;
+  id:string;
+  tenantName:string;
+  propertyName:string;
+  status:string;
+  amount:number;
+  unitNumber:string;
+  tenantId?:string;
+  leaseEndDate:string;
+  currentReading:number;
+  previousReading:number;
+  previousImage: File | null;
+  currentImage: File | null;
+  garbage: number;
+  email:string;
+  water: number;
+  _id:string;
+  paymentDate :Date
 }
 
 export interface TenantProps {

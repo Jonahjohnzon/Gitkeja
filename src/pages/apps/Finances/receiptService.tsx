@@ -1,28 +1,26 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { RentPayment, WaterMeterReadingData } from '../../../types';
-
+import { RentPayment } from '../../../types';
+import { APICore } from '../../../helpers/api/apiCore';
 // Extend jsPDF type to include autoTable method
 interface jsPDFWithAutoTable extends jsPDF {
   autoTable: (options: any) => jsPDF;  
 }
+
+const api = new APICore()
 export interface Receipt {
   id: number;
   tenantName: string;
   propertyName: string;
   paidAmount: number;
-  paymentDate: string;
-  waterMeterReading: {
-    previousReading: number;
-    currentReading: number;
-  };
+  paymentDate:Date;
+  waterMeterReading: any
   pendingBalance: number;
 }
 
 // Generate Receipt
 export const generateReceipt = async (
   payment: RentPayment,
-  waterMeterReading: Pick<WaterMeterReadingData, 'previousReading' | 'currentReading'>
 ): Promise<Receipt> => {
   try {
     // Simulate API call
@@ -34,7 +32,7 @@ export const generateReceipt = async (
       propertyName: payment.propertyName,
       paidAmount: payment.amount,
       paymentDate: payment.paymentDate || new Date().toISOString(),
-      waterMeterReading: waterMeterReading,
+      waterMeterReading: payment,
       pendingBalance: 0, // This should come from your backend in a real app
     };
 
@@ -42,6 +40,28 @@ export const generateReceipt = async (
   } catch (error) {
     console.error('Error generating receipt:', error);
     throw new Error('Failed to generate receipt');
+  }
+};
+
+
+export const sendReceipt = async ( email:string, doc:any): Promise<Boolean> => {
+  try {
+    const pdfBlob = doc.output('blob');
+    const  data =
+    {
+    email:email,
+    doc:pdfBlob
+  }
+   const result = await api.createWithFile('/api/sendEmailReceipt', data)
+    
+    if(result?.data?.result)
+    {
+      return  true
+    }
+    return false
+  } catch (error) {
+    console.error('Error sending invoice:', error);
+    throw new Error('Failed to send invoice');
   }
 };
 
@@ -54,7 +74,7 @@ export const generateReceiptPDF = (receipt: Receipt): jsPDF => {
   doc.text('Receipt', 14, 30);
 
   doc.setFontSize(12);
-  doc.text(`Receipt Number: ${receipt.id}`, 14, 40);
+  doc.text(`Receipt Id: ${receipt.id}`, 14, 40);
   doc.text(`Date: ${new Date(receipt.paymentDate).toLocaleDateString()}`, 14, 46);
 
   // Add Tenant and Property Info
