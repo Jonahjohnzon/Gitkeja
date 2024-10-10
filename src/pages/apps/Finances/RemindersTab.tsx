@@ -1,22 +1,34 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Table, Button, Modal, Form } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import { sendPaymentReminder } from './reminderService';
 import { Mock } from '../../../mocks/rentPaymentData';
+import { APICore } from '../../../helpers/api/apiCore';
+import { Paymentprop } from './InvoicingTab';
+import { useDispatch } from 'react-redux';
+import { AppDispatch } from '../../../redux/store';
+import { AuthActionTypes } from '../../../redux/auth/constants';
+import { authApiResponseSuccess } from '../../../redux/actions';
+import TopDisplay from '../../../layouts/TopDisplay';
+
 
 interface RemindersTabProps {
   data?: Mock[];
 }
-const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
+
+const  api = new APICore()
+const RemindersTab: React.FC<RemindersTabProps> = () => {
+  const dispatch = useDispatch<AppDispatch>();
+  const [data, setData] = useState([])
   const [showModal, setShowModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<Mock | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<Paymentprop | null>(null);
   const [loading, setLoading] = useState(false);
   const [reminderMethod, setReminderMethod] = useState<'email' | 'sms' | 'both'>('both');
   const [customMessage, setCustomMessage] = useState('');
 
-  const handleOpenModal = (payment:Mock) => {
+  const handleOpenModal = (payment:Paymentprop) => {
     setSelectedPayment(payment);
     setShowModal(true);
   };
@@ -28,11 +40,19 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
     setCustomMessage('');
   };
 
-  const handleSendReminder = async (payment: Mock) => {
+  const handleSendReminder = async (payment:Paymentprop) => {
     setLoading(true);
     try {
-      await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
-      alert('Payment reminder sent successfully.');
+      const {data} = await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
+      if(data.result)
+      {
+        window.scrollTo({
+          top: 0,
+          behavior: 'smooth' // Optional: makes the scrolling smooth
+      });
+        const data ={topDisplay:true,topMessage:"Remainder sent",topColor:"primary",}
+        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
+      }
     } catch (error) {
       console.error('Error sending reminder:', error);
       alert('Failed to send reminder. Please try again.');
@@ -72,8 +92,39 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
 
   const series = chartData.map(item => item.value);
 
+
+  const Get = async()=>{
+    try{
+      const {data} = await api.get('/api/getTenantInvoice')
+      if(data.result)
+      {
+        setData(data.data)
+      }
+    }
+    catch(error)
+    {
+
+    }
+  }
+
+  useEffect(()=>{
+    Get()
+  },[])
+
+  const isDatePast = (date:string) => new Date(date) < new Date();
+
+const getStatus = (payment:Paymentprop) => {
+  if (isDatePast(payment.leaseEndDate) && (payment.status === 'pending' || payment.status === 'incomplete')) {
+    return 'Overdue';
+  } else if (payment.status === 'pending' || payment.status === 'incomplete') {
+    return payment.status.charAt(0).toUpperCase() + payment.status.slice(1); // Capitalize first letter
+  } else {
+    return 'Paid';
+  }
+};
   return (
     <>
+    <TopDisplay/>
       <Row className="mb-3">
         <Col md={6}>
           <h4>Reminder Effectiveness</h4>
@@ -107,13 +158,13 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
               </tr>
             </thead>
             <tbody>
-              {data.filter(payment => payment.status !== 'Paid').map((payment) => (
+              {data.map((payment:Paymentprop) => (
                 <tr key={payment.id}>
                   <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName}</td>
+                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
                   <td>KES {payment.amount.toLocaleString()}</td>
-                  <td>{format(new Date(payment.dueDate), 'MMM dd, yyyy')}</td>
-                  <td>{payment.status}</td>
+                  <td>{format(new Date(payment.leaseEndDate), 'MMM dd, yyyy')}</td>
+                  <td>{getStatus(payment)}</td>
                   <td>
                     <Button
                       variant="warning"
@@ -152,7 +203,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ data = [] }) => {
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Due Date</Form.Label>
-                <Form.Control type="text" value={format(new Date(selectedPayment.dueDate), 'MMM dd, yyyy')} readOnly />
+                <Form.Control type="text" value={format(new Date(selectedPayment.leaseEndDate), 'MMM dd, yyyy')} readOnly />
               </Form.Group>
               <Form.Group className="mb-3">
                 <Form.Label>Reminder Method</Form.Label>
