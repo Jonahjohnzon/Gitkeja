@@ -8,9 +8,9 @@ import OccupancyImpact from './OccupancyImpact';
 import PaymentTrends from './PaymentTrends';
 import DocumentSummary from './DocumentSummary';
 import DateRangeFilter from './DateRangeFilter';
-import { fetchFinancialData } from './financialDataService';
 import { FinancialData } from './types';
 import ErrorBoundary, { LoadingSpinner } from './ErrorBoundary';
+import { mockFinancialData } from './mockFinancialData';
 
 const FinancesReport: React.FC = () => {
   const [financialData, setFinancialData] = useState<FinancialData | null>(null);
@@ -18,16 +18,13 @@ const FinancesReport: React.FC = () => {
   const [dateRange, setDateRange] = useState({ startDate: new Date(), endDate: new Date() });
 
   useEffect(() => {
-    const loadData = async () => {
+    // Simulate API call with setTimeout
+    const loadData = () => {
       setIsLoading(true);
-      try {
-        const data = await fetchFinancialData(dateRange.startDate.toISOString(), dateRange.endDate.toISOString());
-        setFinancialData(data);
-      } catch (error) {
-        console.error('Error fetching financial data:', error);
-      } finally {
+      setTimeout(() => {
+        setFinancialData(mockFinancialData);
         setIsLoading(false);
-      }
+      }, 1000); // Simulate 1 second loading time
     };
     loadData();
   }, [dateRange]);

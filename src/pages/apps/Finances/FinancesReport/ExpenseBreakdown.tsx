@@ -12,40 +12,29 @@ const ExpenseBreakdown: React.FC<ExpenseBreakdownProps> = ({ data }) => {
   if (!data) return null;
 
   const expenseCategories = Object.keys(data.expenseData);
-  const expenseValues = Object.values(data.expenseData);
+  const expenseValues = Object.values(data.expenseData).map(Math.round);
+  const totalExpenses = expenseValues.reduce((sum, value) => sum + value, 0);
 
   const chartOptions: ApexOptions = {
-    chart: {
-      type: 'pie',
-    },
+    chart: { type: 'pie' },
     labels: expenseCategories,
     responsive: [{
       breakpoint: 480,
       options: {
-        chart: {
-          width: 200
-        },
-        legend: {
-          position: 'bottom'
-        }
+        chart: { width: 200 },
+        legend: { position: 'bottom' }
       }
-    }]
+    }],
+    tooltip: {
+      y: { formatter: (value) => `$${value.toLocaleString()}` }
+    }
   };
-
-  const series = expenseValues;
-
-  const totalExpenses = expenseValues.reduce((sum, value) => sum + value, 0);
 
   return (
     <Card>
       <Card.Body>
         <h4 className="header-title mb-3">Expense Breakdown</h4>
-        <Chart
-          options={chartOptions}
-          series={series}
-          type="pie"
-          height={350}
-        />
+        <Chart options={chartOptions} series={expenseValues} type="pie" height={350} />
         <Table responsive className="mt-3">
           <thead>
             <tr>
@@ -59,9 +48,14 @@ const ExpenseBreakdown: React.FC<ExpenseBreakdownProps> = ({ data }) => {
               <tr key={index}>
                 <td>{category}</td>
                 <td>${expenseValues[index].toLocaleString()}</td>
-                <td>{((expenseValues[index] / totalExpenses) * 100).toFixed(2)}%</td>
+                <td>{((expenseValues[index] / totalExpenses) * 100).toFixed(1)}%</td>
               </tr>
             ))}
+            <tr>
+              <th>Total</th>
+              <th>${totalExpenses.toLocaleString()}</th>
+              <th>100%</th>
+            </tr>
           </tbody>
         </Table>
       </Card.Body>

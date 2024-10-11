@@ -11,27 +11,25 @@ interface PaymentTrendsProps {
 const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
   if (!data) return null;
 
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   const chartOptions: ApexOptions = {
-    chart: {
+    chart: { 
       type: 'bar',
       height: 350,
       stacked: true,
     },
     plotOptions: {
-      bar: {
-        horizontal: false,
-      },
+      bar: { horizontal: false }
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+      categories: months,
     },
     yaxis: {
-      title: {
-        text: 'Number of Payments'
-      },
+      title: { text: 'Number of Payments' }
     },
     legend: {
-      position: 'top',
+      position: 'top'
     },
     fill: {
       opacity: 1
@@ -39,17 +37,22 @@ const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
     title: {
       text: 'Payment Trends',
       align: 'left'
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => Math.round(val).toString()
+      }
     }
   };
 
   const series = [
     {
       name: 'On-Time Payments',
-      data: data.paymentTrendsData.onTime
+      data: data.paymentTrendsData.onTime.map(Math.round)
     },
     {
       name: 'Late Payments',
-      data: data.paymentTrendsData.late
+      data: data.paymentTrendsData.late.map(Math.round)
     }
   ];
 
@@ -73,15 +76,17 @@ const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-           {data.paymentTrendsData.onTime.map((rate: number, index: number) => {
-            const total = rate + data.paymentTrendsData.late[index];
-            const onTimeRate = (rate / total) * 100;
-            return (
-                <tr key={index}>
-                <td>{chartOptions.xaxis?.categories[index]}</td>
-                <td>{rate}</td>
-                <td>{data.paymentTrendsData.late[index]}</td>
-                <td>{onTimeRate.toFixed(2)}%</td>
+            {months.map((month, index) => {
+              const onTime = Math.round(data.paymentTrendsData.onTime[index]);
+              const late = Math.round(data.paymentTrendsData.late[index]);
+              const total = onTime + late;
+              const onTimeRate = total > 0 ? (onTime / total) * 100 : 0;
+              return (
+                <tr key={month}>
+                  <td>{month}</td>
+                  <td>{onTime}</td>
+                  <td>{late}</td>
+                  <td>{onTimeRate.toFixed(1)}%</td>
                 </tr>
               );
             })}

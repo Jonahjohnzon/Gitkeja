@@ -11,13 +11,15 @@ interface DocumentSummaryProps {
 const DocumentSummary: React.FC<DocumentSummaryProps> = ({ data }) => {
   if (!data) return null;
 
+  const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+
   const chartOptions: ApexOptions = {
     chart: {
       type: 'line',
       height: 350
     },
     xaxis: {
-      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+      categories: months
     },
     yaxis: {
       title: {
@@ -26,21 +28,30 @@ const DocumentSummary: React.FC<DocumentSummaryProps> = ({ data }) => {
     },
     legend: {
       position: 'top'
+    },
+    title: {
+      text: 'Document Trends',
+      align: 'left'
+    },
+    tooltip: {
+      y: {
+        formatter: (val) => Math.round(val).toString()
+      }
     }
   };
 
   const series = [
     {
       name: 'Receipts',
-      data: data.documentTrends.receipts
+      data: data.documentTrends.receipts.map(Math.round)
     },
     {
       name: 'Invoices',
-      data: data.documentTrends.invoices
+      data: data.documentTrends.invoices.map(Math.round)
     },
     {
       name: 'Reminders',
-      data: data.documentTrends.reminders
+      data: data.documentTrends.reminders.map(Math.round)
     }
   ];
 
@@ -73,8 +84,8 @@ const DocumentSummary: React.FC<DocumentSummaryProps> = ({ data }) => {
               </tbody>
             </Table>
             <div className="mt-3">
-              <p><strong>Average Payment Time:</strong> {data.averagePaymentTime} days</p>
-              <p><strong>Collection Rate:</strong> {data.collectionRate.toFixed(2)}%</p>
+              <p><strong>Average Payment Time:</strong> {data.averagePaymentTime.toFixed(1)} days</p>
+              <p><strong>Collection Rate:</strong> {(data.collectionRate * 100).toFixed(1)}%</p>
             </div>
           </Col>
           <Col lg={6}>
