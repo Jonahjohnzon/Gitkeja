@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Card, Row, Col, Table, Dropdown } from 'react-bootstrap';
+import { Card, Row, Col, Table, Button, ButtonGroup } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { FinancialData, Invoice, Receipt, Reminder } from './types';
-
+import { generatePDF } from '../../../../utils/pdfGenerator';
 interface RevenueOverviewProps {
   data: FinancialData | null;
 }
@@ -56,6 +56,26 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
     }
   ];
 
+  const handleGeneratePDF = () => {
+    let documents: (Invoice | Receipt | Reminder)[];
+    let title: string;
+    switch (selectedDocType) {
+      case 'Invoices':
+        documents = data.invoices;
+        title = 'Invoices Report';
+        break;
+      case 'Receipts':
+        documents = data.receipts;
+        title = 'Receipts Report';
+        break;
+      case 'Reminders':
+        documents = data.reminders;
+        title = 'Reminders Report';
+        break;
+    }
+    generatePDF(documents, title);
+  };
+
   const renderDocumentList = () => {
     let documents: (Invoice | Receipt | Reminder)[];
     switch (selectedDocType) {
@@ -71,40 +91,48 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
     }
 
     return (
-      <Table responsive>
-        <thead>
-          <tr>
-            <th>ID</th>
-            <th>Tenant</th>
-            <th>Property</th>
-            <th>Amount</th>
-            <th>Date</th>
-            {selectedDocType === 'Reminders' && <th>Type</th>}
-            <th>Status</th>
-          </tr>
-        </thead>
-        <tbody>
-          {documents.map((doc, index) => (
-            <tr key={index}>
-              <td>{doc.id}</td>
-              <td>{doc.tenantName}</td>
-              <td>{doc.propertyName}</td>
-              <td>
-                {selectedDocType !== 'Reminders'
-                  ? `$${(doc as Invoice | Receipt).amount.toLocaleString()}`
-                  : 'N/A'}
-              </td>
-              <td>
-                {selectedDocType === 'Receipts'
-                  ? (doc as Receipt).date
-                  : (doc as Invoice | Reminder).dueDate}
-              </td>
-              {selectedDocType === 'Reminders' && <td>{(doc as Reminder).type}</td>}
-              <td>{doc.status}</td>
+      <>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h5>{selectedDocType}</h5>
+          <Button variant="secondary" onClick={handleGeneratePDF}>
+            Generate PDF
+          </Button>
+        </div>
+        <Table responsive>
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Tenant</th>
+              <th>Property</th>
+              <th>Amount</th>
+              <th>Date</th>
+              {selectedDocType === 'Reminders' && <th>Type</th>}
+              <th>Status</th>
             </tr>
-          ))}
-        </tbody>
-      </Table>
+          </thead>
+          <tbody>
+            {documents.map((doc, index) => (
+              <tr key={index}>
+                <td>{doc.id}</td>
+                <td>{doc.tenantName}</td>
+                <td>{doc.propertyName}</td>
+                <td>
+                  {selectedDocType !== 'Reminders'
+                    ? `$${(doc as Invoice | Receipt).amount.toLocaleString()}`
+                    : 'N/A'}
+                </td>
+                <td>
+                  {selectedDocType === 'Receipts'
+                    ? (doc as Receipt).date
+                    : (doc as Invoice | Reminder).dueDate}
+                </td>
+                {selectedDocType === 'Reminders' && <td>{(doc as Reminder).type}</td>}
+                <td>{doc.status}</td>
+              </tr>
+            ))}
+          </tbody>
+        </Table>
+      </>
     );
   };
 
@@ -145,16 +173,26 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
         </Row>
         <Row className="mt-4">
           <Col>
-            <Dropdown className="mb-3">
-              <Dropdown.Toggle variant="primary" id="dropdown-document-type">
-                {selectedDocType}
-              </Dropdown.Toggle>
-              <Dropdown.Menu>
-                <Dropdown.Item onClick={() => setSelectedDocType('Invoices')}>Invoices</Dropdown.Item>
-                <Dropdown.Item onClick={() => setSelectedDocType('Receipts')}>Receipts</Dropdown.Item>
-                <Dropdown.Item onClick={() => setSelectedDocType('Reminders')}>Reminders</Dropdown.Item>
-              </Dropdown.Menu>
-            </Dropdown>
+            <ButtonGroup className="mb-3">
+              <Button
+                variant={selectedDocType === 'Invoices' ? 'primary' : 'outline-primary'}
+                onClick={() => setSelectedDocType('Invoices')}
+              >
+                Invoices
+              </Button>
+              <Button
+                variant={selectedDocType === 'Receipts' ? 'primary' : 'outline-primary'}
+                onClick={() => setSelectedDocType('Receipts')}
+              >
+                Receipts
+              </Button>
+              <Button
+                variant={selectedDocType === 'Reminders' ? 'primary' : 'outline-primary'}
+                onClick={() => setSelectedDocType('Reminders')}
+              >
+                Reminders
+              </Button>
+            </ButtonGroup>
             {renderDocumentList()}
           </Col>
         </Row>
