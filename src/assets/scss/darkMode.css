@@ -1,0 +1,32 @@
+/* src/assets/css/darkMode.css */
+.authentication-bg {
+  background-color: #121212 !important;
+}
+
+.authentication-bg .logo-dark {
+  display: none;
+}
+
+.authentication-bg .logo-light {
+  display: inline-block;
+}
+
+.card.bg-pattern {
+  background-color: #ffffff !important; /* Light background for the card */
+  color: #000000; /* Dark text for the card content */
+}
+
+.card.bg-pattern .text-muted {
+  color: #6c757d !important; /* Bootstrap's default text-muted color */
+}
+
+.footer-alt {
+  background-color: #121212;
+  color: #a0a0a0;
+}
+
+/* Override text colors inside the card to ensure readability */
+.card.bg-pattern .text-white,
+.card.bg-pattern .text-white-50 {
+  color: #000000 !important;
+}

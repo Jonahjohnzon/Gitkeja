@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 
 import LogoDark from "../../assets/images/logo-dark.png";
 import LogoLight from "../../assets/images/logo-light.png";
+import "../../assets/scss/darkMode.css";
 
 interface AccountLayoutProps {
   helpText?: string;
@@ -20,17 +21,11 @@ const AuthLayout = ({
 }: AccountLayoutProps) => {
   useEffect(() => {
     if (document.body)
-      document.body.classList.add(
-        "authentication-bg",
-        "authentication-bg-pattern"
-      );
-
+      document.body.classList.add("authentication-bg");
+    
     return () => {
       if (document.body)
-        document.body.classList.remove(
-          "authentication-bg",
-          "authentication-bg-pattern"
-        );
+        document.body.classList.remove("authentication-bg");
     };
   }, []);
 
@@ -44,14 +39,11 @@ const AuthLayout = ({
                 <Card.Body className="p-4">
                   <div className="text-center w-75 m-auto">
                     <div className="auth-brand">
-                      <Link to="/" className="logo logo-dark text-center">
-                        <span className="logo-lg">
+                      <Link to="/" className="logo text-center">
+                        <span className="logo-lg logo-dark">
                           <img src={LogoDark} alt="" height="22" />
                         </span>
-                      </Link>
-
-                      <Link to="/" className="logo logo-light text-center">
-                        <span className="logo-lg">
+                        <span className="logo-lg logo-light">
                           <img src={LogoLight} alt="" height="22" />
                         </span>
                       </Link>
@@ -70,9 +62,9 @@ const AuthLayout = ({
       </div>
 
       <footer className="footer footer-alt">
-        2015 - {new Date().getFullYear()} &copy; UBold theme by{" "}
+        {new Date().getFullYear()} &copy; {" "}
         <Link to="#" className="text-white-50">
-          Coderthemes
+          Andromeda Labs
         </Link>
       </footer>
     </>
