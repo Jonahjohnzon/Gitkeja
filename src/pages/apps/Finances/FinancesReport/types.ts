@@ -1,15 +1,8 @@
 export interface FinancialData {
-    cashFlowData: {
-      inflow: number[];
-      outflow: number[];
-    };
+    revenueData: number[];
+    expensesData: number[];
     expenseData: {
       [category: string]: number;
-    };
-    profitabilityData: {
-      grossProfitMargin: number;
-      netProfitMargin: number;
-      roi: number;
     };
     occupancyData: {
       rates: number[];
@@ -31,5 +24,34 @@ export interface FinancialData {
     };
     averagePaymentTime: number;
     collectionRate: number;
-    // Add any other properties needed for your financial reports
+    invoices: Invoice[];
+    receipts: Receipt[];
+    reminders: Reminder[];
+  }
+  
+  export interface Invoice {
+    id: string;
+    tenantName: string;
+    propertyName: string;
+    amount: number;
+    dueDate: string;
+    status: 'Paid' | 'Unpaid' | 'Overdue';
+  }
+  
+  export interface Receipt {
+    id: string;
+    tenantName: string;
+    propertyName: string;
+    amount: number;
+    date: string;
+    status: 'Processed' | 'Pending';
+  }
+  
+  export interface Reminder {
+    id: string;
+    tenantName: string;
+    propertyName: string;
+    type: 'Payment' | 'Lease Renewal' | 'Maintenance';
+    dueDate: string;
+    status: 'Sent' | 'Pending' | 'Resolved';
   }
