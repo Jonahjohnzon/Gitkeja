@@ -1,0 +1,95 @@
+import React from 'react';
+import { Card, Table } from 'react-bootstrap';
+import Chart from 'react-apexcharts';
+import { ApexOptions } from 'apexcharts';
+import { FinancialData } from './types';
+
+interface PaymentTrendsProps {
+  data: FinancialData | null;
+}
+
+const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
+  if (!data) return null;
+
+  const chartOptions: ApexOptions = {
+    chart: {
+      type: 'bar',
+      height: 350,
+      stacked: true,
+    },
+    plotOptions: {
+      bar: {
+        horizontal: false,
+      },
+    },
+    xaxis: {
+      categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+    },
+    yaxis: {
+      title: {
+        text: 'Number of Payments'
+      },
+    },
+    legend: {
+      position: 'top',
+    },
+    fill: {
+      opacity: 1
+    },
+    title: {
+      text: 'Payment Trends',
+      align: 'left'
+    }
+  };
+
+  const series = [
+    {
+      name: 'On-Time Payments',
+      data: data.paymentTrendsData.onTime
+    },
+    {
+      name: 'Late Payments',
+      data: data.paymentTrendsData.late
+    }
+  ];
+
+  return (
+    <Card>
+      <Card.Body>
+        <h4 className="header-title mb-3">Payment Trends</h4>
+        <Chart
+          options={chartOptions}
+          series={series}
+          type="bar"
+          height={350}
+        />
+        <Table responsive className="mt-3">
+          <thead>
+            <tr>
+              <th>Month</th>
+              <th>On-Time Payments</th>
+              <th>Late Payments</th>
+              <th>On-Time Payment Rate</th>
+            </tr>
+          </thead>
+          <tbody>
+           {data.paymentTrendsData.onTime.map((rate: number, index: number) => {
+            const total = rate + data.paymentTrendsData.late[index];
+            const onTimeRate = (rate / total) * 100;
+            return (
+                <tr key={index}>
+                <td>{chartOptions.xaxis?.categories[index]}</td>
+                <td>{rate}</td>
+                <td>{data.paymentTrendsData.late[index]}</td>
+                <td>{onTimeRate.toFixed(2)}%</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </Table>
+      </Card.Body>
+    </Card>
+  );
+};
+
+export default PaymentTrends;
