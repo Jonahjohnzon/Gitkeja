@@ -46,7 +46,7 @@ export interface FinancialData {
     amount: number;
     date: string;
     status: 'Processed' | 'Pending';
-    leaseEndDate:string
+    paymentDate:string
   }
   
   export interface Reminder {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Table, Button, ButtonGroup } from 'react-bootstrap';
+import { Card, Row, Col, Table, Button, ButtonGroup, Tab } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { APICore } from '../../../../helpers/api/apiCore';
 import { format } from 'date-fns';
@@ -17,14 +17,32 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>('Invoices');
   const [graphArray, setGraphArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
   const [invoice, setInvoice] = useState([]) 
+  const [tab, setTab] = useState('Invoices')
   
     //Get Invoice
   const getInvoiceDocument =async()=>{
       try{
+        setInvoice([])
         const {data} = await api.get('/api/getInvoice')
         if(data.result)
         {
           setInvoice(data.data)
+        }
+      }
+      catch(error)
+      {
+        console.log(error)
+      }
+    }
+
+    const getReceiptDocument =async()=>{
+      try{
+        setInvoice([])
+        const {data} = await api.get('/api/getReceiptData')
+        if(data.result)
+        {
+         setInvoice(data.data)
+          
         }
       }
       catch(error)
@@ -47,13 +65,14 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
       console.log(error)
     }
   }
-  
+
   useEffect(()=>{
     getGraph()
-    getInvoiceDocument()
   },[])
 
-
+  useEffect(()=>{
+    getInvoiceDocument()
+  },[tab])
 
   useEffect(()=>{},[])
   if (!data) return null;
@@ -121,17 +140,8 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
 
   const renderDocumentList = () => {
     let documents: (Invoice | Receipt | Reminder)[];
-    switch (selectedDocType) {
-      case 'Invoices':
         documents = invoice;
-        break;
-      case 'Receipts':
-        documents = data.receipts;
-        break;
-      case 'Reminders':
-        documents = data.reminders;
-        break;
-    }
+    
 
     return (
       <>
@@ -166,8 +176,8 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
                 </td>
                 <td>
                   {selectedDocType === 'Receipts'
-                    ? (doc as Receipt).date
-                    : format(new Date((doc as Invoice | Reminder).leaseEndDate), 'MMM dd, yyyy')
+                    ? format(new Date((doc as Receipt).paymentDate), 'MMM dd, yyyy')
+                    :(selectedDocType === 'Invoices') ?format(new Date((doc as Invoice).leaseEndDate), 'MMM dd, yyyy'):(doc as Reminder).dueDate
                     }
                 </td>
                 {selectedDocType === 'Reminders' && <td>{(doc as Reminder).type}</td>}
@@ -220,13 +230,17 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
             <ButtonGroup className="mb-3">
               <Button
                 variant={selectedDocType === 'Invoices' ? 'primary' : 'outline-primary'}
-                onClick={() => setSelectedDocType('Invoices')}
+                onClick={() => {
+                  getInvoiceDocument()
+                  setSelectedDocType('Invoices')}}
               >
                 Invoices
               </Button>
               <Button
                 variant={selectedDocType === 'Receipts' ? 'primary' : 'outline-primary'}
-                onClick={() => setSelectedDocType('Receipts')}
+                onClick={() => {
+                  getReceiptDocument()
+                  setSelectedDocType('Receipts')}}
               >
                 Receipts
               </Button>

@@ -47,25 +47,9 @@ export const mockFinancialData: FinancialData = {
 
 // Add some mock data for invoices, receipts, and reminders
 for (let i = 0; i < 10; i++) {
-  mockFinancialData.invoices.push({
-    _id: `INV-${1000 + i}`,
-    tenantName: `Tenant ${i + 1}`,
-    propertyName: `Property ${i + 1}`,
-    amount: Math.round(1000 + Math.random() * 2000),
-    dueDate: new Date(2024, i, 15).toISOString().split('T')[0],
-    status: ['Paid', 'Unpaid', 'Overdue'][Math.floor(Math.random() * 3)] as 'Paid' | 'Unpaid' | 'Overdue',
-    leaseEndDate:''
-  });
 
-  mockFinancialData.receipts.push({
-    _id: `REC-${2000 + i}`,
-    tenantName: `Tenant ${i + 1}`,
-    propertyName: `Property ${i + 1}`,
-    amount: Math.round(1000 + Math.random() * 2000),
-    date: new Date(2024, i, 10).toISOString().split('T')[0],
-    status: ['Processed', 'Pending'][Math.floor(Math.random() * 2)] as 'Processed' | 'Pending',
-    leaseEndDate:''
-  });
+
+
 
   mockFinancialData.reminders.push({
     _id: `REM-${3000 + i}`,
