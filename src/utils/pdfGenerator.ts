@@ -68,7 +68,7 @@ function getHeaders(item: ReportItem): string[] {
 function getItemValue(item: ReportItem, header: string): string {
   switch (header) {
     case 'ID':
-      return item.id.toString();
+      return item._id.toString();
     case 'Tenant':
       return 'tenantName' in item ? item.tenantName : 'N/A';
     case 'Property':

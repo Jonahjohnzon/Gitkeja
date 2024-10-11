@@ -48,29 +48,32 @@ export const mockFinancialData: FinancialData = {
 // Add some mock data for invoices, receipts, and reminders
 for (let i = 0; i < 10; i++) {
   mockFinancialData.invoices.push({
-    id: `INV-${1000 + i}`,
+    _id: `INV-${1000 + i}`,
     tenantName: `Tenant ${i + 1}`,
     propertyName: `Property ${i + 1}`,
     amount: Math.round(1000 + Math.random() * 2000),
     dueDate: new Date(2024, i, 15).toISOString().split('T')[0],
     status: ['Paid', 'Unpaid', 'Overdue'][Math.floor(Math.random() * 3)] as 'Paid' | 'Unpaid' | 'Overdue',
+    leaseEndDate:''
   });
 
   mockFinancialData.receipts.push({
-    id: `REC-${2000 + i}`,
+    _id: `REC-${2000 + i}`,
     tenantName: `Tenant ${i + 1}`,
     propertyName: `Property ${i + 1}`,
     amount: Math.round(1000 + Math.random() * 2000),
     date: new Date(2024, i, 10).toISOString().split('T')[0],
     status: ['Processed', 'Pending'][Math.floor(Math.random() * 2)] as 'Processed' | 'Pending',
+    leaseEndDate:''
   });
 
   mockFinancialData.reminders.push({
-    id: `REM-${3000 + i}`,
+    _id: `REM-${3000 + i}`,
     tenantName: `Tenant ${i + 1}`,
     propertyName: `Property ${i + 1}`,
     type: ['Payment', 'Lease Renewal', 'Maintenance'][Math.floor(Math.random() * 3)] as 'Payment' | 'Lease Renewal' | 'Maintenance',
     dueDate: new Date(2024, i, 20).toISOString().split('T')[0],
     status: ['Sent', 'Pending', 'Resolved'][Math.floor(Math.random() * 3)] as 'Sent' | 'Pending' | 'Resolved',
+    leaseEndDate:''
   });
 }

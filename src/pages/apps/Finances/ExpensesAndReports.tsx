@@ -10,7 +10,7 @@ import { generatePDF } from '../../../utils/pdfGenerator';
 
 // types
 export interface Expense {
-  id: number;
+  _id: number;
   category: string;
   amount: number;
   date: string;
@@ -29,7 +29,7 @@ interface Report {
 // Mock data - replace with API calls in production
 const mockExpenses: Expense[] = [
   {
-    id: 1,
+    _id: 1,
     category: 'Maintenance',
     amount: 500,
     date: '2024-08-15',
@@ -37,7 +37,7 @@ const mockExpenses: Expense[] = [
     propertyName: 'Sunset Apartments',
   },
   {
-    id: 2,
+    _id: 2,
     category: 'Utilities',
     amount: 1200,
     date: '2024-08-01',
@@ -293,8 +293,8 @@ const ExpensesAndReports: React.FC = () => {
                     </thead>
                     <tbody>
                       {filteredExpenses.map((expense) => (
-                        <tr key={expense.id}>
-                          <td>{expense.id}</td>
+                        <tr key={expense._id}>
+                          <td>{expense._id}</td>
                           <td>{expense.category}</td>
                           <td>${expense.amount.toLocaleString()}</td>
                           <td>{format(new Date(expense.date), 'MMM dd, yyyy')}</td>
