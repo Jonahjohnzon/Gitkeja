@@ -9,7 +9,7 @@ import PageTitle from '../../../components/PageTitle';
 import { generatePDF } from '../../../utils/pdfGenerator';
 
 // types
-interface Expense {
+export interface Expense {
   id: number;
   category: string;
   amount: number;
