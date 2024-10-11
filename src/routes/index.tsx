@@ -10,6 +10,7 @@ import WaterMeterReadingsTab from "../pages/apps/Finances/WaterMeterReadingsTab"
 import ReceiptsTab from "../pages/apps/Finances/ReceiptsTab";
 import RemindersTab from "../pages/apps/Finances/RemindersTab";
 import RentPayments from "../pages/apps/Finances/RentPayments";
+import FinancesReport from "../pages/apps/Finances/FinancesReport/FinancesReport";
 // import Root from './Root';
 
 
@@ -315,10 +316,16 @@ const ecommerceAppRoutes = {
       element: <RemindersTab />,
       route: PrivateRoute,
     },
-    {
+    /*{
       path: "/apps/finances/rent-payments",
       name: "Rent Payments",
       element: <RentPayments />,
+      route: PrivateRoute,
+    },*/
+    {
+      path: "/apps/finances/finances-report",
+      name: "Finances Report",
+      element: <FinancesReport />,
       route: PrivateRoute,
     },
     {
