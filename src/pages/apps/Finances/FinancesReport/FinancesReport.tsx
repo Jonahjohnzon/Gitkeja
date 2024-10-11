@@ -3,10 +3,8 @@ import { Row, Col, Card, Tab, Tabs } from 'react-bootstrap';
 import RevenueOverview from './RevenueOverview';
 import CashFlowAnalysis from './CashFlowAnalysis';
 import ExpenseBreakdown from './ExpenseBreakdown';
-import ProfitabilityMetrics from './ProfitabilityMetrics';
 import OccupancyImpact from './OccupancyImpact';
 import PaymentTrends from './PaymentTrends';
-import DocumentSummary from './DocumentSummary';
 import DateRangeFilter from './DateRangeFilter';
 import { FinancialData } from './types';
 import ErrorBoundary, { LoadingSpinner } from './ErrorBoundary';
@@ -44,23 +42,17 @@ const FinancesReport: React.FC = () => {
           <Tab eventKey="overview" title="Overview">
             <RevenueOverview data={financialData} />
           </Tab>
-          <Tab eventKey="cashflow" title="Cash Flow">
+          <Tab eventKey="cashflow" title="Revenue vs Expenses">
             <CashFlowAnalysis data={financialData} />
           </Tab>
-          <Tab eventKey="expenses" title="Expenses">
+          <Tab eventKey="expenses" title="Expense Breakdown">
             <ExpenseBreakdown data={financialData} />
-          </Tab>
-          <Tab eventKey="profitability" title="Profitability">
-            <ProfitabilityMetrics data={financialData} />
           </Tab>
           <Tab eventKey="occupancy" title="Occupancy Impact">
             <OccupancyImpact data={financialData} />
           </Tab>
           <Tab eventKey="payments" title="Payment Trends">
             <PaymentTrends data={financialData} />
-          </Tab>
-          <Tab eventKey="documents" title="Document Summary">
-            <DocumentSummary data={financialData} />
           </Tab>
         </Tabs>
       </div>
