@@ -50,8 +50,8 @@ const RemindersTab: React.FC<RemindersTabProps> = () => {
           top: 0,
           behavior: 'smooth' // Optional: makes the scrolling smooth
       });
-        const data ={topDisplay:true,topMessage:"Remainder sent",topColor:"primary",}
-        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
+        const dataz ={topDisplay:true,topMessage:"Remainder sent",topColor:"primary",}
+        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,dataz))
       }
     } catch (error) {
       console.error('Error sending reminder:', error);
@@ -103,9 +103,23 @@ const RemindersTab: React.FC<RemindersTabProps> = () => {
     }
     catch(error)
     {
-
+      console.log(error)
     }
   }
+
+  const GetGraph = async ()=>{
+    try{
+      const info ={}
+      const {data} = await api.update('', info)
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+useEffect(()=>{
+
+},[])
 
   useEffect(()=>{
     Get()
