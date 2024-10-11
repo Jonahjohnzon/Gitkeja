@@ -12,49 +12,63 @@ const CashFlowAnalysis: React.FC<CashFlowAnalysisProps> = ({ data }) => {
   if (!data) return null;
 
   const chartOptions: ApexOptions = {
-    chart: { type: 'line', height: 350 },
+    chart: {
+      type: 'line',
+      height: 350
+    },
     xaxis: {
       categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     },
     yaxis: {
-      title: { text: 'Amount ($)' },
-      labels: { formatter: (value) => `$${value.toLocaleString()}` }
+      title: {
+        text: 'Amount ($)'
+      }
     },
-    title: { text: 'Cash Flow Analysis', align: 'left' },
-    stroke: { curve: 'smooth', width: 2 },
-    tooltip: {
-      y: { formatter: (value) => `$${value.toLocaleString()}` }
+    title: {
+      text: 'Revenue vs Expenses',
+      align: 'left'
     }
   };
 
   const series = [
-    { name: 'Cash Inflow', data: data.cashFlowData.inflow.map(Math.round) },
-    { name: 'Cash Outflow', data: data.cashFlowData.outflow.map(Math.round) }
+    {
+      name: 'Revenue',
+      data: data.revenueData.map(val => Math.round(val))
+    },
+    {
+      name: 'Expenses',
+      data: data.expensesData.map(val => Math.round(val))
+    }
   ];
 
   return (
     <Card>
       <Card.Body>
-        <h4 className="header-title mb-3">Cash Flow Analysis</h4>
-        <Chart options={chartOptions} series={series} type="line" height={350} />
+        <h4 className="header-title mb-3">Revenue vs Expenses</h4>
+        <Chart
+          options={chartOptions}
+          series={series}
+          type="line"
+          height={350}
+        />
         <Table responsive className="mt-3">
           <thead>
             <tr>
               <th>Month</th>
-              <th>Cash Inflow</th>
-              <th>Cash Outflow</th>
+              <th>Revenue</th>
+              <th>Expenses</th>
               <th>Net Cash Flow</th>
             </tr>
           </thead>
           <tbody>
-            {data.cashFlowData.inflow.map((inflow, index) => {
-              const outflow = data.cashFlowData.outflow[index];
-              const netCashFlow = inflow - outflow;
+            {data.revenueData.map((revenue, index) => {
+              const expenses = data.expensesData[index];
+              const netCashFlow = revenue - expenses;
               return (
                 <tr key={index}>
                   <td>{chartOptions.xaxis?.categories[index]}</td>
-                  <td>${Math.round(inflow).toLocaleString()}</td>
-                  <td>${Math.round(outflow).toLocaleString()}</td>
+                  <td>${Math.round(revenue).toLocaleString()}</td>
+                  <td>${Math.round(expenses).toLocaleString()}</td>
                   <td>${Math.round(netCashFlow).toLocaleString()}</td>
                 </tr>
               );
