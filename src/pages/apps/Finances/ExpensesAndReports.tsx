@@ -16,6 +16,7 @@ export interface Expense {
   date: string;
   description: string;
   propertyName: string;
+  leaseEndDate:string
 }
 
 interface Report {
@@ -35,6 +36,7 @@ const mockExpenses: Expense[] = [
     date: '2024-08-15',
     description: 'Plumbing repair',
     propertyName: 'Sunset Apartments',
+    leaseEndDate:""
   },
   {
     _id: 2,
@@ -43,6 +45,7 @@ const mockExpenses: Expense[] = [
     date: '2024-08-01',
     description: 'Electricity bill',
     propertyName: 'Lakeside Villas',
+     leaseEndDate:""
   },
   // Add more mock data as needed
 ];
