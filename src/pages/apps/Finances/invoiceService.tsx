@@ -1,6 +1,6 @@
 import jsPDF from 'jspdf';
 import 'jspdf-autotable';
-import { Paymentprop } from './InvoicingTab';
+import { Paymentprop } from '../../../types';
 import { APICore } from '../../../helpers/api/apiCore';
 
 
