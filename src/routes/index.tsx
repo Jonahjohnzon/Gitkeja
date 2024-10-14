@@ -9,7 +9,7 @@ import InvoicingTab from "../pages/apps/Finances/InvoicingTab";
 import WaterMeterReadingsTab from "../pages/apps/Finances/WaterMeterReadingsTab";
 import ReceiptsTab from "../pages/apps/Finances/ReceiptsTab";
 import RemindersTab from "../pages/apps/Finances/RemindersTab";
-import RentPayments from "../pages/apps/Finances/RentPayments";
+//import RentPayments from "../pages/apps/Finances/RentPayments";
 import FinancesReport from "../pages/apps/Finances/FinancesReport/FinancesReport";
 // import Root from './Root';
 
@@ -73,7 +73,7 @@ const ProductEdit = React.lazy(
   () => import("../pages/apps/Finances/ProductEdit")
 );
 const Customers = React.lazy(() => import("../pages/apps/Finances/Customers"));
-const Orders = React.lazy(() => import("../pages/apps/Finances/RentPayments").then(module => ({ default: module.default })));
+//const Orders = React.lazy(() => import("../pages/apps/Finances/RentPayments").then(module => ({ default: module.default })));
 const OrderDetails = React.lazy(
   () => import("../pages/apps/Finances/ExpensesAndReports")
 );
@@ -356,12 +356,6 @@ const ecommerceAppRoutes = {
       path: "/apps/ecommerce/customers",
       name: "Customers",
       element: <Customers />,
-      route: PrivateRoute,
-    },
-    {
-      path: "/apps/ecommerce/orders",
-      name: "Orders",
-      element: <Orders />,
       route: PrivateRoute,
     },
     {
