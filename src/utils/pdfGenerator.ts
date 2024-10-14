@@ -1,15 +1,18 @@
 import { Invoice, Receipt, Reminder } from '../pages/apps/Finances/FinancesReport/types';
 import { Expense } from '../pages/apps/Finances/ExpensesAndReports';
+import { format } from 'date-fns';
+
 
 type ReportItem = Invoice | Receipt | Reminder | Expense;
 
-export const generatePDF = (data: ReportItem[], title: string) => {
+export const generatePDF = (data: ReportItem[], title: string, selectedDocType?:any) => {
   // Create a new window
   const win = window.open('', '_blank');
   if (!win) {
     alert('Please allow popups for this website');
     return;
   }
+
 
   // Determine the headers based on the document type
   const headers = getHeaders(data[0]);
@@ -35,7 +38,7 @@ export const generatePDF = (data: ReportItem[], title: string) => {
           </thead>
           <tbody>
             ${data.map(item => `
-              <tr>${headers.map(header => `<td>${getItemValue(item, header)}</td>`).join('')}</tr>
+              <tr>${headers.map(header => `<td>${getItemValue(item, header, selectedDocType)}</td>`).join('')}</tr>
             `).join('')}
           </tbody>
         </table>
@@ -65,10 +68,40 @@ function getHeaders(item: ReportItem): string[] {
   }
 }
 
-function getItemValue(item: ReportItem, header: string): string {
+
+function getItemValue(item: ReportItem, header: string, selectedDocType?:string): string {
+  const Status = (status:string)=>{
+    if(selectedDocType === 'Reminders')
+    {
+      switch (status){
+        case 'paid':
+          return 'Resolved'
+        case 'pending':
+          return 'Pending'
+        default:
+          return 'Sent'
+      }
+    }
+    else if(selectedDocType === 'Invoices')
+      {
+        switch (status){
+          case 'paid':
+            return 'Paid'
+          default:
+            return 'Unpaid'
+      }
+    }
+    else{
+      switch (status){
+        case 'paid':
+          return 'Processed'
+        default:
+          return 'Pending'
+      }}
+  }
   switch (header) {
     case 'ID':
-      return item.id.toString();
+      return item._id.toString();
     case 'Tenant':
       return 'tenantName' in item ? item.tenantName : 'N/A';
     case 'Property':
@@ -78,11 +111,11 @@ function getItemValue(item: ReportItem, header: string): string {
     case 'Date':
       return 'date' in item ? item.date : ('dueDate' in item ? item.dueDate : 'N/A');
     case 'Due Date':
-      return 'dueDate' in item ? item.dueDate : 'N/A';
+      return 'dueDate' in item ? format(new Date(item.dueDate), 'MMM dd, yyyy') : 'N/A';
     case 'Type':
       return 'type' in item ? item.type : 'N/A';
     case 'Status':
-      return 'status' in item ? item.status : 'N/A';
+      return 'status' in item ? Status(item.status) : 'N/A';
     case 'Category':
       return 'category' in item ? item.category : 'N/A';
     case 'Description':

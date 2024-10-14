@@ -30,28 +30,35 @@ export interface FinancialData {
   }
   
   export interface Invoice {
-    id: string;
+    _id: string;
     tenantName: string;
     propertyName: string;
     amount: number;
     dueDate: string;
     status: 'Paid' | 'Unpaid' | 'Overdue';
+    leaseEndDate:string,
+    paymentDate:string,
   }
   
   export interface Receipt {
-    id: string;
+    _id: string;
     tenantName: string;
     propertyName: string;
     amount: number;
     date: string;
     status: 'Processed' | 'Pending';
+    paymentDate:string,
+    leaseEndDate:string
+
   }
   
   export interface Reminder {
-    id: string;
+    _id: string;
     tenantName: string;
     propertyName: string;
     type: 'Payment' | 'Lease Renewal' | 'Maintenance';
     dueDate: string;
     status: 'Sent' | 'Pending' | 'Resolved';
+    leaseEndDate:string,
+    
   }
