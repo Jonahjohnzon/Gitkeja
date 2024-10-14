@@ -1,187 +1,179 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Table, Button, Modal, Form } from 'react-bootstrap';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { Row, Col, Button, Modal, Form } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
+import { Column } from 'react-table';
 import { sendPaymentReminder } from './reminderService';
-import { Mock } from '../../../mocks/rentPaymentData';
 import { APICore } from '../../../helpers/api/apiCore';
-import { Paymentprop } from './InvoicingTab';
+import { RentPayment } from '../../../types';
 import { useDispatch } from 'react-redux';
 import { AppDispatch } from '../../../redux/store';
 import { AuthActionTypes } from '../../../redux/auth/constants';
 import { authApiResponseSuccess } from '../../../redux/actions';
 import TopDisplay from '../../../layouts/TopDisplay';
-
+import PaginatedTable from '../../../components/PaginatedTable';
 
 interface RemindersTabProps {
-  data?: Mock[];
+  initialData?: RentPayment[];
 }
 
-const  api = new APICore()
-const RemindersTab: React.FC<RemindersTabProps> = () => {
+const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
   const dispatch = useDispatch<AppDispatch>();
-  const [data, setData] = useState([])
+  const [reminders, setReminders] = useState<RentPayment[]>(initialData || []);
   const [showModal, setShowModal] = useState(false);
-  const [selectedPayment, setSelectedPayment] = useState<Paymentprop | null>(null);
+  const [selectedPayment, setSelectedPayment] = useState<RentPayment | null>(null);
   const [loading, setLoading] = useState(false);
   const [reminderMethod, setReminderMethod] = useState<'email' | 'sms' | 'both'>('both');
   const [customMessage, setCustomMessage] = useState('');
 
-  const handleOpenModal = (payment:Paymentprop) => {
+  const api = useMemo(() => new APICore(), []);
+
+  const fetchData = useCallback(async () => {
+    try {
+      setLoading(true);
+      const { data } = await api.get('/api/getTenantInvoice');
+      if (data.result) {
+        setReminders(data.data);
+      }
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, [api]);
+
+  useEffect(() => {
+    if (!initialData) {
+      fetchData();
+    }
+  }, [fetchData, initialData]);
+
+  const handleOpenModal = useCallback((payment: RentPayment) => {
     setSelectedPayment(payment);
     setShowModal(true);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     setShowModal(false);
     setSelectedPayment(null);
     setReminderMethod('both');
     setCustomMessage('');
-  };
+  }, []);
 
-  const handleSendReminder = async (payment:Paymentprop) => {
+  const handleSendReminder = useCallback(async (payment: RentPayment) => {
     setLoading(true);
     try {
-      const {data} = await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
-      if(data.result)
-      {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth' // Optional: makes the scrolling smooth
-      });
-        const data ={topDisplay:true,topMessage:"Remainder sent",topColor:"primary",}
-        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,data))
+      const { data } = await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
+      if (data.result) {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+          topDisplay: true,
+          topMessage: "Reminder sent",
+          topColor: "primary",
+        }));
       }
     } catch (error) {
       console.error('Error sending reminder:', error);
-      alert('Failed to send reminder. Please try again.');
+      dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+        topDisplay: true,
+        topMessage: "Failed to send reminder",
+        topColor: "danger",
+      }));
     } finally {
       setLoading(false);
       handleCloseModal();
     }
-  };
+  }, [dispatch, reminderMethod, customMessage, handleCloseModal]);
 
-  // Prepare data for the chart
-  // In a real application, you would track the effectiveness of reminders
-  // For this example, we'll use mock data
-  const chartData = [
+  const chartData = useMemo(() => [
     { name: 'Paid after reminder', value: 60 },
     { name: 'No response', value: 30 },
     { name: 'Payment plan arranged', value: 10 },
-  ];
+  ], []);
 
-  const chartOptions: ApexOptions = {
-    chart: {
-      type: 'pie',
-    },
+  const chartOptions: ApexOptions = useMemo(() => ({
+    chart: { type: 'pie' },
     labels: chartData.map(item => item.name),
     responsive: [{
       breakpoint: 480,
       options: {
-        chart: {
-          width: 200
-        },
-        legend: {
-          position: 'bottom'
-        }
+        chart: { width: 200 },
+        legend: { position: 'bottom' }
       }
     }],
     colors: ['#28a745', '#dc3545', '#ffc107']
-  };
+  }), [chartData]);
 
-  const series = chartData.map(item => item.value);
+  const series = useMemo(() => chartData.map(item => item.value), [chartData]);
 
+  const isDatePast = useCallback((date: string) => new Date(date) < new Date(), []);
 
-  const Get = async()=>{
-    try{
-      const {data} = await api.get('/api/getTenantInvoice')
-      if(data.result)
-      {
-        setData(data.data)
-      }
+  const getStatus = useCallback((payment: RentPayment) => {
+    if (isDatePast(payment.leaseEndDate) && (payment.status === 'pending' || payment.status === 'incomplete')) {
+      return 'Overdue';
+    } else if (payment.status === 'pending' || payment.status === 'incomplete') {
+      return payment.status.charAt(0).toUpperCase() + payment.status.slice(1);
+    } else {
+      return 'Paid';
     }
-    catch(error)
+  }, [isDatePast]);
+
+  const columns: Column<RentPayment>[] = useMemo(() => [
+    { Header: 'Tenant', accessor: 'tenantName' },
+    { Header: 'Property', accessor: (row: RentPayment) => `${row.propertyName}, ${row.unitNumber}` },
+    { 
+      Header: 'Amount Due', 
+      accessor: 'amount',
+      Cell: ({ value }: { value: number }) => `KES ${value.toLocaleString()}`
+    },
+    { 
+      Header: 'Due Date', 
+      accessor: 'leaseEndDate',
+      Cell: ({ value }: { value: string }) => format(new Date(value), 'MMM dd, yyyy')
+    },
+    { 
+      Header: 'Status', 
+      accessor: (row: RentPayment) => getStatus(row)
+    },
     {
-
+      Header: 'Actions',
+      Cell: ({ row }: { row: { original: RentPayment } }) => (
+        <Button
+          variant="warning"
+          size="sm"
+          onClick={() => handleOpenModal(row.original)}
+          disabled={loading}
+        >
+          Send Reminder
+        </Button>
+      )
     }
-  }
+  ], [loading, handleOpenModal, getStatus]);
 
-  useEffect(()=>{
-    Get()
-  },[])
-
-  const isDatePast = (date:string) => new Date(date) < new Date();
-
-const getStatus = (payment:Paymentprop) => {
-  if (isDatePast(payment.leaseEndDate) && (payment.status === 'pending' || payment.status === 'incomplete')) {
-    return 'Overdue';
-  } else if (payment.status === 'pending' || payment.status === 'incomplete') {
-    return payment.status.charAt(0).toUpperCase() + payment.status.slice(1); // Capitalize first letter
-  } else {
-    return 'Paid';
-  }
-};
   return (
     <>
-    <TopDisplay/>
+      <TopDisplay />
       <Row className="mb-3">
         <Col md={6}>
           <h4>Reminder Effectiveness</h4>
-          <Chart
-            options={chartOptions}
-            series={series}
-            type="pie"
-            height={300}
-          />
+          <Chart options={chartOptions} series={series} type="pie" height={300} />
         </Col>
         <Col md={6}>
           <h4>Reminder Statistics</h4>
           <ul>
-            <li>Total Reminders Sent: {data.length}</li>
-            <li>Successful Reminders: {Math.round(data.length * 0.6)}</li>
+            <li>Total Reminders Sent: {reminders.length}</li>
+            <li>Successful Reminders: {Math.round(reminders.length * 0.6)}</li>
             <li>Average Response Time: 2 days</li>
           </ul>
         </Col>
       </Row>
       <Row>
         <Col>
-          <Table responsive>
-            <thead>
-              <tr>
-                <th>Tenant</th>
-                <th>Property</th>
-                <th>Amount Due</th>
-                <th>Due Date</th>
-                <th>Status</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((payment:Paymentprop) => (
-                <tr key={payment.id}>
-                  <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
-                  <td>KES {payment.amount.toLocaleString()}</td>
-                  <td>{format(new Date(payment.leaseEndDate), 'MMM dd, yyyy')}</td>
-                  <td>{getStatus(payment)}</td>
-                  <td>
-                    <Button
-                      variant="warning"
-                      size="sm"
-                      onClick={() => handleOpenModal(payment)}
-                      disabled={loading}
-                    >
-                      Send Reminder
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
+          <PaginatedTable columns={columns} data={reminders} pageSize={10} />
         </Col>
       </Row>
-
+  
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>
           <Modal.Title>Send Payment Reminder</Modal.Title>
@@ -226,19 +218,24 @@ const getStatus = (payment:Paymentprop) => {
                   placeholder="Enter a custom reminder message..."
                 />
               </Form.Group>
-              <Button 
-                variant="primary" 
-                onClick={() => handleSendReminder(selectedPayment)}
-                disabled={loading}
-              >
-                {loading ? 'Sending...' : 'Send Reminder'}
-              </Button>
             </Form>
           )}
         </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseModal}>
+            Cancel
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={() => selectedPayment && handleSendReminder(selectedPayment)}
+            disabled={loading}
+          >
+            {loading ? 'Sending...' : 'Send Reminder'}
+          </Button>
+        </Modal.Footer>
       </Modal>
     </>
   );
 };
 
-export default RemindersTab;
+export default React.memo(RemindersTab);
