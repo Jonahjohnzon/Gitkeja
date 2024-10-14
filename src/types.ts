@@ -1,31 +1,29 @@
-// src/types/index.ts
-
 export interface WaterMeterReadingData {
  
 }
 
 export interface RentPayment {
-  id:string;
-  tenantName:string;
-  propertyName:string;
-  status:string;
-  amount:number;
-  unitNumber:string;
-  tenantId?:string;
-  leaseEndDate:string;
-  currentReading:number;
-  previousReading:number;
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  status: string;
+  amount: number;
+  unitNumber: string;
+  tenantId?: string;
+  leaseEndDate: string;
+  currentReading: number;
+  previousReading: number;
   previousImage: File | null;
   currentImage: File | null;
   garbage: number;
-  email:string;
+  email: string;
   water: number;
-  _id:string;
-  paymentDate :Date
+  _id: string;
+  paymentDate: Date;
 }
 
 export interface TenantProps {
-  paymentId:string;
+  paymentId: string;
   id: string;
   tenantName: string;
   propertyName: string;
@@ -33,7 +31,7 @@ export interface TenantProps {
   previousReading: number;
   currentReading: number;
   readingDate: string;
-  unitNumber:string;
+  unitNumber: string;
   previousImage: File | null;
   currentImage: File | null;
 }
@@ -62,6 +60,42 @@ export interface Reminder {
   propertyName: string;
   amount: number;
   dueDate: string;
-  status: string
+  status: string;
   remindersSent: number;
+}
+
+export interface PropertyType {
+  _id: string;
+  name: string;
+  location: string;
+  status: 'Occupied' | 'Partially Occupied' | 'Vacant';
+  description: string;
+  units: number;
+  rentAmount: number;
+  occupancy: number;
+  managers: Array<{
+    name: string;
+    image?: string;
+  }>;
+}
+
+// New Paymentprop interface
+export interface Paymentprop {
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  status: string;
+  amount: number;
+  unitNumber: string;
+  tenantId?: string;
+  leaseEndDate: string;
+  currentReading: number;
+  previousReading: number;
+  previousImage: File | null;
+  currentImage: File | null;
+  garbage: number;
+  email: string;
+  water: number;
+  _id: string;
+  paymentDate: Date;
 }
