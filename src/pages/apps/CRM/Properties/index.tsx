@@ -1,25 +1,17 @@
-import React, { useEffect } from "react";
-import { Row, Col, Card, Button, ButtonGroup, Dropdown, ProgressBar, OverlayTrigger, Tooltip } from "react-bootstrap";
+import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { Row, Col, Card, Button, ButtonGroup, Dropdown, ProgressBar, OverlayTrigger, Tooltip, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import classNames from "classnames";
-import { useSelector } from "react-redux";
-import { RootState } from "../../../../redux/store";
-import { useDispatch } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { RootState, AppDispatch } from "../../../../redux/store";
 import { AuthActionTypes } from "../../../../redux/auth/constants";
-import { AppDispatch } from "../../../../redux/store";
 import DefaultImage from "../../../../components/DefaultImage";
-
-// components
 import PageTitle from "../../../../components/PageTitle";
+import PaginatedTable from "../../../../components/PaginatedTable";
+import { Column } from 'react-table';
+import { PropertyType } from "../../../../types";
 
-import { PropertyType } from "./data";
-
-// single property
-const SingleProperty = (props: { property: PropertyType }) => {
-
-
-const property = props.property || {};
-
+const SingleProperty: React.FC<{ property: PropertyType }> = React.memo(({ property }) => {
   return (
     <Card className="property-box">
       <Card.Body>
@@ -27,7 +19,6 @@ const property = props.property || {};
           <Dropdown.Toggle as="a" className="cursor-pointer card-drop p-0 shadow-none">
             <i className="mdi mdi-dots-horizontal m-0 text-muted h3"></i>
           </Dropdown.Toggle>
-
           <Dropdown.Menu>
             <Dropdown.Item><i className="mdi mdi-pencil me-1"></i>Edit</Dropdown.Item>
             <Dropdown.Item><i className="mdi mdi-delete me-1"></i>Delete</Dropdown.Item>
@@ -40,7 +31,6 @@ const property = props.property || {};
           </Link>
         </h4>
         <p className="text-muted text-uppercase"><i className="mdi mdi-map-marker"></i> <small>{property.location}</small></p>
-
         <div className={classNames("badge", {
           "bg-soft-success text-success": property.status === "Occupied",
           "bg-soft-warning text-warning": property.status === "Partially Occupied",
@@ -48,7 +38,6 @@ const property = props.property || {};
         }, "mb-3")}>
           {property.status}
         </div>
-
         <p className="text-muted font-13 mb-3 sp-line-2">{property.description}</p>
         <p className="mb-1">
           <span className="pe-2 text-nowrap mb-2 d-inline-block">
@@ -61,19 +50,17 @@ const property = props.property || {};
           </span>
         </p>
         <div className="avatar-group mb-3">
-          {(property.managers || []).map((manager, index) => {
-            return (
-              <OverlayTrigger
-                key={index}
-                placement="bottom"
-                overlay={<Tooltip id={manager.name}>{manager.name}</Tooltip>}
-              >
-                <Link to="#" className="avatar-group-item">
-                {manager.image?<img src={manager.image} className="rounded-circle  avatar-sm" alt="" />:<DefaultImage username={manager?.name}/>}
-                </Link>
-              </OverlayTrigger>
-            );
-          })}
+          {(property.managers || []).map((manager, index) => (
+            <OverlayTrigger
+              key={index}
+              placement="bottom"
+              overlay={<Tooltip id={manager.name}>{manager.name}</Tooltip>}
+            >
+              <Link to="#" className="avatar-group-item">
+                {manager.image ? <img src={manager.image} className="rounded-circle avatar-sm" alt="" /> : <DefaultImage username={manager?.name} />}
+              </Link>
+            </OverlayTrigger>
+          ))}
         </div>
         <p className="mb-2 fw-semibold">
           Occupancy Rate:
@@ -83,16 +70,44 @@ const property = props.property || {};
       </Card.Body>
     </Card>
   );
-};
+});
 
-const Properties = () => {
+const Properties: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
-  const {propertiesList} = useSelector((state:RootState)=>state.Auth)
-  const PropertiesList: PropertyType[] = propertiesList
+  const { propertiesList } = useSelector((state: RootState) => state.Auth);
+  const [filter, setFilter] = useState("All");
+  const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(()=>{
-    dispatch({type:AuthActionTypes.GETPROPERTY,payload:{limit:9}})
-  },[dispatch])
+  useEffect(() => {
+    dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 9 } });
+  }, [dispatch]);
+
+  const filteredProperties = useMemo(() => {
+    return propertiesList.filter((property: PropertyType) => {
+      const matchesFilter = filter === "All" || property.status === filter;
+      const matchesSearch = property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            property.location.toLowerCase().includes(searchTerm.toLowerCase());
+      return matchesFilter && matchesSearch;
+    });
+  }, [propertiesList, filter, searchTerm]);
+
+  const handleFilterChange = useCallback((newFilter: string) => {
+    setFilter(newFilter);
+  }, []);
+
+  const columns: Column<PropertyType>[] = useMemo(
+    () => [
+      {
+        Header: "Property",
+        accessor: (row: PropertyType) => row.name,
+        Cell: ({ row }: { row: { original: PropertyType } }) => (
+          <SingleProperty property={row.original} />
+        ),
+      },
+    ],
+    []
+  );
+
   return (
     <>
       <PageTitle
@@ -112,25 +127,34 @@ const Properties = () => {
         <Col sm={8}>
           <div className="text-sm-end">
             <ButtonGroup className="mb-3">
-              <Button variant="primary">All</Button>
-              <Button variant="light">Occupied</Button>
-              <Button variant="light">Vacant</Button>
+              {["All", "Occupied", "Partially Occupied", "Vacant"].map((status) => (
+                <Button
+                  key={status}
+                  variant={filter === status ? "primary" : "light"}
+                  onClick={() => handleFilterChange(status)}
+                >
+                  {status}
+                </Button>
+              ))}
             </ButtonGroup>
           </div>
         </Col>
       </Row>
 
-      <Row>
-        {(PropertiesList || []).map((property, i) => {
-          return (
-            <Col lg={4} key={`prop-${property._id}`} >
-              <SingleProperty property={property} />
-            </Col>
-          );
-        })}
+      <Row className="mb-3">
+        <Col>
+          <Form.Control
+            type="text"
+            placeholder="Search properties..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </Col>
       </Row>
+
+      <PaginatedTable columns={columns} data={filteredProperties} pageSize={9} />
     </>
   );
 };
 
-export default Properties;
+export default React.memo(Properties);
