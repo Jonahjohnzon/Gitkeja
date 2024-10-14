@@ -1,17 +1,10 @@
-<<<<<<< HEAD
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useCallback } from 'react';
 import { Card, Row, Col, Button, ButtonGroup } from 'react-bootstrap';
-=======
-import React, { useEffect, useState } from 'react';
-import { Card, Row, Col, Table, Button, ButtonGroup, Tab } from 'react-bootstrap';
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
 import Chart from 'react-apexcharts';
-import { APICore } from '../../../../helpers/api/apiCore';
-import { format } from 'date-fns';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import { Column } from 'react-table';
-import { FinancialData, Invoice, Receipt, Reminder } from './types';
+import { FinancialData, Invoice, Receipt, Reminder  } from './types';
 import { generatePDF } from '../../../../utils/pdfGenerator';
 import PaginatedTable from '../../../../components/PaginatedTable';
 
@@ -20,96 +13,10 @@ interface RevenueOverviewProps {
 }
 
 type DocumentType = 'Invoices' | 'Receipts' | 'Reminders';
-<<<<<<< HEAD
 type Document = Invoice | Receipt | Reminder;
-=======
-const api = new APICore()
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
 
-const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
+const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
   const [selectedDocType, setSelectedDocType] = useState<DocumentType>('Invoices');
-  const [graphArray, setGraphArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
-  const [invoice, setInvoice] = useState([]) 
-  const [tab, setTab] = useState('Invoices')
-  const [data, setData] = useState({
-    invoices:0,
-    receipts:0,
-    reminders:0
-  })
-  
-    //Get Invoice
-  const getInvoiceDocument =async()=>{
-      try{
-        setInvoice([])
-        const {data} = await api.get('/api/getInvoice')
-        if(data.result)
-        {
-          setInvoice(data.data)
-        }
-      }
-      catch(error)
-      {
-        console.log(error)
-      }
-    }
-
-    const getReceiptDocument =async()=>{
-      try{
-        setInvoice([])
-        const {data} = await api.get('/api/getReceiptData')
-        if(data.result)
-        {
-         setInvoice(data.data)
-          
-        }
-      }
-      catch(error)
-      {
-        console.log(error)
-      }
-    }
-
-    const getRemindDocument =async()=>{
-      try{
-        setInvoice([])
-        const {data} = await api.get('/api/getReminder')
-        if(data.result)
-        {
-         setInvoice(data.data)
-          
-        }
-      }
-      catch(error)
-      {
-        console.log(error)
-      }
-    }
-
-
-  const getGraph = async()=>{
-    try{
-      const {data} = await api.get('/api/monthlyRevenue')
-      if(data.result)
-      {
-        setGraphArray(data.data)
-        setData(data.documentCounts)
-      }
-    }
-    catch(error)
-    {
-      console.log(error)
-    }
-  }
-
-  useEffect(()=>{
-    getGraph()
-  },[])
-
-  useEffect(()=>{
-    getInvoiceDocument()
-  },[tab])
-
-
 
   const chartOptions: ApexOptions = useMemo(() => ({
     chart: {
@@ -145,37 +52,39 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
     }
   }), []);
 
-  const series = useMemo(() => ([
-    {
+  const series = useMemo(() => {
+    if (!data) return [];
+    return [{
       name: 'Revenue',
-      data: graphArray
-    }
-  ]), [data.revenueData]);
+      data: data.revenueData.map(val => Math.round(val))
+    }];
+  }, [data]);
 
-  const handleGeneratePDF = () => {
+  const handleGeneratePDF = useCallback(() => {
+    if (!data) return;
+
     let documents: Document[];
     let title: string;
     switch (selectedDocType) {
       case 'Invoices':
-        documents = invoice;
+        documents = data.invoices;
         title = 'Invoices Report';
         break;
       case 'Receipts':
-        documents = invoice;
+        documents = data.receipts;
         title = 'Receipts Report';
         break;
       case 'Reminders':
-        documents = invoice;
+        documents = data.reminders;
         title = 'Reminders Report';
         break;
     }
-    generatePDF(documents, title, selectedDocType);
-  };
+    generatePDF(documents, title);
+  }, [data, selectedDocType]);
 
-<<<<<<< HEAD
   const columns: Column<Document>[] = useMemo(() => {
     const baseColumns: Column<Document>[] = [
-      { Header: 'ID', accessor: 'id' },
+      { Header: 'ID', accessor: '_id' },
       { Header: 'Tenant', accessor: 'tenantName' },
       { Header: 'Property', accessor: 'propertyName' },
       {
@@ -206,6 +115,7 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
   }, [selectedDocType]);
 
   const documents = useMemo(() => {
+    if (!data) return [];
     switch (selectedDocType) {
       case 'Invoices':
         return data.invoices;
@@ -215,87 +125,8 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
         return data.reminders;
     }
   }, [data, selectedDocType]);
-=======
-  const renderDocumentList = () => {
-    let documents: (Invoice | Receipt | Reminder)[];
-        documents = invoice;
-    
-    const Status = (status:string)=>{
-      if(selectedDocType === 'Reminders')
-      {
-        switch (status){
-          case 'paid':
-            return 'Resolved'
-          case 'pending':
-            return 'Pending'
-          default:
-            return 'Sent'
-        }
-      }
-      else if(selectedDocType === 'Invoices')
-        {
-          switch (status){
-            case 'paid':
-              return 'Paid'
-            default:
-              return 'Unpaid'
-        }
-      }
-      else{
-        switch (status){
-          case 'paid':
-            return 'Processed'
-          default:
-            return 'Pending'
-        }}
-    }
-    return (
-      <>
-        <div className="d-flex justify-content-between align-items-center mb-3">
-          <h5>{selectedDocType}</h5>
-          <Button variant="secondary" onClick={handleGeneratePDF}>
-            Generate PDF
-          </Button>
-        </div>
-        <Table responsive>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Tenant</th>
-              <th>Property</th>
-              <th>Amount</th>
-              <th>Date</th>
-              {selectedDocType === 'Reminders' && <th>Type</th>}
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {documents.map((doc, index) => (
-              <tr key={index}>
-                <td>{doc._id}</td>
-                <td>{doc.tenantName}</td>
-                <td>{doc.propertyName}</td>
-                <td>
-                  {selectedDocType !== 'Reminders'
-                    ? `$${(doc as Invoice | Receipt).amount.toLocaleString()}`
-                    : 'N/A'}
-                </td>
-                <td>
-                  {selectedDocType === 'Receipts'
-                    ? format(new Date((doc as Receipt).paymentDate), 'MMM dd, yyyy')
-                    :(selectedDocType === 'Invoices') ?format(new Date((doc as Invoice).leaseEndDate), 'MMM dd, yyyy'):format(new Date((doc as Reminder).dueDate), 'MMM dd, yyyy')
-                    }
-                </td>
-                {selectedDocType === 'Reminders' && <td>{(doc as Reminder).type}</td>}
-                <td>{Status(doc.status)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </Table>
-      </>
-    );
-  };
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
+
+  if (!data) return null;
 
   return (
     <Card>
@@ -312,7 +143,6 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
           </Col>
           <Col lg={4}>
             <h5>Document Summary</h5>
-<<<<<<< HEAD
             <ul className="list-unstyled">
               <li>Invoices: {data.documentCounts.invoices}</li>
               <li>Receipts: {data.documentCounts.receipts}</li>
@@ -320,32 +150,11 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
             </ul>
             <p><strong>Average Payment Time:</strong> {data.averagePaymentTime.toFixed(1)} days</p>
             <p><strong>Collection Rate:</strong> {(data.collectionRate * 100).toFixed(1)}%</p>
-=======
-            <Table>
-              <tbody>
-                <tr>
-                  <td>Invoices</td>
-                  <td>{data.invoices}</td>
-                </tr>
-                <tr>
-                  <td>Receipts</td>
-                  <td>{data.receipts}</td>
-                </tr>
-                <tr>
-                  <td>Reminders</td>
-                  <td>{data.reminders}</td>
-                </tr>
-              </tbody>
-            </Table>
-            {/* <p><strong>Average Payment Time:</strong> {data.averagePaymentTime.toFixed(1)} days</p>
-            <p><strong>Collection Rate:</strong> {(data.collectionRate * 100).toFixed(1)}%</p> */}
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
           </Col>
         </Row>
         <Row className="mt-4">
           <Col>
             <ButtonGroup className="mb-3">
-<<<<<<< HEAD
               {(['Invoices', 'Receipts', 'Reminders'] as DocumentType[]).map((docType) => (
                 <Button
                   key={docType}
@@ -355,32 +164,6 @@ const RevenueOverview: React.FC<RevenueOverviewProps> = () => {
                   {docType}
                 </Button>
               ))}
-=======
-              <Button
-                variant={selectedDocType === 'Invoices' ? 'primary' : 'outline-primary'}
-                onClick={() => {
-                  getInvoiceDocument()
-                  setSelectedDocType('Invoices')}}
-              >
-                Invoices
-              </Button>
-              <Button
-                variant={selectedDocType === 'Receipts' ? 'primary' : 'outline-primary'}
-                onClick={() => {
-                  getReceiptDocument()
-                  setSelectedDocType('Receipts')}}
-              >
-                Receipts
-              </Button>
-              <Button
-                variant={selectedDocType === 'Reminders' ? 'primary' : 'outline-primary'}
-                onClick={() => {
-                  getRemindDocument()
-                  setSelectedDocType('Reminders')}}
-              >
-                Reminders
-              </Button>
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
             </ButtonGroup>
             <div className="d-flex justify-content-between align-items-center mb-3">
               <h5>{selectedDocType}</h5>

@@ -64,7 +64,6 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
   const handleSendReminder = useCallback(async (payment: RentPayment) => {
     setLoading(true);
     try {
-<<<<<<< HEAD
       const { data } = await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
       if (data.result) {
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -73,17 +72,6 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
           topMessage: "Reminder sent",
           topColor: "primary",
         }));
-=======
-      const {data} = await sendPaymentReminder(payment, { method: reminderMethod, message: customMessage });
-      if(data.result)
-      {
-        window.scrollTo({
-          top: 0,
-          behavior: 'smooth' // Optional: makes the scrolling smooth
-      });
-        const dataz ={topDisplay:true,topMessage:"Remainder sent",topColor:"primary",}
-        dispatch(authApiResponseSuccess(AuthActionTypes.POSTTENANT,dataz))
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
       }
     } catch (error) {
       console.error('Error sending reminder:', error);
@@ -149,7 +137,6 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
       accessor: (row: RentPayment) => getStatus(row)
     },
     {
-<<<<<<< HEAD
       Header: 'Actions',
       Cell: ({ row }: { row: { original: RentPayment } }) => (
         <Button
@@ -161,45 +148,9 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
           Send Reminder
         </Button>
       )
-=======
-      console.log(error)
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
     }
   ], [loading, handleOpenModal, getStatus]);
-
-<<<<<<< HEAD
-=======
-  const GetGraph = async ()=>{
-    try{
-      const info ={}
-      const {data} = await api.update('', info)
-    }
-    catch(error)
-    {
-      console.log(error)
-    }
-  }
-useEffect(()=>{
-
-},[])
-
-  useEffect(()=>{
-    Get()
-  },[])
-
-  const isDatePast = (date:string) => new Date(date) < new Date();
-
-const getStatus = (payment:Paymentprop) => {
-  if (isDatePast(payment.leaseEndDate) && (payment.status === 'pending' || payment.status === 'incomplete')) {
-    return 'Overdue';
-  } else if (payment.status === 'pending' || payment.status === 'incomplete') {
-    return payment.status.charAt(0).toUpperCase() + payment.status.slice(1); // Capitalize first letter
-  } else {
-    return 'Paid';
-  }
-};
->>>>>>> 4793f36969e7387dc5c4cadbeed69f7cc664ce34
-  return (
+   return (
     <>
       <TopDisplay />
       <Row className="mb-3">
