@@ -33,7 +33,6 @@ function dateDiffInMonths(startDate: Date, endDate: Date): string {
 
 
 const TopTenants = ({ tenants }: TopTenantsProps) => {
-  console.log(tenants)
   return (
     <Card>
       <Card.Body>
@@ -79,9 +78,9 @@ const TopTenants = ({ tenants }: TopTenantsProps) => {
                     <td>
                       <span
                         className={classNames("badge", {
-                          "bg-success": tenant.status === "paid",
-                          "bg-warning": tenant.status === "pending",
-                          "bg-danger": tenant.status === "late",
+                          "bg-success": tenant.status === "Paid",
+                          "bg-warning": tenant.status === "Unpaid",
+                          "bg-danger": tenant.status === "Overdue",
                         })}
                       >
                         {tenant.status}
