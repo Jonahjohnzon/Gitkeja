@@ -28,13 +28,28 @@ const InvoicingTab: React.FC = () => {
 
   const api = useMemo(() => new APICore(), []);
 
+  const searchData =  async (word:string) =>{
+    try{
+      setLoading(true);
+      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word});
+      if (data.result) {
+        setInvoices(data.data);
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    } 
+    finally {
+      setLoading(false);
+    }
+  }
   const fetchData = useCallback(async () => {
     try {
       setLoading(true);
       const { data } = await api.get('/api/getTenantInvoice');
       if (data.result) {
         setInvoiceData(data.display);
-        setInvoices(data.data);
       }
     } catch (error) {
       console.error('Error fetching invoice data:', error);
@@ -232,7 +247,7 @@ const InvoicingTab: React.FC = () => {
           <Card>
             <Card.Body>
               <h4 className="header-title mb-3">Invoices List</h4>
-              <PaginatedTable columns={columns} data={invoices} pageSize={10} />
+              <PaginatedTable columns={columns} data={invoices} pageSize={10} searchData={searchData}/>
             </Card.Body>
           </Card>
         </Col>

@@ -29,10 +29,10 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
 
   const api = useMemo(() => new APICore(), []);
 
-  const fetchData = useCallback(async () => {
+  const fetchData = useCallback(async (word:string) => {
     try {
       setLoading(true);
-      const { data } = await api.get('/api/getTenantInvoice');
+      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word});
       if (data.result) {
         setReminders(data.data);
       }
@@ -43,11 +43,6 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
     }
   }, [api]);
 
-  useEffect(() => {
-    if (!initialData) {
-      fetchData();
-    }
-  }, [fetchData, initialData]);
 
   const handleOpenModal = useCallback((payment: RentPayment) => {
     setSelectedPayment(payment);
@@ -169,7 +164,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
       </Row>
       <Row>
         <Col>
-          <PaginatedTable columns={columns} data={reminders} pageSize={10} />
+          <PaginatedTable columns={columns} data={reminders} pageSize={10} searchData={fetchData} />
         </Col>
       </Row>
   

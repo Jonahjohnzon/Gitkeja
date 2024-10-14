@@ -103,7 +103,7 @@ const MENU_ITEMS: MenuItemTypes[] = [
         key: "ecommerce-finances-report",
         label: "Finances Report",
         role: "all",
-        url: "/apps/finances/finances-report",
+        url: "/apps/finances/finances-report/overview/invoices/1",
         parentKey: "apps-ecommerce",
       },
       {

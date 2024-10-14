@@ -34,7 +34,6 @@ export interface FinancialData {
     tenantName: string;
     propertyName: string;
     amount: number;
-    dueDate: string;
     status: 'Paid' | 'Unpaid' | 'Overdue';
     leaseEndDate:string,
     paymentDate:string,
@@ -45,11 +44,8 @@ export interface FinancialData {
     tenantName: string;
     propertyName: string;
     amount: number;
-    date: string;
     status: 'Processed' | 'Pending';
     paymentDate:string,
-    leaseEndDate:string
-
   }
   
   export interface Reminder {
@@ -59,6 +55,5 @@ export interface FinancialData {
     type: 'Payment' | 'Lease Renewal' | 'Maintenance';
     dueDate: string;
     status: 'Sent' | 'Pending' | 'Resolved';
-    leaseEndDate:string,
     
   }

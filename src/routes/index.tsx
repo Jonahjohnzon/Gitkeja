@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Children } from "react";
 import { Route, Navigate, RouteProps } from "react-router-dom";
 
 
@@ -323,10 +323,18 @@ const ecommerceAppRoutes = {
       route: PrivateRoute,
     },*/
     {
-      path: "/apps/finances/finances-report",
+      path: "/apps/finances/finances-report/overview/:type/:page",
       name: "Finances Report",
       element: <FinancesReport />,
       route: PrivateRoute,
+      children:[
+        {
+          path: "/apps/finances/finances-report/overview/:type/:page",
+          name: "Finances Report",
+          element: <FinancesReport />,
+          route: PrivateRoute,
+        }
+      ]
     },
     {
       path: "/apps/ecommerce/dashboard",

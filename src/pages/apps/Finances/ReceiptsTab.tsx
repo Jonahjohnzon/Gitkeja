@@ -231,7 +231,7 @@ const ReceiptsTab: React.FC = () => {
           <Card>
             <Card.Body>
               <h4 className="header-title mb-3">Receipts List</h4>
-              <PaginatedTable columns={columns} data={receipts} pageSize={10} />
+              {/* <PaginatedTable columns={columns} data={receipts} pageSize={10} /> */}
             </Card.Body>
           </Card>
         </Col>

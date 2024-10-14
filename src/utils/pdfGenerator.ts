@@ -62,43 +62,22 @@ function getHeaders(item: ReportItem): string[] {
   if ('category' in item) {
     return ['ID', 'Category', 'Amount', 'Date', 'Description', 'Property'];
   } else if ('amount' in item) {
+    
+  if( 'dueDate' in item) {
+    return ['ID', 'Tenant', 'Property', 'Amount', 'Date', 'Type', 'Status'];
+  }
+
     return ['ID', 'Tenant', 'Property', 'Amount', 'Date', 'Status'];
-  } else {
-    return ['ID', 'Tenant', 'Property', 'Type', 'Due Date', 'Status'];
+  }
+  else {
+    return ['ID', 'Tenant', 'Property', 'Type', 'Status'];
   }
 }
 
 
 function getItemValue(item: ReportItem, header: string, selectedDocType?:string): string {
-  const Status = (status:string)=>{
-    if(selectedDocType === 'Reminders')
-    {
-      switch (status){
-        case 'paid':
-          return 'Resolved'
-        case 'pending':
-          return 'Pending'
-        default:
-          return 'Sent'
-      }
-    }
-    else if(selectedDocType === 'Invoices')
-      {
-        switch (status){
-          case 'paid':
-            return 'Paid'
-          default:
-            return 'Unpaid'
-      }
-    }
-    else{
-      switch (status){
-        case 'paid':
-          return 'Processed'
-        default:
-          return 'Pending'
-      }}
-  }
+  
+  
   switch (header) {
     case 'ID':
       return item._id.toString();
@@ -109,13 +88,11 @@ function getItemValue(item: ReportItem, header: string, selectedDocType?:string)
     case 'Amount':
       return 'amount' in item ? `$${item.amount.toLocaleString()}` : 'N/A';
     case 'Date':
-      return 'date' in item ? item.date : ('dueDate' in item ? item.dueDate : 'N/A');
-    case 'Due Date':
-      return 'dueDate' in item ? format(new Date(item.dueDate), 'MMM dd, yyyy') : 'N/A';
+      return 'leaseEndDate' in item ? format(new Date(item.leaseEndDate), 'MMM dd, yyyy') :  'paymentDate' in item ? format(new Date(item.paymentDate), 'MMM dd, yyyy'):'dueDate' in item ? format(new Date(item.dueDate), 'MMM dd, yyyy') : 'N/A';
     case 'Type':
       return 'type' in item ? item.type : 'N/A';
     case 'Status':
-      return 'status' in item ? Status(item.status) : 'N/A';
+      return 'status' in item ?  item.status : 'N/A';
     case 'Category':
       return 'category' in item ? item.category : 'N/A';
     case 'Description':

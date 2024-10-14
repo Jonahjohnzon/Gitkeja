@@ -7,9 +7,10 @@ interface PaginatedTableProps<T extends object> {
   columns: Column<T>[];
   data: T[];
   pageSize?: number;
+  searchData:any;
 }
 
-function PaginatedTable<T extends object>({ columns, data, pageSize = 10 }: PaginatedTableProps<T>) {
+function PaginatedTable<T extends object>({ columns, data, pageSize = 10, searchData }: PaginatedTableProps<T>) {
   const [globalFilterValue, setGlobalFilterValue] = useState('');
 
   const {
@@ -26,7 +27,6 @@ function PaginatedTable<T extends object>({ columns, data, pageSize = 10 }: Pagi
     nextPage,
     previousPage,
     setPageSize,
-    setGlobalFilter,
     state: { pageIndex },
   } = useTable(
     {
@@ -39,8 +39,8 @@ function PaginatedTable<T extends object>({ columns, data, pageSize = 10 }: Pagi
   );
 
   React.useEffect(() => {
-    setGlobalFilter(globalFilterValue);
-  }, [globalFilterValue, setGlobalFilter]);
+    searchData(globalFilterValue)
+  }, [globalFilterValue]);
 
   return (
     <>
@@ -53,6 +53,7 @@ function PaginatedTable<T extends object>({ columns, data, pageSize = 10 }: Pagi
           onChange={(e) => setGlobalFilterValue(e.target.value)}
           placeholder="Search..."
           aria-label="Search"
+
         />
       </InputGroup>
 

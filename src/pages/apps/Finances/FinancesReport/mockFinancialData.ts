@@ -58,6 +58,5 @@ for (let i = 0; i < 10; i++) {
     type: ['Payment', 'Lease Renewal', 'Maintenance'][Math.floor(Math.random() * 3)] as 'Payment' | 'Lease Renewal' | 'Maintenance',
     dueDate: new Date(2024, i, 20).toISOString().split('T')[0],
     status: ['Sent', 'Pending', 'Resolved'][Math.floor(Math.random() * 3)] as 'Sent' | 'Pending' | 'Resolved',
-    leaseEndDate:''
   });
 }
