@@ -141,9 +141,6 @@ const Properties: React.FC = () => {
         </Col>
       </Row>
 
-<<<<<<< HEAD
-      <PaginatedTable columns={columns} data={filteredProperties} pageSize={9} />
-=======
       <Row className="mb-3">
         <Col>
           <Form.Control
@@ -156,7 +153,6 @@ const Properties: React.FC = () => {
       </Row>
 
       {/* <PaginatedTable columns={columns} data={filteredProperties} pageSize={9} /> */}
->>>>>>> 68cff6f (update)
     </>
   );
 };
