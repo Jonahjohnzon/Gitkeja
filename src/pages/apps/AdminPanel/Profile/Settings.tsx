@@ -4,7 +4,7 @@ import { Row, Col, InputGroup, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 
 // components
-import { FormInput } from "../../../../components/";
+import { FormInput } from "../../../../components";
 
 interface SocialInfo {
   label: string;

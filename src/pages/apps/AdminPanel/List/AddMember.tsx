@@ -4,7 +4,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 // components
-import { VerticalForm, FormInput } from "../../../../components/";
+import { VerticalForm, FormInput } from "../../../../components";
 
 interface AddMemberProps {
   show: boolean;

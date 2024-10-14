@@ -101,9 +101,9 @@ const TaskList = React.lazy(() => import("../pages/apps/Tasks/List/"));
 const TaskDetails = React.lazy(() => import("../pages/apps/Tasks/Details"));
 const Kanban = React.lazy(() => import("../pages/apps/Tasks/Board/"));
 // -contacts
-const ContactsList = React.lazy(() => import("../pages/apps/Contacts/List/"));
+const ContactsList = React.lazy(() => import("../pages/apps/AdminPanel/List"));
 const ContactsProfile = React.lazy(
-  () => import("../pages/apps/Contacts/Profile/")
+  () => import("../pages/apps/AdminPanel/Profile")
 );
 // -tickets
 const TicketsList = React.lazy(() => import("../pages/apps/Tickets/List/"));
