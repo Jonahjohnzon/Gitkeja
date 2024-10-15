@@ -132,7 +132,6 @@ const SignInSignUp2 = () => {
 
   const onSignUp = (formData: UserData) => {
     dispatch(
-      signupUser(formData["fullname"], formData["email"], formData["password"])
     );
   };
 

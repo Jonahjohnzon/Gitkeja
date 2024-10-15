@@ -114,7 +114,6 @@ const Register2 = () => {
    */
   const onSubmit = (formData: UserData) => {
     dispatch(
-      signupUser(formData["fullname"], formData["email"], formData["password"])
     );
   };
 

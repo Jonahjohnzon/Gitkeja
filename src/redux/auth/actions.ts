@@ -121,10 +121,11 @@ export const logoutUser = (): AuthActionType => ({
 export const signupUser = (
   name: string,
   email: string,
-  password: string
+  password: string,
+  role:string
 ): AuthActionType => ({
   type: AuthActionTypes.SIGNUP_USER,
-  payload: { name, email, password },
+  payload: { name, email, password, role },
 });
 
 export const createNewProperty = (

@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
 import { AdminItem } from './data';
-import defaultAvatar from '../../../../assets/images/user-1.png';
+import { useSelector, useDispatch } from "react-redux";
+import { AppDispatch } from '../../../../redux/store';
+import { signupUser } from '../../../../redux/actions';
 
 interface AdminFormProps {
   administrators: AdminItem[];
@@ -11,31 +13,19 @@ interface AdminFormProps {
 const AdminForm: React.FC<AdminFormProps> = ({ administrators, onAddAdmin }) => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
-  const [role, setRole] = useState('Admin');
+  const [role, setRole] = useState('admin');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showAlert, setShowAlert] = useState(false);
+  const dispatch = useDispatch<AppDispatch>();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (administrators.length < 3) {
-      const newAdmin: AdminItem = {
-        id: administrators.length + 1,
-        name: fullName,
-        email,
-        avatar: defaultAvatar,
-        position: role,
-        phone: phoneNumber,
-        dateAdded: new Date().toISOString().split('T')[0],
-      };
-      onAddAdmin(newAdmin);
-      setFullName('');
-      setEmail('');
-      setRole('Admin');
-      setPhoneNumber('');
-      setShowAlert(true);
-      setTimeout(() => setShowAlert(false), 5000); // Hide alert after 5 seconds
-    } else {
-      alert('Maximum of 2 additional administrators allowed.');
+    try{
+      dispatch(signupUser(fullName, email, role, role))
+    }
+    catch(error)
+    {
+      console.log(error)
     }
   };
 
@@ -73,8 +63,8 @@ const AdminForm: React.FC<AdminFormProps> = ({ administrators, onAddAdmin }) => 
               value={role}
               onChange={(e) => setRole(e.target.value)}
             >
-              <option value="Admin">Admin</option>
-              <option value="Manager">Manager</option>
+              <option value="admin">Admin</option>
+              <option value="manager">Manager</option>
             </Form.Select>
           </Form.Group>
           <Form.Group className="mb-3">

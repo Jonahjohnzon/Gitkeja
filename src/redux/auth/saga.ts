@@ -46,6 +46,7 @@ interface UserData {
     fullname?: string;
     email?: string;
     token?: string;
+    role?:string;
   };
   type: string;
 }
@@ -125,10 +126,10 @@ function* logout(): SagaIterator {
   }
 }
 
-function* signup({ payload: { name = '', email = '', password = '' } }: UserData): SagaIterator {
+function* signup({ payload: { name = '', email = '', password = '', role='' } }: UserData): SagaIterator {
   try {
     if (!name || !email || !password) throw new Error('Fullname, email, and password are required');
-    const response = yield call(() => signupApi({ name, email, password }));
+    const response = yield call(() => signupApi({ name, email, password, role }));
     const user = response.data;
     yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
   } catch (error: any) {
