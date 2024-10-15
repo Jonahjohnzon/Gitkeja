@@ -178,7 +178,12 @@ function* createTenant({ payload: { name = '', propertyId = '', email = '', unit
     behavior: 'smooth' // Optional: makes the scrolling smooth
     });
   } catch (error: any) {
-    yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor:  "danger",
+      topMessage:"Error creating tenants",
+      topDisplay:true,
+  }));
   }
 }
 
