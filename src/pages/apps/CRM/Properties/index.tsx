@@ -10,6 +10,7 @@ import PageTitle from "../../../../components/PageTitle";
 import PaginatedTable from "../../../../components/PaginatedTable";
 import { Column } from 'react-table';
 import { PropertyType } from "../../../../types";
+import { APICore } from "../../../../helpers/api/apiCore";
 
 const SingleProperty: React.FC<{ property: PropertyType }> = React.memo(({ property }) => {
   return (
@@ -73,23 +74,22 @@ const SingleProperty: React.FC<{ property: PropertyType }> = React.memo(({ prope
 });
 
 const Properties: React.FC = () => {
-  const dispatch = useDispatch<AppDispatch>();
-  const { propertiesList } = useSelector((state: RootState) => state.Auth);
+  const api = new APICore()
+  const [propertiesList, setPropertiesList] = useState([])
   const [filter, setFilter] = useState("All");
   const [searchTerm, setSearchTerm] = useState("");
 
-  useEffect(() => {
-    dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 9 } });
-  }, [dispatch]);
+  const Get = async(word:string)=>{
+    const baseUrl = "/api/getProperty/";
+    const {data} = await api.get(`${baseUrl}`, {limit:9, name:word});
+    if(data?.result)
+    {
+    setPropertiesList(data.data)
+    }
+    }
 
-  const filteredProperties = useMemo(() => {
-    return propertiesList.filter((property: PropertyType) => {
-      const matchesFilter = filter === "All" || property.status === filter;
-      const matchesSearch = property.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            property.location.toLowerCase().includes(searchTerm.toLowerCase());
-      return matchesFilter && matchesSearch;
-    });
-  }, [propertiesList, filter, searchTerm]);
+
+
 
   const handleFilterChange = useCallback((newFilter: string) => {
     setFilter(newFilter);
@@ -152,7 +152,7 @@ const Properties: React.FC = () => {
         </Col>
       </Row>
 
-      {/* <PaginatedTable columns={columns} data={filteredProperties} pageSize={9} /> */}
+      <PaginatedTable columns={columns} data={propertiesList} pageSize={9} searchData={Get}  />
     </>
   );
 };
