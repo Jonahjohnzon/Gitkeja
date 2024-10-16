@@ -8,6 +8,7 @@ import { PropertyOccupancy } from './types';
 import axios from 'axios';
 import config from '../../../../config';
 import Spinner from '../../../../components/Spinner';
+import { APICore } from '../../../../helpers/api/apiCore';
 
 interface PropertyOccupancyDetailsProps {
   propertiesList:any
@@ -20,27 +21,29 @@ const PropertyOccupancyDetails: React.FC<PropertyOccupancyDetailsProps> = ({
   const [selectedProperty, setSelectedProperty] = useState<PropertyOccupancy | null>(
     null
   )
-
+  const api = new APICore()
   const [pid, setPid] = useState(propertiesList[0]._id)
   const [name, setName] = useState<string | null>(selectedProperty?.name || null)
 
+  const Get = async ()=>{
+    try{
+      const {data} = await api.get(`/api/getMonthlyProperty`,{propertyId:pid})
+      const result = data
+      if(result.result)
+      {
+        setArray(result.occupancyRates)
+        setSelectedProperty(result.data)
+        setName(result.data.name)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
 useEffect(()=>{
   setSelectedProperty(null)
-try{
-  axios.get(`${config.API_URL}/api/getMonthlyProperty?propertyId=${pid}`).then(resp =>{
-  const result = resp.data
-  if(result.result)
-  {
-    setArray(result.occupancyRates)
-    setSelectedProperty(result.data)
-    setName(result.data.name)
-  }
-})
-}
-catch(error)
-{
-  console.log(error)
-}
+ Get()
 },[pid])
   const [arrayData, setArray] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
 

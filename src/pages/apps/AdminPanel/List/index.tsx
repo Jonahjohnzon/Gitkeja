@@ -10,6 +10,7 @@ import ManagersList from "./ManagersList";
 
 // data
 import { administrators as initialAdmins, managers as initialManagers, AdminItem, ManagerItem } from "./data";
+import TopDisplay from "../../../../layouts/TopDisplay";
 
 const ManagersAndAdmins = () => {
   const [administrators, setAdministrators] = useState<AdminItem[]>(initialAdmins);
@@ -48,6 +49,7 @@ const ManagersAndAdmins = () => {
 
   return (
     <>
+    <TopDisplay/>
       <PageTitle
         breadCrumbItems={[
           { label: "Admin", path: "/admin" },

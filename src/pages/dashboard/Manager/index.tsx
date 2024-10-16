@@ -14,20 +14,18 @@ import VacancyAlertWidget from "./VacancyAlertWidget";
 
 // data
 import { maintenanceRequests, leaseExpirations } from "./data";
-import axios from "axios";
-import config from "../../../config";
 import Spinner from "../../../components/Spinner";
+import { APICore } from "../../../helpers/api/apiCore";
 
 const PropertyManagerDashboard = () => {
 const  [properties, setProperties] = useState([])
+const api = new APICore()
 
 //Single Api Get
-const Get =()=>{
+const Get = async()=>{
   try{
-  axios.get(`${config.API_URL}/api/getManagerProperty`).then((resp)=>{
-    const data = resp.data
-    setProperties(data.data)
-  })
+  const {data} = await api.get(`/api/getManagerProperty`)
+  setProperties(data.data)
 }
 catch(error){
   console.log(error)

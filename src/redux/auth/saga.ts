@@ -126,15 +126,45 @@ function* logout(): SagaIterator {
   }
 }
 
-function* signup({ payload: { name = '', email = '', password = '', role='' } }: UserData): SagaIterator {
+function* signup({ payload: { name = '', email = '', role='' } }: UserData): SagaIterator {
   try {
-    if (!name || !email || !password) throw new Error('Fullname, email, and password are required');
-    const response = yield call(() => signupApi({ name, email, password, role }));
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      loading:true,
+  }));
+    if (!name || !email || !role) throw new Error('Fullname, email, and role are required');
+const response = yield call(() => signupApi({ name, email, role }));
     const user = response.data;
-    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
-  } catch (error: any) {
-    yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error.message || 'Signup Failed'));
+    if(user.result)
+    {
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor:  "primary",
+      topMessage:"Admin Creation Successful",
+      topDisplay:true,
+      loading:false
+  }));
   }
+  else{
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor:  "danger",
+      topMessage:user.message,
+      topDisplay:true,
+      loading:false
+  }))
+  }
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth' // Optional: makes the scrolling smooth
+    });
+  } catch (error: any) {
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor:  "danger",
+      topMessage:"Error creating admin",
+      topDisplay:true,
+      loading:false
+  }));  }
 }
 
 function* createProperty({ payload: { name = '', location = '', type = '', units = 0, rentAmount = 0, leaseTerms = '', description = '', amenities = [], nearbyFacilities = [], managers = [] , acquisitionDate = new Date() , image = null, garbageFee = 0, utilities = [],  estimatedPropertyValue = 0  } }: FormData): SagaIterator {
@@ -155,8 +185,12 @@ function* createProperty({ payload: { name = '', location = '', type = '', units
         behavior: 'smooth' // Optional: makes the scrolling smooth
     });
   } catch (error: any) {
-    yield put(authApiResponseError(AuthActionTypes.POSTPROPERTY, 'Creation Failed'));
-  }
+    yield put(authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
+      tenantLoading:false,
+      topColor:  "danger",
+      topMessage:"Error creating Property",
+      topDisplay:true,
+  }));  }
 }
 
 function* createTenant({ payload: { name = '', propertyId = '', email = '', unit = "", rentAmount = 0, leaseStartDate = "", phone = '', leaseEndDate = "", securityDeposit=0, numberOfOccupants=0, pets=false, idPassportNumber=""  } }: TenantForm): SagaIterator {

@@ -12,6 +12,7 @@ import RemindersTab from "../pages/apps/Finances/RemindersTab";
 //import RentPayments from "../pages/apps/Finances/RentPayments";
 import FinancesReport from "../pages/apps/Finances/FinancesReport/FinancesReport";
 // import Root from './Root';
+import SetPasswordForm from '../pages/auth/SetPasswordForm';
 
 
 // lazy load all the views
@@ -1110,6 +1111,12 @@ const authRoutes: RoutesProps[] = [
     path: "/auth/lock-screen2",
     name: "Lock Screen2",
     element: <LockScreen2 />,
+    route: Route,
+  },
+  {
+    path: "/auth/password/:token",
+    name: "Password Form",
+    element: <SetPasswordForm/>,
     route: Route,
   },
 ];

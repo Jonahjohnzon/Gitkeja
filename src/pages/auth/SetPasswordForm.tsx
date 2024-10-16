@@ -1,9 +1,10 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Alert, Row, Col } from "react-bootstrap";
-import { useSelector, useDispatch } from "react-redux";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import { useTranslation } from "react-i18next";
+import { useParams } from "react-router-dom";
+import { APICore } from "../../helpers/api/apiCore";
 
 // actions
 //import { setPassword } from "../../redux/auth/actions";
@@ -13,27 +14,24 @@ import { RootState, AppDispatch } from "../../redux/store";
 
 // components
 import { VerticalForm, FormInput } from "../../components/";
+import AuthLayout from "./AuthLayout";
+import { S } from "react-ladda-button";
 
 interface PasswordData {
   newPassword: string;
   confirmPassword: string;
 }
 
-interface SetPasswordFormProps {
-  token: string;
-}
 
-const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ token }) => {
+
+const SetPasswordForm: React.FC = () => {
+  const {token} = useParams()
+  const api = new APICore()
   const { t } = useTranslation();
-  const dispatch = useDispatch<AppDispatch>();
+  const [loading, setLoading] = useState(false)
+  const [success, setSuccess] = useState()
+  const [error, setError] = useState()
 
-  const { loading, error, success } = useSelector(
-    (state: RootState) => ({
-      loading: state.Auth.loading,
-      error: state.Auth.error,
-      success: state.Auth.success,
-    })
-  );
 
   const schemaResolver = yupResolver(
     yup.object().shape({
@@ -52,11 +50,39 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ token }) => {
     })
   );
 
-  const onSubmit = (formData: PasswordData) => {
-    //dispatch(setPassword(formData.newPassword, token));
+  const onSubmit = async (formData: PasswordData) => {
+    try{
+      setLoading(true)
+      if(token)
+      {
+      const {data} = await api.create('/api/passwordCreation',{
+        token,
+        password:formData['newPassword']
+      })
+      if(data.result)
+      {
+
+        setSuccess(data.message)
+        console.log(data)
+      }
+      else{
+        setError(data.message)
+      }
+      setLoading(false)
+    }
+    }
+    catch(error)
+    {
+      console.log(error)
+      setLoading(false)
+    }
   };
   return (
+    <AuthLayout
+    helpText={t("Click the button below to activate your account.")}
+  >
     <>
+    
       {error && (
         <Alert variant="danger" className="my-2">
           {error}
@@ -95,7 +121,7 @@ const SetPasswordForm: React.FC<SetPasswordFormProps> = ({ token }) => {
           </Button>
         </div>
       </VerticalForm>
-    </>
+    </></AuthLayout>
   );
 };
 

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, Form, Button, Alert } from 'react-bootstrap';
 import { AdminItem } from './data';
 import { useSelector, useDispatch } from "react-redux";
-import { AppDispatch } from '../../../../redux/store';
+import { AppDispatch, RootState } from '../../../../redux/store';
 import { signupUser } from '../../../../redux/actions';
 
 interface AdminFormProps {
@@ -17,11 +17,14 @@ const AdminForm: React.FC<AdminFormProps> = ({ administrators, onAddAdmin }) => 
   const [phoneNumber, setPhoneNumber] = useState('');
   const [showAlert, setShowAlert] = useState(false);
   const dispatch = useDispatch<AppDispatch>();
+  const { loading} = useSelector((state: RootState) => ({
+    loading: state.Auth.loading,
+  }));
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     try{
-      dispatch(signupUser(fullName, email, role, role))
+      dispatch(signupUser(fullName, email, role))
     }
     catch(error)
     {
@@ -76,7 +79,7 @@ const AdminForm: React.FC<AdminFormProps> = ({ administrators, onAddAdmin }) => 
               required
             />
           </Form.Group>
-          <Button type="submit" variant="primary">
+          <Button type="submit" variant="primary" disabled={loading}>
             Add Administrator
           </Button>
         </Form>
