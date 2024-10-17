@@ -232,7 +232,6 @@ const InvoicingTab: React.FC = () => {
 
   return (
     <>
-      <TopDisplay />
       <Row className="mb-3">
         <Col>
           <Card>
@@ -260,6 +259,7 @@ const InvoicingTab: React.FC = () => {
         <Modal.Body>
           {selectedPayment && (
             <Form>
+              <TopDisplay />
               <Form.Group className="mb-3">
                 <Form.Label>Tenant</Form.Label>
                 <Form.Control type="text" value={selectedPayment.tenantName} readOnly />
