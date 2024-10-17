@@ -1,22 +1,24 @@
 // src/pages/apps/AdminPanel/List/index.tsx
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Row, Col, Form, Container } from "react-bootstrap";
 
 // components
 import PageTitle from "../../../../components/PageTitle";
 import AdminForm from "./AdminForm";
 import ManagersList from "./ManagersList";
+import { APICore } from "../../../../helpers/api/apiCore";
 
 // data
-import { administrators as initialAdmins, managers as initialManagers, AdminItem, ManagerItem } from "./data";
+import {  managers as initialManagers, AdminItem, ManagerItem } from "./data";
 import TopDisplay from "../../../../layouts/TopDisplay";
 
 const ManagersAndAdmins = () => {
-  const [administrators, setAdministrators] = useState<AdminItem[]>(initialAdmins);
+  const [admin, setAdmin] = useState([])
   const [managers] = useState<ManagerItem[]>(initialManagers);
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [filterBy, setFilterBy] = useState<string>("All");
+  const api = new APICore()
 
   const onSearchData = (value: string) => {
     setSearchTerm(value);
@@ -27,24 +29,30 @@ const ManagersAndAdmins = () => {
     manager.property.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const filteredAdmins = administrators.filter((admin) =>
-    admin.name.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const Get = async() =>{
+    try{
+      const {data} = await api.get('/api/getadmin')
+      if(data.result){
+        console.log(data.data)
+        setAdmin(data.data)
+      }
+    }
+    catch(error){
+      console.log(error)
+    }
+  }
+  useEffect(()=>{
+    Get()
+  },[])
+
+
 
   const handleAddAdmin = (newAdmin: AdminItem) => {
-    if (administrators.length < 3) {
-      setAdministrators([...administrators, newAdmin]);
-    } else {
-      alert("Maximum of 2 additional administrators allowed.");
-    }
+
   };
 
   const handleRemoveAdmin = (adminId: number) => {
-    if (administrators.length > 1) {
-      setAdministrators(administrators.filter(admin => admin.id !== adminId));
-    } else {
-      alert("Cannot remove the last administrator.");
-    }
+
   };
 
   return (
@@ -94,14 +102,12 @@ const ManagersAndAdmins = () => {
         <Row>
           <Col lg={4}>
             <AdminForm
-              administrators={administrators}
-              onAddAdmin={handleAddAdmin}
             />
           </Col>
           <Col lg={8}>
             <ManagersList
               managers={filteredManagers}
-              administrators={filteredAdmins}
+              administrators={admin}
               showAdmins={filterBy === "All" || filterBy === "Admins"}
               showManagers={filterBy === "All" || filterBy === "Managers"}
               onRemoveAdmin={handleRemoveAdmin}

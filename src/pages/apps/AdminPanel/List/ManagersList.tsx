@@ -28,12 +28,12 @@ const ManagersList: React.FC<ManagersListProps> = ({
           <>
             <h5>Administrators</h5>
             {administrators.map((admin) => (
-              <div key={admin.id} className="d-flex justify-content-between align-items-center mb-2">
+              <div key={admin._id} className="d-flex justify-content-between align-items-center mb-2">
                 <UserCard user={admin} />
                 <Button 
                   variant="danger" 
                   size="sm" 
-                  onClick={() => onRemoveAdmin(admin.id)}
+                  onClick={() => onRemoveAdmin(admin._id)}
                   disabled={administrators.length === 1}
                 >
                   Remove Access
@@ -56,7 +56,7 @@ const ManagersList: React.FC<ManagersListProps> = ({
               </thead>
               <tbody>
                 {managers.map((manager) => (
-                  <tr key={manager.id}>
+                  <tr key={manager._id}>
                     <td>{manager.name}</td>
                     <td>{manager.email}</td>
                     <td>{manager.phone}</td>

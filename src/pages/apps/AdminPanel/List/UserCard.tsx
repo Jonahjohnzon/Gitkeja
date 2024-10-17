@@ -1,12 +1,13 @@
 import React from 'react';
 import { Card, Row, Col, Button } from 'react-bootstrap';
 import { Link } from 'react-router-dom';
+import DefaultImage from '../../../../components/DefaultImage';
 
 interface UserCardProps {
   user: {
-    id: number;
+    _id: number;
     name: string;
-    avatar: string;
+    profile_image: string;
     position: string;
     email: string;
   };
@@ -17,11 +18,13 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
     <Card className="text-center">
       <Card.Body>
         <div className="pt-2 pb-2">
-          <img
-            src={user.avatar}
+          {user.profile_image ?<img
+            src={user.profile_image}
             className="rounded-circle img-thumbnail avatar-xl"
             alt={user.name}
-          />
+          />:
+          <div className=' d-flex justify-content-center'>
+          <DefaultImage username={user.name}/></div>}
           <h4 className="mt-3">
             <Link to="#" className="text-dark">
               {user.name}

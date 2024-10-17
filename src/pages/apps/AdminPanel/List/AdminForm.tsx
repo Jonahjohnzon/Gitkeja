@@ -5,12 +5,9 @@ import { useSelector, useDispatch } from "react-redux";
 import { AppDispatch, RootState } from '../../../../redux/store';
 import { signupUser } from '../../../../redux/actions';
 
-interface AdminFormProps {
-  administrators: AdminItem[];
-  onAddAdmin: (newAdmin: AdminItem) => void;
-}
 
-const AdminForm: React.FC<AdminFormProps> = ({ administrators, onAddAdmin }) => {
+
+const AdminForm = () => {
   const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [role, setRole] = useState('admin');
