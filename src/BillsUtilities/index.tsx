@@ -59,11 +59,10 @@ const BillsUtilitiesPage: React.FC = () => {
         breadCrumbItems={[
           { label: 'Bills & Utilities', path: '/bills-utilities', active: true },
         ]}
-        title={'Bills & Utilities'}
+    title={'Bills & Utilities'}
       />
       <Container>
         <div className="d-flex justify-content-between align-items-center mb-4">
-          <h1>Bills & Utilities</h1>
           <Button variant="primary" onClick={() => setShowBillForm(true)}>
             Add New Bill
           </Button>
