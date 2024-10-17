@@ -111,6 +111,9 @@ const TicketsList = React.lazy(() => import("../pages/apps/Tickets/List/"));
 const TicketsDetails = React.lazy(
   () => import("../pages/apps/Tickets/Details/")
 );
+// Maintenance & Bills
+const MaintenancePage = React.lazy(() => import("../Maintenance"));
+const BillsUtilities = React.lazy(() => import("../BillsUtilities"));
 // - file
 const FileManager = React.lazy(() => import("../pages/apps/FileManager"));
 
@@ -267,6 +270,23 @@ const dashboardRoutes: RoutesProps = {
   ],
 };
 
+const maintenanceRoutes = {
+  path: "/apps/maintenance",
+  name: "Maintenance",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  icon: "tool",
+  element: <MaintenancePage />,
+};
+
+const billsUtilitiesRoutes = {
+  path: "/apps/bills-utilities",
+  name: "Bills & Utilities",
+  route: PrivateRoute,
+  roles: ["Admin"],
+  icon: "file-text",
+  element: <BillsUtilities />,
+};
 const calendarAppRoutes: RoutesProps = {
   path: "/apps/calendar",
   name: "Calendar",
@@ -609,6 +629,8 @@ const appRoutes = [
   contactsRoutes,
   ticketsRoutes,
   fileAppRoutes,
+  maintenanceRoutes,
+  billsUtilitiesRoutes,
 ];
 
 // pages

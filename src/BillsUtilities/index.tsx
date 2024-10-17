@@ -1,13 +1,15 @@
 import React, { useState, useEffect } from 'react';
-import { Container } from 'react-bootstrap';
+import { Container, Button } from 'react-bootstrap';
 import PageTitle from '../components/PageTitle';
 import BillsDashboard from './BillsDashboard';
 import BillsList from './BillsList';
+import BillForm from './BillForm';
 import { getBills, addBill, updateBill, deleteBill } from '../services/billsService';
 
 const BillsUtilitiesPage: React.FC = () => {
   const [bills, setBills] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [showBillForm, setShowBillForm] = useState(false);
 
   useEffect(() => {
     fetchBills();
@@ -60,6 +62,12 @@ const BillsUtilitiesPage: React.FC = () => {
         title={'Bills & Utilities'}
       />
       <Container>
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1>Bills & Utilities</h1>
+          <Button variant="primary" onClick={() => setShowBillForm(true)}>
+            Add New Bill
+          </Button>
+        </div>
         <BillsDashboard bills={bills} />
         <BillsList
           bills={bills}
@@ -67,6 +75,11 @@ const BillsUtilitiesPage: React.FC = () => {
           onAddBill={handleAddBill}
           onUpdateBill={handleUpdateBill}
           onDeleteBill={handleDeleteBill}
+        />
+        <BillForm
+          show={showBillForm}
+          onHide={() => setShowBillForm(false)}
+          onSubmit={handleAddBill}
         />
       </Container>
     </>

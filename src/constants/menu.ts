@@ -161,14 +161,6 @@ const MENU_ITEMS: MenuItemTypes[] = [
     url: "/pages/timeline",
   },
   {
-    key: "apps-companies",
-    label: "Timeline",
-    isTitle: false,
-    role:["admin",'manager','superadmin'],
-    icon: "activity",
-    url: "/pages/timeline",
-  },
-  {
     key: "maintenance",
     label: "Maintenance",
     isTitle: false,
