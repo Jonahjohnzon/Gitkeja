@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Card, Button, Row, Col, Alert } from "react-bootstrap";
 import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -12,6 +12,7 @@ import { createNewTenant } from "../../../../redux/actions";
 import { useForm, Controller } from "react-hook-form";
 import Spinner from "../../../../components/Spinner";
 import TopDisplay from "../../../../layouts/TopDisplay";
+import { APICore } from "../../../../helpers/api/apiCore";
 
 interface Property {
   _id: string;
@@ -60,12 +61,25 @@ const schema = yup.object().shape({
 const AddTenantPage: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
   const navigate = useNavigate();
-
-  const { propertiesList, tenantLoading, loading, error } = useSelector((state: RootState) => state.Auth);
-
+  const api = new APICore()
+  const { tenantLoading, loading, error } = useSelector((state: RootState) => state.Auth);
+  const [propertiesList, setpropertiesList] = useState([])
+  const Get = async()=>{
+    try{
+      const {data} = await api.get('/api/getPropertyname',{limit:1000})
+      if(data.result)
+      {
+        setpropertiesList(data.data)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
   useEffect(() => {
-    dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
-  }, [dispatch]);
+    Get()
+  }, []);
 
   const { control, handleSubmit, formState: { errors }, watch } = useForm<TenantFormData>({
     resolver: yupResolver(schema),
