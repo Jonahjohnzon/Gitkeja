@@ -15,6 +15,7 @@ import { RootState } from '../../../../redux/store';
 import { AuthActionTypes } from '../../../../redux/auth/constants';
 import Spinner from '../../../../components/Spinner';
 import { getOccupancyApi } from '../../../../redux/actions';
+import { APICore } from '../../../../helpers/api/apiCore';
 // Mock data - replace with API calls in production
 
 
@@ -24,9 +25,11 @@ const mockPropertyOccupancies: PropertyOccupancy[] = [
 ];
 
 const OccupancyPage: React.FC = () => {
-  const {  OccupancyReport,  OccupancyLoad, OccupancyReports , propertiesList} = useSelector((state: RootState) => state.Auth);
+  const api =new APICore()
+  const {  OccupancyReport,  OccupancyLoad, OccupancyReports} = useSelector((state: RootState) => state.Auth);
   const occupancyReports = OccupancyReports
   const dispatch = useDispatch<AppDispatch>();
+  const [propertiesList, setpropertiesList] = useState([])
 
 
   useEffect(() => {
@@ -37,6 +40,24 @@ const OccupancyPage: React.FC = () => {
     dispatch({type: AuthActionTypes.GETOCCREPORT})
     dispatch({ type: AuthActionTypes.GETPROPERTY, payload: { limit: 1000 } });
 
+  }, []);
+
+
+  const Get = async()=>{
+    try{
+      const {data} = await api.get('/api/getPropertyname',{limit:1000})
+      if(data.result)
+      {
+        setpropertiesList(data.data)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+  useEffect(() => {
+    Get()
   }, []);
 
   if (OccupancyLoad) {
