@@ -6,11 +6,9 @@ import { FinancialData } from './types';
 import { APICore
 
  } from '../../../../helpers/api/apiCore';
-interface OccupancyImpactProps {
-  data: FinancialData | null;
-}
 
-const OccupancyImpact: React.FC<OccupancyImpactProps> = ({ data }) => {
+
+const OccupancyImpact: React.FC= () => {
   const api = new APICore()
   const [roundedRates, setRoundedRates] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
   const [roundedRevenues, setRoundedRevenue] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
@@ -88,7 +86,7 @@ const OccupancyImpact: React.FC<OccupancyImpactProps> = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data?.occupancyData.rates.map((rate, index) => (
+            {chartOptions.xaxis?.categories.map((rate:any, index:any) => (
               <tr key={index}>
                 <td>{chartOptions.xaxis?.categories[index]}</td>
                 <td>{Math.round(roundedRates[index])}%</td>

@@ -1,19 +1,41 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { FinancialData } from './types';
+import { APICore } from '../../../../helpers/api/apiCore';
 
-interface ExpenseBreakdownProps {
-  data: FinancialData | null;
+
+
+const ExpenseBreakdown: React.FC = () => {
+  const api = new APICore()
+  const [Data, setData] = useState({
+            Insurance: 0,
+            Maintenance: 0,
+            ManagementFee: 0,
+            PropertyTax: 0,
+            Utilities: 0
+  })
+const Get = async() =>{
+  try{
+    const {data} = await api.get('/api/expenseBreakdown')
+    if(data.result)
+    {
+      const result = data.data
+      setData(result)
+
+    }
+
+  }
+  catch(error){
+
+  }
 }
 
-const ExpenseBreakdown: React.FC<ExpenseBreakdownProps> = ({ data }) => {
-
-  if (!data) return null;
-
-  const expenseCategories = Object.keys(data.expenseData);
-  const expenseValues = Object.values(data.expenseData).map(Math.round);
+  useEffect(()=>{
+    Get()
+  },[])
+  const expenseCategories = Object.keys(Data);
+  const expenseValues = Object.values(Data).map(Math.round);
   const totalExpenses = expenseValues.reduce((sum, value) => sum + value, 0);
 
   const chartOptions: ApexOptions = {
@@ -49,13 +71,13 @@ const ExpenseBreakdown: React.FC<ExpenseBreakdownProps> = ({ data }) => {
               <tr key={index}>
                 <td>{category}</td>
                 <td>${expenseValues[index].toLocaleString()}</td>
-                <td>{((expenseValues[index] / totalExpenses) * 100).toFixed(1)}%</td>
+                <td>{totalExpenses > 0? ((expenseValues[index] / totalExpenses) * 100).toFixed(1): 0}%</td>
               </tr>
             ))}
             <tr>
               <th>Total</th>
               <th>${totalExpenses.toLocaleString()}</th>
-              <th>100%</th>
+              <th>{totalExpenses > 0 ? 100 : 0}%</th>
             </tr>
           </tbody>
         </Table>

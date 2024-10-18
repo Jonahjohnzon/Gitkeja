@@ -1,58 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { Row, Col, Card, Tab, Tabs } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { Tab, Tabs } from 'react-bootstrap';
 import RevenueOverview from './RevenueOverview';
 import CashFlowAnalysis from './CashFlowAnalysis';
 import ExpenseBreakdown from './ExpenseBreakdown';
 import OccupancyImpact from './OccupancyImpact';
 import PaymentTrends from './PaymentTrends';
 import DateRangeFilter from './DateRangeFilter';
-import { FinancialData } from './types';
-import ErrorBoundary, { LoadingSpinner } from './ErrorBoundary';
-import { mockFinancialData } from './mockFinancialData';
+import ErrorBoundary from './ErrorBoundary';
 
 const FinancesReport: React.FC = () => {
-  const [financialData, setFinancialData] = useState<FinancialData | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const params = useParams() 
+  const selectedDocType = params.overview
+  const navigate = useNavigate()
   const [dateRange, setDateRange] = useState({ startDate: new Date(), endDate: new Date() });
 
-  useEffect(() => {
-    // Simulate API call with setTimeout
-    const loadData = () => {
-      setIsLoading(true);
-      setTimeout(() => {
-        setFinancialData(mockFinancialData);
-        setIsLoading(false);
-      }, 1000); // Simulate 1 second loading time
-    };
-    loadData();
-  }, [dateRange]);
+
 
   const handleDateRangeChange = (startDate: Date, endDate: Date) => {
     setDateRange({ startDate, endDate });
   };
 
-  if (isLoading) return <LoadingSpinner />;
-
+  const handleSelect = (key:any) => {
+    console.log(key)
+    switch (key) {
+      case 'overview':
+        navigate('/apps/finances/finances-report/overview/invoices/1');
+        break;
+      case 'cashflow':
+        navigate('/apps/finances/finances-report/cashflow/invoices/1');
+        break;
+      case 'expenses':
+        navigate('/apps/finances/finances-report/expenses/invoices/1');
+        break;
+      case 'occupancy':
+        navigate('/apps/finances/finances-report/occupancy/invoices/1');
+        break;
+      case 'payments':
+        navigate('/apps/finances/finances-report/payments/invoices/1');
+        break;
+      // Add cases for other tabs if needed
+      default:
+        break;
+    }
+  };
   return (
     <ErrorBoundary>
       <div className="finances-report">
         <h2>Finances Report</h2>
         <DateRangeFilter onFilterChange={handleDateRangeChange} />
-        <Tabs defaultActiveKey="overview" id="finances-report-tabs" className="mb-3">
-          <Tab eventKey="overview" title="Overview">
-            <RevenueOverview data={financialData} />
+        <Tabs defaultActiveKey={selectedDocType} id="finances-report-tabs" className="mb-3" onSelect={handleSelect}>
+          <Tab eventKey={"overview"} title="Overview" >
+            {selectedDocType == 'overview' &&<RevenueOverview  />}
           </Tab>
-          <Tab eventKey="cashflow" title="Revenue vs Expenses">
-            <CashFlowAnalysis data={financialData} />
+          <Tab eventKey="cashflow" title="Revenue vs Expenses" onSelect={handleSelect} >
+          {selectedDocType == 'cashflow' &&<CashFlowAnalysis  />}
           </Tab>
           <Tab eventKey="expenses" title="Expense Breakdown">
-            <ExpenseBreakdown data={financialData} />
+          {selectedDocType == 'expenses' &&<ExpenseBreakdown  />}
           </Tab>
           <Tab eventKey="occupancy" title="Occupancy Impact">
-            <OccupancyImpact data={financialData} />
+          {selectedDocType == 'occupancy' &&<OccupancyImpact  />}
           </Tab>
           <Tab eventKey="payments" title="Payment Trends">
-            <PaymentTrends data={financialData} />
+          {selectedDocType == 'payments' &&<PaymentTrends/>}
           </Tab>
         </Tabs>
       </div>

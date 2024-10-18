@@ -344,13 +344,13 @@ const ecommerceAppRoutes = {
       route: PrivateRoute,
     },*/
     {
-      path: "/apps/finances/finances-report/overview/:type/:page",
+      path: "/apps/finances/finances-report/:overview/:type/:page",
       name: "Finances Report",
       element: <FinancesReport />,
       route: PrivateRoute,
       children:[
         {
-          path: "/apps/finances/finances-report/overview/:type/:page",
+          path: "/apps/finances/finances-report/:overview/:type/:page",
           name: "Finances Report",
           element: <FinancesReport />,
           route: PrivateRoute,

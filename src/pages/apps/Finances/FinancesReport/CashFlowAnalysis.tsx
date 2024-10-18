@@ -5,11 +5,9 @@ import { ApexOptions } from 'apexcharts';
 import { FinancialData } from './types';
 import { APICore } from '../../../../helpers/api/apiCore';
 
-interface CashFlowAnalysisProps {
-  data: FinancialData | null;
-}
 
-const CashFlowAnalysis: React.FC<CashFlowAnalysisProps> = ({ data }) => {
+
+const CashFlowAnalysis: React.FC = () => {
   const [revenue, setRevenue] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
   const [expense, setExpense] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
   const api = new APICore()

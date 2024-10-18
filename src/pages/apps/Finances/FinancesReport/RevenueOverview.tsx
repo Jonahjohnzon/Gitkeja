@@ -4,21 +4,19 @@ import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { format } from 'date-fns';
 import { Column } from 'react-table';
-import { FinancialData, Invoice, Receipt, Reminder  } from './types';
+import { Invoice, Receipt, Reminder  } from './types';
 import { useParams, useNavigate  } from 'react-router-dom';
 import { generatePDF } from '../../../../utils/pdfGenerator';
 import PaginatedTable from '../../../../components/PaginatedTable';
 import { APICore } from '../../../../helpers/api/apiCore';
 
 const api = new APICore()
-interface RevenueOverviewProps {
-  data: FinancialData | null;
-}
+
 
 type DocumentType = 'invoices' | 'receipts' | 'reminders';
 type Document = Invoice | Receipt | Reminder;
 
-const RevenueOverview: React.FC<RevenueOverviewProps> = ({ data }) => {
+const RevenueOverview: React.FC= () => {
   const params = useParams() 
   const selectedDocType = params.type
   const [Document, setDocument] = useState<Document[]>([])

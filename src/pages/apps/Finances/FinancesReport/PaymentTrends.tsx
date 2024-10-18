@@ -1,15 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
-import { FinancialData } from './types';
 import { APICore } from '../../../../helpers/api/apiCore';
 
-interface PaymentTrendsProps {
-  data: FinancialData | null;
-}
 
-const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
+
+const PaymentTrends = () => {
   const api = new APICore()
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
   const [onTime, setOnTime] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
