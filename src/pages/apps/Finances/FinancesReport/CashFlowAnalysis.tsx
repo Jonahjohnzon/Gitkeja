@@ -1,16 +1,35 @@
-import React from 'react';
+import React, {useEffect,useState} from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { FinancialData } from './types';
+import { APICore } from '../../../../helpers/api/apiCore';
 
 interface CashFlowAnalysisProps {
   data: FinancialData | null;
 }
 
 const CashFlowAnalysis: React.FC<CashFlowAnalysisProps> = ({ data }) => {
-  if (!data) return null;
-
+  const [revenue, setRevenue] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
+  const [expense, setExpense] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
+  const api = new APICore()
+  const Get = async() =>{
+    try{
+      const {data} = await api.get('/api/getIncome')
+      if(data.result)
+      {
+        const result = data.data
+        setRevenue(result.income)
+        setExpense(result.expense)
+        }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }}
+  useEffect(()=>{
+    Get()
+  },[])
   const chartOptions: ApexOptions = {
     chart: {
       type: 'line',
@@ -33,11 +52,11 @@ const CashFlowAnalysis: React.FC<CashFlowAnalysisProps> = ({ data }) => {
   const series = [
     {
       name: 'Revenue',
-      data: data.revenueData.map(val => Math.round(val))
+      data: revenue
     },
     {
       name: 'Expenses',
-      data: data.expensesData.map(val => Math.round(val))
+      data: expense
     }
   ];
 
@@ -61,13 +80,14 @@ const CashFlowAnalysis: React.FC<CashFlowAnalysisProps> = ({ data }) => {
             </tr>
           </thead>
           <tbody>
-            {data.revenueData.map((revenue, index) => {
-              const expenses = data.expensesData[index];
-              const netCashFlow = revenue - expenses;
+            {chartOptions.xaxis?.categories.map((revenu:any, index:any) => {
+              const expenses = expense[index];
+              const revenues = revenue[index]
+              const netCashFlow = revenues - expenses;
               return (
                 <tr key={index}>
                   <td>{chartOptions.xaxis?.categories[index]}</td>
-                  <td>${Math.round(revenue).toLocaleString()}</td>
+                  <td>${Math.round(revenues).toLocaleString()}</td>
                   <td>${Math.round(expenses).toLocaleString()}</td>
                   <td>${Math.round(netCashFlow).toLocaleString()}</td>
                 </tr>

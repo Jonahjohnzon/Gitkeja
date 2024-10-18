@@ -21,7 +21,6 @@ const OccupancyTrends = ({dashboard}:StatisticsProps) => {
   ];
   const rentalIncome = dashboard.rentalIncome;
   const occupancyRates = dashboard.occupancyRates;
-console.log(dashboard)
   const apexOpts: ApexOptions = {
     chart: {
       height: 378,

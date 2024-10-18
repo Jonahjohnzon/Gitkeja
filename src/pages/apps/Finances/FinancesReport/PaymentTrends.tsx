@@ -1,18 +1,38 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { FinancialData } from './types';
+import { APICore } from '../../../../helpers/api/apiCore';
 
 interface PaymentTrendsProps {
   data: FinancialData | null;
 }
 
 const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
-  if (!data) return null;
-
+  const api = new APICore()
   const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  const [onTime, setOnTime] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
+  const [late, setLate] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
 
+  const Get= async()=>{
+    try{
+      const {data} = await api.get('/api/paymentTrend')
+      if(data.result)
+      {
+        const result = data.data
+        setOnTime(result['ontime'])
+        setLate(result['late'])
+      }
+
+    }
+    catch(error){
+
+    }
+  }
+  useEffect(()=>{
+    Get()
+  },[])
   const chartOptions: ApexOptions = {
     chart: { 
       type: 'bar',
@@ -48,11 +68,11 @@ const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
   const series = [
     {
       name: 'On-Time Payments',
-      data: data.paymentTrendsData.onTime.map(Math.round)
+      data: onTime
     },
     {
       name: 'Late Payments',
-      data: data.paymentTrendsData.late.map(Math.round)
+      data: late
     }
   ];
 
@@ -77,15 +97,15 @@ const PaymentTrends: React.FC<PaymentTrendsProps> = ({ data }) => {
           </thead>
           <tbody>
             {months.map((month, index) => {
-              const onTime = Math.round(data.paymentTrendsData.onTime[index]);
-              const late = Math.round(data.paymentTrendsData.late[index]);
-              const total = onTime + late;
-              const onTimeRate = total > 0 ? (onTime / total) * 100 : 0;
+              const onTim = Math.round(onTime[index] || 0);
+              const lat = Math.round(late[index] || 0);
+              const total = onTim + lat;
+              const onTimeRate = total > 0 ? (onTim / total) * 100 : 0;
               return (
                 <tr key={month}>
                   <td>{month}</td>
-                  <td>{onTime}</td>
-                  <td>{late}</td>
+                  <td>{onTim}</td>
+                  <td>{lat}</td>
                   <td>{onTimeRate.toFixed(1)}%</td>
                 </tr>
               );

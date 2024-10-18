@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -9,6 +9,7 @@ interface ExpenseBreakdownProps {
 }
 
 const ExpenseBreakdown: React.FC<ExpenseBreakdownProps> = ({ data }) => {
+
   if (!data) return null;
 
   const expenseCategories = Object.keys(data.expenseData);

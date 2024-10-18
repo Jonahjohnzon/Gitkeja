@@ -1,18 +1,39 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
 import { FinancialData } from './types';
+import { APICore
 
+ } from '../../../../helpers/api/apiCore';
 interface OccupancyImpactProps {
   data: FinancialData | null;
 }
 
 const OccupancyImpact: React.FC<OccupancyImpactProps> = ({ data }) => {
-  if (!data) return null;
+  const api = new APICore()
+  const [roundedRates, setRoundedRates] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
+  const [roundedRevenues, setRoundedRevenue] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
+  const [expectedRevenue, setExpectedRevenue] = useState<number[]>([0,0,0,0,0,0,0,0,0,0,0,0])
+  const Get = async() =>{
+    try{
+      const {data} = await api.get('/api/getOccupancyImpact')
+      if(data.result)
+      {
+        setRoundedRates(data['data'].monthlyOccupants)
+        setRoundedRevenue(data['data'].monthlyRevenue)
+        setExpectedRevenue(data['data'].expectedRevenue)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+  useEffect(()=>{
+  Get()
+  },[])
 
-  const roundedRates = data.occupancyData.rates.map(rate => Math.round(rate * 100));
-  const roundedRevenues = data.occupancyData.revenue.map(rev => Math.round(rev));
 
   const chartOptions: ApexOptions = {
     chart: {
@@ -63,16 +84,16 @@ const OccupancyImpact: React.FC<OccupancyImpactProps> = ({ data }) => {
               <th>Month</th>
               <th>Occupancy Rate</th>
               <th>Revenue</th>
-              <th>Revenue per Available Unit</th>
+              <th>Expected Revenue</th>
             </tr>
           </thead>
           <tbody>
-            {data.occupancyData.rates.map((rate, index) => (
+            {data?.occupancyData.rates.map((rate, index) => (
               <tr key={index}>
                 <td>{chartOptions.xaxis?.categories[index]}</td>
-                <td>{Math.round(rate * 100)}%</td>
-                <td>${Math.round(data.occupancyData.revenue[index]).toLocaleString()}</td>
-                <td>${Math.round(data.occupancyData.revenue[index] / rate).toLocaleString()}</td>
+                <td>{Math.round(roundedRates[index])}%</td>
+                <td>${Math.round(roundedRevenues[index]).toLocaleString()}</td>
+                <td>${Math.round(expectedRevenue[index]).toLocaleString()}</td>
               </tr>
             ))}
           </tbody>
