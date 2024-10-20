@@ -1,24 +1,71 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, Table, Button, Form, Row, Col } from 'react-bootstrap';
 import MaintenanceForm from './MaintenanceForm';
+import { APICore } from '../helpers/api/apiCore';
+import { format } from 'date-fns';
+
 
 interface MaintenanceTask {
-  id: number;
+  _id: string;
   description: string;
   property: string;
   status: string;
   cost: number;
-  date: string;
+  date: Date;
+  unit:string
+}
+
+function truncateDescription(description:string) {
+  const words = description
+  if (words.length > 20) {
+      return words.slice(0, 20) + '...';
+  }
+  return description;
 }
 
 const MaintenanceList: React.FC = () => {
+
+
+  const api = new APICore()
   const [tasks, setTasks] = useState<MaintenanceTask[]>([]);
   const [showForm, setShowForm] = useState(false);
+  const [sending, setSending] = useState(false)
 
-  const handleAddTask = (newTask: MaintenanceTask) => {
-    setTasks([...tasks, { ...newTask, id: tasks.length + 1 }]);
+  const handleAddTask = async (newTask: MaintenanceTask) => {
+    try{
+    setSending(true)
+    const {data} = await api.create('/api/createMaintenance',newTask)
+    if(data.result)
+    {
+      setTasks((prev)=>[data.data, ...prev])
+    }
     setShowForm(false);
+    setSending(false)
+
+  }
+  catch(error)
+  {
+    setSending(false)
+  }
   };
+
+  const Get = async() =>{
+    try{
+      const {data} = await api.get('/api/getMaintenance')
+      if(data.result)
+      {
+        setTasks(data.data)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+  }
+
+  useEffect(()=>{
+    Get()
+  },[])
 
   return (
     <Card>
@@ -45,13 +92,13 @@ const MaintenanceList: React.FC = () => {
           </thead>
           <tbody>
             {tasks.map((task) => (
-              <tr key={task.id}>
-                <td>{task.id}</td>
-                <td>{task.description}</td>
-                <td>{task.property}</td>
+              <tr key={task._id}>
+                <td>{task._id}</td>
+                <td>{truncateDescription(task.description)}</td>
+                <td>{truncateDescription(task.property)}{', '}{task.unit}</td>
                 <td>{task.status}</td>
                 <td>${task.cost}</td>
-                <td>{task.date}</td>
+                <td>{format(task.date, 'MMMM dd, yyyy' )}</td>
                 <td>
                   <Button variant="link" size="sm">View</Button>
                   <Button variant="link" size="sm">Edit</Button>
@@ -61,7 +108,7 @@ const MaintenanceList: React.FC = () => {
           </tbody>
         </Table>
       </Card.Body>
-      <MaintenanceForm show={showForm} onHide={() => setShowForm(false)} onSubmit={handleAddTask} />
+      {showForm&&<MaintenanceForm show={showForm} onHide={() => setShowForm(false)} sending={sending} onSubmit={handleAddTask} />}
     </Card>
   );
 };

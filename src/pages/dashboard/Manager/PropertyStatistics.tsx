@@ -6,6 +6,31 @@ interface PropertyStatisticsProps {
   properties: any;
 }
 
+export const formatNumber = (num: number, decimals: number = 1): string => {
+  if (num >= 1_000_000_000) {
+    return (num / 1_000_000_000).toFixed(decimals); // Billions
+  } else if (num >= 1_000_000) {
+    return (num / 1_000_000).toFixed(decimals); // Millions
+  } else if (num >= 1_000) {
+    return (num / 1_000).toFixed(decimals); // Thousands
+  } else {
+    return num.toString(); // No suffix for smaller numbers
+  }
+};
+
+    //Suffix
+ export const formatSuffix = (num: number):string => {
+      if (num >= 1_000_000_000) {
+        return "B"
+      } else if (num >= 1_000_000) {
+        return "M"
+      } else if (num >= 1_000) {
+        return "K"
+      } else {
+        return "";
+      }
+    };
+
 const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) => {
   // Calculate total properties
   const totalProperties = properties.totalProperties;
@@ -23,30 +48,9 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
   //total property value
   const propertyValue = properties?.totalPropertyAmount
 
-    //Suffix
-    const formatSuffix = (num: number):string => {
-      if (num >= 1_000_000_000) {
-        return "B"
-      } else if (num >= 1_000_000) {
-        return "M"
-      } else if (num >= 1_000) {
-        return "K"
-      } else {
-        return "";
-      }
-    };
 
-    const formatNumber = (num: number, decimals: number = 1): string => {
-      if (num >= 1_000_000_000) {
-        return (num / 1_000_000_000).toFixed(decimals); // Billions
-      } else if (num >= 1_000_000) {
-        return (num / 1_000_000).toFixed(decimals); // Millions
-      } else if (num >= 1_000) {
-        return (num / 1_000).toFixed(decimals); // Thousands
-      } else {
-        return num.toString(); // No suffix for smaller numbers
-      }
-    };
+
+
   return (
     <Row>
       <Col md={6} xl={3}>

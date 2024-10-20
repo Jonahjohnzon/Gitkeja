@@ -22,7 +22,6 @@ const FinancesReport: React.FC = () => {
   };
 
   const handleSelect = (key:any) => {
-    console.log(key)
     switch (key) {
       case 'overview':
         navigate('/apps/finances/finances-report/overview/invoices/1');
