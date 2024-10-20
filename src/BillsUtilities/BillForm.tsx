@@ -1,23 +1,42 @@
 // src/pages/BillsUtilities/BillForm.tsx
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal, Form, Button } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { APICore } from '../helpers/api/apiCore';
 
 interface BillFormProps {
   show: boolean;
   onHide: () => void;
   onSubmit: (bill: any) => void;
+  sending:boolean
 }
 
-const BillForm: React.FC<BillFormProps> = ({ show, onHide, onSubmit }) => {
+const BillForm: React.FC<BillFormProps> = ({ show, onHide, onSubmit, sending }) => {
+  const api = new APICore()
   const { register, handleSubmit, formState: { errors } } = useForm();
-
+  const [properties, setProperties] = useState([])
   const onSubmitForm = (data: any) => {
     onSubmit(data);
-    onHide();
   };
 
+  const getProperties = async() =>{
+    try{
+      const {data}  = await api.get('/api/getPropertyname')
+      if(data.result)
+      {
+        setProperties(data.data)
+      }
+    }
+    catch(error)
+    {
+      console.log(error)
+    }
+ }
+
+ useEffect(()=>{
+  getProperties()
+ },[])
   return (
     <Modal show={show} onHide={onHide}>
       <Modal.Header closeButton>
@@ -67,15 +86,20 @@ const BillForm: React.FC<BillFormProps> = ({ show, onHide, onSubmit }) => {
           </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>Property</Form.Label>
-            <Form.Control
-              {...register('property', { required: 'Property is required' })}
-              isInvalid={!!errors.property}
-            />
+            <Form.Select {...register('property', { required: 'Property is required' })}>
+            {
+              properties.map((e:any,i)=>{
+                return(
+                  <option key={e._id} value={e._id}>{e.name}</option>
+                )
+              })
+            }
+            </Form.Select>
             <Form.Control.Feedback type="invalid">
               {errors.property?.message}
             </Form.Control.Feedback>
           </Form.Group>
-          <Button type="submit">Add Bill</Button>
+          <Button type="submit" disabled={sending}>{sending?"Adding Bill":"Add Bill"}</Button>
         </Form>
       </Modal.Body>
     </Modal>

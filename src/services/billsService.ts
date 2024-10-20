@@ -1,10 +1,10 @@
 // src/services/billsService.ts
 
-import axios from 'axios';
-
+import { APICore } from "../helpers/api/apiCore";
 const API_URL = '/api/bills';
+const api = new APICore()
 
-export const getBills = () => axios.get(API_URL);
-export const addBill = (bill: any) => axios.post(API_URL, bill);
-export const updateBill = (id: number, bill: any) => axios.put(`${API_URL}/${id}`, bill);
-export const deleteBill = (id: number) => axios.delete(`${API_URL}/${id}`);
+export const getBills = () => api.get('/api/getBills');
+export const addBill = (bill: any) => api.create('/api/createBU', bill);
+export const updateBill = (_id: string, bill: any) => api.update(`${API_URL}/${_id}`, bill);
+export const deleteBill = (_id: string) => api.delete(`/api/billDelete?id=${_id}`);

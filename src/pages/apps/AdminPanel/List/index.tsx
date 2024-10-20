@@ -33,7 +33,6 @@ const ManagersAndAdmins = () => {
     try{
       const {data} = await api.get('/api/getadmin')
       if(data.result){
-        console.log(data.data)
         setAdmin(data.data)
       }
     }

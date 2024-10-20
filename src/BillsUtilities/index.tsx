@@ -8,17 +8,21 @@ import { getBills, addBill, updateBill, deleteBill } from '../services/billsServ
 
 const BillsUtilitiesPage: React.FC = () => {
   const [bills, setBills] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(true);  
+  const [sending, setSending] = useState(false)
   const [showBillForm, setShowBillForm] = useState(false);
-
+  const [load, setLoad] = useState(false)
+  
   useEffect(() => {
     fetchBills();
   }, []);
 
   const fetchBills = async () => {
     try {
-      const response = await getBills();
-      setBills(response.data);
+      const {data} = await getBills();
+      if(data.result){
+      setBills(data.data);
+      }
       setLoading(false);
     } catch (error) {
       console.error('Error fetching bills:', error);
@@ -28,28 +32,43 @@ const BillsUtilitiesPage: React.FC = () => {
 
   const handleAddBill = async (newBill: any) => {
     try {
-      const response = await addBill(newBill);
-      setBills([...bills, response.data]);
+      setSending(true)
+      const {data} = await addBill(newBill);
+      if(data.result)
+      {
+      setBills([data.data, ...bills]);
+      setSending(false)
+      setShowBillForm(false)
+      }
     } catch (error) {
       console.error('Error adding bill:', error);
+      setSending(false)
+      setShowBillForm(false)
+
     }
   };
 
-  const handleUpdateBill = async (id: number, updatedBill: any) => {
+  const handleUpdateBill = async (_id: string, updatedBill: any) => {
     try {
-      const response = await updateBill(id, updatedBill);
-      setBills(bills.map(bill => bill.id === id ? response.data : bill));
+      const response = await updateBill(_id, updatedBill);
+      setBills(bills.map(bill => bill.id === _id ? response.data : bill));
     } catch (error) {
       console.error('Error updating bill:', error);
     }
   };
 
-  const handleDeleteBill = async (id: number) => {
+  const handleDeleteBill = async (_id: string) => {
     try {
-      await deleteBill(id);
-      setBills(bills.filter(bill => bill.id !== id));
+      setLoad(true)
+      const {data} = await deleteBill(_id);
+      if(data.result)
+      {
+      setBills(bills.filter(bill => bill._id !== _id));
+      setLoad(false)
+      }
     } catch (error) {
       console.error('Error deleting bill:', error);
+      setLoad(false)
     }
   };
 
@@ -67,18 +86,20 @@ const BillsUtilitiesPage: React.FC = () => {
             Add New Bill
           </Button>
         </div>
-        <BillsDashboard bills={bills} />
+        <BillsDashboard  />
         <BillsList
           bills={bills}
           loading={loading}
           onAddBill={handleAddBill}
           onUpdateBill={handleUpdateBill}
           onDeleteBill={handleDeleteBill}
+          load={load}
         />
         <BillForm
           show={showBillForm}
           onHide={() => setShowBillForm(false)}
           onSubmit={handleAddBill}
+          sending={sending}
         />
       </Container>
     </>
