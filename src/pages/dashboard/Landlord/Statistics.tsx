@@ -61,7 +61,7 @@ const Statistics = ({dashboard}: StatisticsProps) => {
           stats={dashboard?.occupancyRate?.toString()}
           counterOptions={{
             suffix: "%",
-            decimals: 1,
+            decimals: 2,
           }}
           icon="fe-home"
         />

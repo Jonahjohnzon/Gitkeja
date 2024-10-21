@@ -108,18 +108,6 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
 
   const series = useMemo(() => chartData.map(item => item.value), [chartData]);
 
-  const isDatePast = useCallback((date: string) => new Date(date) < new Date(), []);
-
-  const getStatus = useCallback((payment: RentPayment) => {
-    if (isDatePast(payment.leaseEndDate) && (payment.status === 'pending' || payment.status === 'incomplete')) {
-      return 'Overdue';
-    } else if (payment.status === 'pending' || payment.status === 'incomplete') {
-      return payment.status.charAt(0).toUpperCase() + payment.status.slice(1);
-    } else {
-      return 'Paid';
-    }
-  }, [isDatePast]);
-
   const columns: Column<RentPayment>[] = useMemo(() => [
     { Header: 'Tenant', accessor: 'tenantName' },
     { Header: 'Property', accessor: (row: RentPayment) => `${row.propertyName}, ${row.unitNumber}` },
@@ -135,7 +123,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
     },
     { 
       Header: 'Status', 
-      accessor: (row: RentPayment) => getStatus(row)
+      accessor: (row: RentPayment) => `${row.status}`
     },
     {
       Header: 'Actions',
@@ -150,7 +138,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
         </Button>
       )
     }
-  ], [loading, handleOpenModal, getStatus]);
+  ], [loading, handleOpenModal]);
    return (
     <>
       <TopDisplay />

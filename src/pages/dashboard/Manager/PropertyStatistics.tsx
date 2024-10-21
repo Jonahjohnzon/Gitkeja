@@ -69,11 +69,12 @@ const PropertyStatistics: React.FC<PropertyStatisticsProps> = ({ properties }) =
         <StatisticsWidget2
           variant="success"
           description="Overall Occupancy Rate"
-          stats={(overallOccupancyRate * 100).toFixed(1)}
+          stats={(overallOccupancyRate * 100).toString()}
           icon="fe-users"
-          progress={Math.ceil(overallOccupancyRate * 100) | 0}
+          progress={overallOccupancyRate * 100 | 0}
           counterOptions={{
             suffix: "%",
+            decimals: 2,
           }}
         />
       </Col>

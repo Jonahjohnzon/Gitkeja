@@ -15,10 +15,13 @@ interface StatisticsProps {
 }
 const OccupancyTrends = ({dashboard}:StatisticsProps) => {
   // Simulated data - replace with actual data from your backend
-  const months = [
-    "Jan", "Feb", "Mar", "Apr", "May", "Jun", 
-    "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-  ];
+  const last12Months = Array.from({ length: 12 }, (_, i) => {
+    const d = new Date();
+    d.setMonth(d.getMonth() - i);
+    return d.toLocaleString('default', { month: 'short' });
+  }).reverse();
+
+  const months = last12Months;
   const rentalIncome = dashboard.rentalIncome;
   const occupancyRates = dashboard.occupancyRates;
   const apexOpts: ApexOptions = {

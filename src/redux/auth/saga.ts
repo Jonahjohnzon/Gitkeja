@@ -236,7 +236,6 @@ function* getOccupancyData ():SagaIterator{
   try{
     const response = yield call(()=> getOccupancy() )
     const data = response.data
-    console.log(data)
     const body = {
       OccupancyReport : data['data'],
       OccupancyLoad:false
@@ -253,7 +252,6 @@ function* getOccupancyData ():SagaIterator{
     try{
       const response = yield call(()=> getReport() )
       const data = response.data
-      console.log(data)
     yield put(getOccupancyApiReport(AuthActionTypes.GETOCCREPORT, data['data']))
     }
     catch(error:any)
