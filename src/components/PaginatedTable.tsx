@@ -102,8 +102,8 @@ function PaginatedTable<T extends object>({ columns, data, searchData, size , pa
 
         </div>
         <Pagination>
-          <Pagination.Prev onClick={() =>  navigate(`${url}${Number(pageInd) - 1}`)} disabled={Number(pageInd) <= 1}  />
-          <Pagination.Next onClick={() =>  navigate(`${url}${Number(pageInd) + 1}`)} disabled={Number(pageInd) >= Number(size)} />
+          <Pagination.Prev onClick={() =>  navigate(`${url}${Number(pageInd) - 1}`)} disabled={Number(pageInd) <= 1 || !pageInd}  />
+          <Pagination.Next onClick={() =>  navigate(`${url}${Number(pageInd) + 1}`)} disabled={Number(pageInd) >= Number(size)  || !pageInd} />
         </Pagination>
       </div>
     </>

@@ -18,11 +18,14 @@ type Document = Invoice | Receipt | Reminder;
 
 const RevenueOverview: React.FC= () => {
   const params = useParams() 
+  const page = params.page
   const selectedDocType = params.type
   const [Document, setDocument] = useState<Document[]>([])
   const [graph, setGraph] = useState([0,0,0,0,0,0,0,0,0,0,0,0])
   const [loading, setLoading] = useState(true)
+  const [pages, setPages] = useState(0)
   const navigate = useNavigate();
+  const [url, setUrl] = useState('/apps/finances/finances-report/overview/invoices/')
   const [Data, setData] = useState({
     invoices:0,
     receipts:0,
@@ -92,18 +95,21 @@ const RevenueOverview: React.FC= () => {
               const {data} = await api.get('/api/getInvoice',{word:name, page:params.page})
               if(data.result){
                 setDocument(data.data)
+                setPages(data.totalPages)
               }
               break;
             case 'receipts':
               const result = await api.get('/api/getReceiptData',{word:name, page:params.page})
               if(result.data.result){
                   setDocument(result.data.data)
+                  setPages(result.data.totalPages)
               }
               break;
             case 'reminders':
               const resultData = await api.get('/api/getReminder',{word:name, page:params.page})
               if(resultData.data.result){
                   setDocument(resultData.data.data)
+                  setPages(resultData.data.totalPages)
               }
               break;
             default:
@@ -219,6 +225,7 @@ const RevenueOverview: React.FC= () => {
                   key={docType}
                   variant={selectedDocType === docType ? 'primary' : 'outline-primary'}
                   onClick={() => {
+                    setUrl(`/apps/finances/finances-report/overview/${docType}/`)
                     navigate(`/apps/finances/finances-report/overview/${docType}/1`)
                   }}
                 >
@@ -232,7 +239,7 @@ const RevenueOverview: React.FC= () => {
                 Generate PDF
               </Button>
             </div>
-            <PaginatedTable columns={columns} data={documents} pageSize={10}  searchData={getList} />
+            <PaginatedTable columns={columns} data={documents} pageSize={10}  searchData={getList} url={url} size={pages} pageInd={page}/>
           </Col>
         </Row>
       </Card.Body>
