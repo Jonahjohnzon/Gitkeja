@@ -72,7 +72,7 @@ const OccupancyTrends = ({dashboard}:StatisticsProps) => {
         title: {
           text: "Occupancy Rate (%)"
         },
-        min: 80,
+        min: 0,
         max: 100
       }
     ],
@@ -82,7 +82,7 @@ const OccupancyTrends = ({dashboard}:StatisticsProps) => {
       y: {
         formatter: function (y) {
           if (typeof y !== "undefined") {
-            return y.toFixed(0) + (y === occupancyRates[0] ? "%" : "$");
+            return y.toFixed(0) + (y === occupancyRates[0] ? "$" : "%");
           }
           return y;
         }
