@@ -90,7 +90,7 @@ function PaginatedTable<T extends object>({ columns, data, searchData, size , pa
               defaultValue={pageInd}
               onChange={(e) => {
                 const page = e.target.value ? Number(e.target.value)  : 0;
-                if(page < 1 || page > Number(size))
+                if(page < 1 || page > Number(size)  || !pageInd)
                 {
                   return
                 }
