@@ -13,8 +13,10 @@ import { authApiResponseSuccess } from '../../../redux/actions';
 import TopDisplay from '../../../layouts/TopDisplay';
 import PaginatedTable from '../../../components/PaginatedTable';
 import { Paymentprop } from '../../../types';
+import { useParams } from 'react-router-dom';
 
 const InvoicingTab: React.FC = () => {
+  const {page} = useParams()
   const dispatch = useDispatch<AppDispatch>();
   const [invoiceData, setInvoiceData] = useState({
     totalRentAmount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -25,15 +27,18 @@ const InvoicingTab: React.FC = () => {
   const [showModal, setShowModal] = useState(false);
   const [selectedPayment, setSelectedPayment] = useState<Paymentprop | null>(null);
   const [loading, setLoading] = useState(false);
-
+  const [pages, setPages] = useState(0)
+  const url = "/apps/finances/invoicing/"
   const api = useMemo(() => new APICore(), []);
 
   const searchData =  async (word:string) =>{
     try{
       setLoading(true);
-      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word});
+      setInvoices([])
+      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word, page:page});
       if (data.result) {
         setInvoices(data.data);
+        setPages(data.totalCount)
       }
     }
     catch(error)
@@ -50,6 +55,7 @@ const InvoicingTab: React.FC = () => {
       const { data } = await api.get('/api/getTenantInvoice');
       if (data.result) {
         setInvoiceData(data.display);
+       
       }
     } catch (error) {
       console.error('Error fetching invoice data:', error);
@@ -103,7 +109,6 @@ const InvoicingTab: React.FC = () => {
         })
       );
     } catch (error) {
-      console.error('Error generating invoice:', error);
       dispatch(
         authApiResponseSuccess(AuthActionTypes.POSTTENANT, {
           topDisplay: true,
@@ -246,7 +251,7 @@ const InvoicingTab: React.FC = () => {
           <Card>
             <Card.Body>
               <h4 className="header-title mb-3">Invoices List</h4>
-              <PaginatedTable columns={columns} data={invoices} pageSize={10} searchData={searchData}/>
+              <PaginatedTable columns={columns} data={invoices} pageSize={5} searchData={searchData} size={pages} pageInd={page} url={url}/>
             </Card.Body>
           </Card>
         </Col>

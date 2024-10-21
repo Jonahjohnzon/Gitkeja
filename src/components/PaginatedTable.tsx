@@ -2,37 +2,31 @@ import React, { useState } from 'react';
 import { useTable, useGlobalFilter, usePagination, Column } from 'react-table';
 import { Table, Form, InputGroup, Pagination } from 'react-bootstrap';
 import { Search } from 'react-feather';
+import { useNavigate } from 'react-router-dom';
 
 interface PaginatedTableProps<T extends object> {
   columns: Column<T>[];
   data: T[];
   pageSize?: number;
   searchData:any;
+  size?:number;
+  pageInd?:string;
+  url?:string
 }
 
-function PaginatedTable<T extends object>({ columns, data, pageSize = 10, searchData }: PaginatedTableProps<T>) {
+function PaginatedTable<T extends object>({ columns, data, searchData, size , pageInd, url}: PaginatedTableProps<T>) {
   const [globalFilterValue, setGlobalFilterValue] = useState('');
-
+  const navigate = useNavigate()
   const {
     getTableProps,
     getTableBodyProps,
     headerGroups,
     prepareRow,
     page,
-    canPreviousPage,
-    canNextPage,
-    pageOptions,
-    pageCount,
-    gotoPage,
-    nextPage,
-    previousPage,
-    setPageSize,
-    state: { pageIndex },
   } = useTable(
     {
       columns,
       data,
-      initialState: { pageIndex: 0, pageSize },
     },
     useGlobalFilter,
     usePagination
@@ -40,7 +34,7 @@ function PaginatedTable<T extends object>({ columns, data, pageSize = 10, search
 
   React.useEffect(() => {
     searchData(globalFilterValue)
-  }, [globalFilterValue]);
+  }, [globalFilterValue, pageInd]);
 
   return (
     <>
@@ -86,40 +80,30 @@ function PaginatedTable<T extends object>({ columns, data, pageSize = 10, search
           <span>
             Page{' '}
             <strong>
-              {pageIndex + 1} of {pageOptions.length}
+              {pageInd} of {size || 1}
             </strong>{' '}
           </span>
           <span>
             | Go to page:{' '}
             <Form.Control
               type="number"
-              defaultValue={pageIndex + 1}
+              defaultValue={pageInd}
               onChange={(e) => {
-                const page = e.target.value ? Number(e.target.value) - 1 : 0;
-                gotoPage(page);
+                const page = e.target.value ? Number(e.target.value)  : 0;
+                if(page < 1 || page > Number(size))
+                {
+                  return
+                }
+               navigate(`${url}${page}`)
               }}
               style={{ width: '100px', display: 'inline-block' }}
             />
           </span>{' '}
-          <Form.Select
-            value={pageSize}
-            onChange={(e) => {
-              setPageSize(Number(e.target.value));
-            }}
-            style={{ width: 'auto', display: 'inline-block' }}
-          >
-            {[10, 20, 30, 40, 50].map((pageSize) => (
-              <option key={pageSize} value={pageSize}>
-                Show {pageSize}
-              </option>
-            ))}
-          </Form.Select>
+
         </div>
         <Pagination>
-          <Pagination.First onClick={() => gotoPage(0)} disabled={!canPreviousPage} />
-          <Pagination.Prev onClick={() => previousPage()} disabled={!canPreviousPage} />
-          <Pagination.Next onClick={() => nextPage()} disabled={!canNextPage} />
-          <Pagination.Last onClick={() => gotoPage(pageCount - 1)} disabled={!canNextPage} />
+          <Pagination.Prev onClick={() =>  navigate(`${url}${Number(pageInd) - 1}`)} disabled={Number(pageInd) <= 1}  />
+          <Pagination.Next onClick={() =>  navigate(`${url}${Number(pageInd) + 1}`)} disabled={Number(pageInd) >= Number(size)} />
         </Pagination>
       </div>
     </>

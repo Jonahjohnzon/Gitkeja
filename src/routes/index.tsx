@@ -314,35 +314,29 @@ const ecommerceAppRoutes = {
   icon: "shopping-cart",
   children: [
     {
-      path: "/apps/finances/invoicing",
+      path: "/apps/finances/invoicing/:page",
       name: "Invoicing",
       element: <InvoicingTab />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/finances/water-utilities",
+      path: "/apps/finances/water-utilities/:page",
       name: "Water & Utilities",
       element: <WaterMeterReadingsTab />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/finances/receipts",
+      path: "/apps/finances/receipts/:page",
       name: "Receipts",
       element: <ReceiptsTab />,
       route: PrivateRoute,
     },
     {
-      path: "/apps/finances/reminders",
+      path: "/apps/finances/reminders/:page",
       name: "Reminders",
       element: <RemindersTab />,
       route: PrivateRoute,
     },
-    /*{
-      path: "/apps/finances/rent-payments",
-      name: "Rent Payments",
-      element: <RentPayments />,
-      route: PrivateRoute,
-    },*/
     {
       path: "/apps/finances/finances-report/:overview/:type/:page",
       name: "Finances Report",
@@ -387,12 +381,12 @@ const ecommerceAppRoutes = {
       element: <Customers />,
       route: PrivateRoute,
     },
-    {
-      path: "/apps/ecommerce/order/details",
-      name: "Order Details",
-      element: <OrderDetails />,
-      route: PrivateRoute,
-    },
+    // {
+    //   path: "/apps/ecommerce/order/details",
+    //   name: "Order Details",
+    //   element: <OrderDetails />,
+    //   route: PrivateRoute,
+    // },
     {
       path: "/apps/ecommerce/sellers",
       name: "Sellers",

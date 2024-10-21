@@ -13,12 +13,15 @@ import { AuthActionTypes } from '../../../redux/auth/constants';
 import { authApiResponseSuccess } from '../../../redux/actions';
 import TopDisplay from '../../../layouts/TopDisplay';
 import PaginatedTable from '../../../components/PaginatedTable';
+import { useParams } from 'react-router-dom';
+
 
 interface RemindersTabProps {
   initialData?: RentPayment[];
 }
 
 const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
+  const {page} = useParams()
   const dispatch = useDispatch<AppDispatch>();
   const [reminders, setReminders] = useState<RentPayment[]>(initialData || []);
   const [showModal, setShowModal] = useState(false);
@@ -26,22 +29,25 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
   const [loading, setLoading] = useState(false);
   const [reminderMethod, setReminderMethod] = useState<'email' | 'sms' | 'both'>('both');
   const [customMessage, setCustomMessage] = useState('');
-
+  const url = "/apps/finances/reminders/"
+  const [pages, setPages] = useState(0)
   const api = useMemo(() => new APICore(), []);
 
-  const fetchData = useCallback(async (word:string) => {
+  const fetchData = async (word:string) => {
     try {
       setLoading(true);
-      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word});
+      setReminders([])
+      const { data } = await api.get('/api/getTenantInvoiceSearch', {name:word, page:page});
       if (data.result) {
         setReminders(data.data);
+        setPages(data.totalCount)
       }
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
       setLoading(false);
     }
-  }, [api]);
+  };
 
 
   const handleOpenModal = useCallback((payment: RentPayment) => {
@@ -164,7 +170,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
       </Row>
       <Row>
         <Col>
-          <PaginatedTable columns={columns} data={reminders} pageSize={10} searchData={fetchData} />
+          <PaginatedTable columns={columns} data={reminders} pageSize={10} searchData={fetchData}  size={pages} pageInd={page} url={url}/>
         </Col>
       </Row>
   

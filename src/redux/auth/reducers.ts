@@ -65,9 +65,9 @@ interface Transaction {
 }
 
 interface Maintenance{
-  pending: number,
-  inProgress: number,
-  completed: number,
+  pendingRequests: number,
+  InProgressTasks: number,
+  completedTasks: number,
   averageResolutionTime: number
 }
 
@@ -131,9 +131,9 @@ const Dashboard:dashboard = {
   toptenant:[],
   recentTransactions:[],
   MaintenanceOverview:{
-    pending: 0,
-    inProgress: 0,
-    completed: 0,
+    pendingRequests: 0,
+    InProgressTasks: 0,
+    completedTasks: 0,
     averageResolutionTime: 0.0 
   },
   leaseExpiryData:[

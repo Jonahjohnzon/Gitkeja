@@ -89,19 +89,19 @@ const RevenueOverview: React.FC= () => {
         switch(params.type)
         {
             case 'invoices':
-              const {data} = await api.get('/api/getInvoice',{word:name})
+              const {data} = await api.get('/api/getInvoice',{word:name, page:params.page})
               if(data.result){
                 setDocument(data.data)
               }
               break;
             case 'receipts':
-              const result = await api.get('/api/getReceiptData',{word:name})
+              const result = await api.get('/api/getReceiptData',{word:name, page:params.page})
               if(result.data.result){
                   setDocument(result.data.data)
               }
               break;
             case 'reminders':
-              const resultData = await api.get('/api/getReminder',{word:name})
+              const resultData = await api.get('/api/getReminder',{word:name, page:params.page})
               if(resultData.data.result){
                   setDocument(resultData.data.data)
               }

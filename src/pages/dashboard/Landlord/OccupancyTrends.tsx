@@ -101,8 +101,6 @@ const OccupancyTrends = ({dashboard}:StatisticsProps) => {
       <Card.Body>
         <div className="float-end d-none d-md-inline-block">
           <div className="btn-group mb-2">
-            <button type="button" className="btn btn-xs btn-light">Today</button>
-            <button type="button" className="btn btn-xs btn-light">Weekly</button>
             <button type="button" className="btn btn-xs btn-secondary">Monthly</button>
           </div>
         </div>

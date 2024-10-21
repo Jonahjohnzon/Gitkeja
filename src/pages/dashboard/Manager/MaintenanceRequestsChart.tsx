@@ -25,7 +25,7 @@ const MaintenanceRequestsChart: React.FC<MaintenanceRequestsChartProps> = ({ req
       type: 'donut',
     },
     labels: ['Open', 'In Progress', 'Closed'],
-    series: [statusCounts['Open'] || 0, statusCounts['In Progress'] || 0, statusCounts['Closed'] || 0],
+    series: [statusCounts['Pending'] || 0, statusCounts['InProgress'] || 0, statusCounts['Completed'] || 0],
     colors: ['#FF4560', '#FEB019', '#00E396'],
     legend: {
       position: 'bottom'

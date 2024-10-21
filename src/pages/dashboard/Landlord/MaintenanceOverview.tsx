@@ -3,9 +3,9 @@ import { Card, Dropdown, ProgressBar } from 'react-bootstrap';
 
 // This would typically come from your API
 interface Maintenance{
-  pending: number,
-  inProgress: number,
-  completed: number,
+  pendingRequests: number,
+  InProgressTasks: number,
+  completedTasks: number,
   averageResolutionTime: number
 }
 
@@ -19,7 +19,7 @@ interface StatisticsProps {
 
 const MaintenanceOverview = ({dashboard}:StatisticsProps) => {
   const maintenanceData  = dashboard?.MaintenanceOverview
-  const total = maintenanceData.pending + maintenanceData.inProgress + maintenanceData.completed;
+  const total = maintenanceData.pendingRequests + maintenanceData.InProgressTasks + maintenanceData.completedTasks;
 
   return (
     <Card>
@@ -38,17 +38,17 @@ const MaintenanceOverview = ({dashboard}:StatisticsProps) => {
         
         <div className="mb-4">
           <h5>Pending Requests</h5>
-          <ProgressBar now={(maintenanceData.pending / total) * 100} variant="danger" label={`${maintenanceData.pending}`} />
+          <ProgressBar now={(maintenanceData.pendingRequests / total) * 100} variant="danger" label={`${maintenanceData.pendingRequests}`} />
         </div>
         
         <div className="mb-4">
           <h5>In Progress</h5>
-          <ProgressBar now={(maintenanceData.inProgress / total) * 100} variant="warning" label={`${maintenanceData.inProgress}`} />
+          <ProgressBar now={(maintenanceData.InProgressTasks / total) * 100} variant="warning" label={`${maintenanceData.InProgressTasks}`} />
         </div>
         
         <div className="mb-4">
           <h5>Completed</h5>
-          <ProgressBar now={(maintenanceData.completed / total) * 100} variant="success" label={`${maintenanceData.completed}`} />
+          <ProgressBar now={(maintenanceData.completedTasks / total) * 100} variant="success" label={`${maintenanceData.completedTasks}`} />
         </div>
         
         <div className="mt-4">
