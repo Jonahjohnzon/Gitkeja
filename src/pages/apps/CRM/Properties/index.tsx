@@ -140,18 +140,6 @@ const Properties: React.FC = () => {
           </div>
         </Col>
       </Row>
-
-      <Row className="mb-3">
-        <Col>
-          <Form.Control
-            type="text"
-            placeholder="Search properties..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-          />
-        </Col>
-      </Row>
-
       <PaginatedTable columns={columns} data={propertiesList} pageSize={9} searchData={Get}  />
     </>
   );
