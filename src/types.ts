@@ -1,5 +1,22 @@
 export interface WaterMeterReadingData {
- 
+  id: string;
+  tenantName: string;
+  propertyName: string;
+  status: string;
+  amount: number;
+  unitNumber: string;
+  tenantId?: string;
+  leaseEndDate: string;
+  currentReading: number;
+  previousReading: number;
+  previousImage: File | null;
+  currentImage: File | null;
+  email: string;
+  water: number;
+  _id: string;
+  paymentDate: Date;
+  readingDate:Date;
+  waterMeterReading:any
 }
 
 export interface RentPayment {
@@ -34,6 +51,8 @@ export interface TenantProps {
   unitNumber: string;
   previousImage: File | null;
   currentImage: File | null;
+  paymentDate: Date;
+  
 }
 
 export interface Invoice {

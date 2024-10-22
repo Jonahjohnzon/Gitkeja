@@ -103,35 +103,35 @@ getData()
         <Col md={6}>
             <p className="text-muted d-flex"><strong>Email:</strong> <span className="ms-2">{tenantDetails?.email?.toLowerCase()}</span></p>
           </Col>
-        <Row>
+        <Col>
           <Col md={6}>
             <p className="text-muted"><strong>Occupants:</strong> <span className="ms-2">{tenantDetails?.occupants}</span></p>
           </Col>
           <Col md={6}>
             <p className="text-muted"><strong>Pets:</strong> <span className="ms-2">{tenantDetails?.pets ? 'Yes' : 'No'}</span></p>
           </Col>
-        </Row>
+        </Col>
         <p className="text-muted"><strong>Parking Space:</strong> <span className="ms-2">{tenantDetails?.parkingSpace || 'N/A'}</span></p>
 
         <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
           <i className="mdi mdi-office-building me-1"></i> Lease Information
         </h5>
-        <Row>
+        <Col>
           <Col md={6}>
             <p className="text-muted"><strong>Start Date:</strong> <span className="ms-2">{formatToDDMMYY(tenantDetails?.leaseInfo?.startDate)}</span></p>
           </Col>
           <Col md={6}>
             <p className="text-muted"><strong>End Date:</strong> <span className="ms-2">{formatToDDMMYY(tenantDetails?.leaseInfo?.endDate)}</span></p>
           </Col>
-        </Row>
-        <Row>
+        </Col>
+        <Col>
           <Col md={6}>
-            <p className="text-muted"><strong>Rent Amount:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.rentAmount}</span></p>
+            <p className="text-muted d-flex"><strong>Rent Amount:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.rentAmount}</span></p>
           </Col>
           <Col md={6}>
-            <p className="text-muted"><strong>Security Deposit:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.securityDeposit}</span></p>
+            <p className="text-muted d-flex"><strong>Security Deposit:</strong> <span className="ms-2">${tenantDetails?.leaseInfo?.securityDeposit}</span></p>
           </Col>
-        </Row>
+        </Col>
 
         <h5 className="mb-3 mt-4 text-uppercase bg-light p-2">
           <i className="mdi mdi-currency-usd me-1"></i> Payment History

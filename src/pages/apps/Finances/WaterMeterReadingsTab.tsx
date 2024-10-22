@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect, useMemo } from 'react';
 import { Row, Col, Table, Button, Modal } from 'react-bootstrap';
 import Chart from 'react-apexcharts';
 import { ApexOptions } from 'apexcharts';
@@ -6,31 +6,36 @@ import { format } from 'date-fns';
 import WaterMeterReadingForm from './WaterMeterReadingForm';
 import { TenantProps, WaterMeterReadingData } from '../../../types';
 import { APICore } from '../../../helpers/api/apiCore';
+import PaginatedTable from '../../../components/PaginatedTable';
+import { Column } from 'react-table';
+import { useParams } from 'react-router-dom';
+
 
 
 
 
 const WaterMeterReadingsTab = () => {
   const api = new APICore()
-  const [data, setData] = useState<TenantProps[]>([])
+  const [data, setData] = useState<WaterMeterReadingData[]>([])
+  const {page} = useParams()
+  const url = "/apps/finances/water-utilities/"
+  const [pages, setpages] = useState(1)
+  const [Data, setdata] = useState<WaterMeterReadingData[]>([])
 
-
-  const Get = async ()=>{
+  const Get = async (word:string)=>{
     try{
-    const {data} = await api.get('/api/getTenantWaterMeter') 
+    setData([])
+    const {data} = await api.get('/api/getTenantWaterMeter', {name:word, page:page}) 
     if(data['result'])
     {
       setData(data['data'])
+      setpages(data['totalPage'])
     }}
     catch(error)
     {
       console.log(error)
     }
   }
-
-  useEffect(()=>{
-    Get()
-  },[])
 
   const [showModal, setShowModal] = useState(false);
 
@@ -55,7 +60,7 @@ const WaterMeterReadingsTab = () => {
   };
 
   // Prepare data for the chart
-  const chartData = data
+  const chartData = Data
     .map(payment => ({
       x: format(new Date(payment.readingDate), 'MMM dd'),
       y: payment.currentReading - payment.previousReading
@@ -95,6 +100,42 @@ const WaterMeterReadingsTab = () => {
     data: chartData
   }];
 
+  const columns: Column<WaterMeterReadingData>[] = useMemo(() => [
+    { Header: 'Tenant', accessor: 'tenantName' },
+    { Header: 'Property', accessor: (row: WaterMeterReadingData) => `${row.propertyName}, ${row.unitNumber}` },
+    { 
+      Header: 'Previous Reading', 
+      accessor: (row: WaterMeterReadingData) => row.previousReading || 'N/A' 
+    },
+    { 
+      Header: 'Current Reading', 
+      accessor: (row: WaterMeterReadingData) => row.currentReading || 'N/A' 
+    },
+    { 
+      Header: 'Usage', 
+      accessor: (row: WaterMeterReadingData) => row.waterMeterReading 
+      ? row.currentReading - row.previousReading 
+      : 'N/A'     },
+    { 
+      Header: 'Reading Date', 
+      accessor: (row: WaterMeterReadingData) => row.readingDate 
+        ? format(new Date(row.readingDate), 'MMM dd, yyyy') 
+        : 'N/A' 
+    },
+    {
+      Header: 'Actions',
+      Cell: ({ row }: { row: { original: TenantProps } }) => (
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={() => handleOpenModal(row.original)}
+        >
+          {row.original ? 'Update' : 'Add'} Reading
+        </Button>
+      )
+    }
+  ], [ handleOpenModal]);
+
   return (
     <>
       <Row className="mb-3">
@@ -107,52 +148,7 @@ const WaterMeterReadingsTab = () => {
           />
         </Col>
       </Row>
-      <Row>
-        <Col>
-          <Table responsive>
-            <thead>
-              <tr>
-                <th>Tenant</th>
-                <th>Property</th>
-                <th>Previous Reading</th>
-                <th>Current Reading</th>
-                <th>Usage</th>
-                <th>Reading Date</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {data.map((payment) => (
-                <tr key={payment.id}>
-                  <td>{payment.tenantName}</td>
-                  <td>{payment.propertyName},{` `}{payment.unitNumber}</td>
-                  <td>{payment.previousReading || 'N/A'}</td>
-                  <td>{payment.currentReading || 'N/A'}</td>
-                  <td>
-                    {payment.waterMeterReading
-                      ? payment.currentReading - payment.previousReading
-                      : 'N/A'}
-                  </td>
-                  <td>
-                    {payment
-                      ? format(new Date(payment.readingDate), 'MMM dd, yyyy')
-                      : 'N/A'}
-                  </td>
-                  <td>
-                    <Button
-                      variant="primary"
-                      size="sm"
-                      onClick={() => handleOpenModal(payment)}
-                    >
-                      {payment ? 'Update' : 'Add'} Reading
-                    </Button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-        </Col>
-      </Row>
+      <PaginatedTable columns={columns} data={data} pageSize={10} searchData={Get} size={pages} pageInd={page} url={url}/>
 
       <Modal show={showModal} onHide={handleCloseModal} size="lg">
         <Modal.Header closeButton>

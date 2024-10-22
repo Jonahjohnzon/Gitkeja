@@ -30,7 +30,7 @@ const RemindersTab: React.FC<RemindersTabProps> = ({ initialData }) => {
   const [reminderMethod, setReminderMethod] = useState<'email' | 'sms' | 'both'>('both');
   const [customMessage, setCustomMessage] = useState('');
   const url = "/apps/finances/reminders/"
-  const [pages, setPages] = useState(0)
+  const [pages, setPages] = useState(1)
   const api = useMemo(() => new APICore(), []);
 
   const fetchData = async (word:string) => {
