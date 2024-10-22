@@ -34,11 +34,13 @@ interface TenantFormData {
   pets: boolean;
 }
 
+const phoneRegExp =/^\+([1-9]{1,3})[0-9]{6,12}$/;
+
 const schema = yup.object().shape({
   propertyId: yup.string().required("Please select a property"),
   name: yup.string().required("Please enter name"),
   email: yup.string().required("Please enter email").email("Please enter valid email"),
-  phone: yup.string().required("Please enter phone").matches(/^\d{10}$/, "Phone number is not valid"),
+  phone: yup.string().required("Please enter phone").matches(phoneRegExp, "Phone number is not valid"),
   idPassportNumber: yup.string().required("Please enter ID or Passport number"),
   unitNumber: yup.string().required("Please enter unit number"),
   leaseStartDate: yup.date().required("Please enter lease start date"),

@@ -75,7 +75,7 @@ const nearbyFacilities: NearbyFacilityTypes[] = [
   { id: "Food Market", label: "Food Market" },
 ];
 
-const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/;
+const phoneRegExp =/^\+([1-9]{1,3})[0-9]{6,12}$/;
 
 const PropertyForm: React.FC = () => {
   const dispatch = useDispatch<AppDispatch>();
