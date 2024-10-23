@@ -17,7 +17,8 @@ export interface AuthActionType {
     | AuthActionTypes.POSTPROPERTY
     | AuthActionTypes.GETPROPERTY
     | AuthActionTypes.POSTTENANT
-    | AuthActionTypes.GETOCCUPANCY;
+    | AuthActionTypes.GETOCCUPANCY
+    | AuthActionTypes.NEWUSER
   payload: {} | string;
 }
 
@@ -123,9 +124,18 @@ export const signupUser = (
   email: string,
   role:string
 ): AuthActionType => ({
-  type: AuthActionTypes.SIGNUP_USER,
+  type: AuthActionTypes.NEWUSER,
   payload: { name, email, role },
 });
+
+export const register = (
+  name: string,
+  email: string,
+  password:string
+): AuthActionType => ({
+  type: AuthActionTypes.SIGNUP_USER,
+  payload: { name, email, password },
+})
 
 export const createNewProperty = (
   name: string,

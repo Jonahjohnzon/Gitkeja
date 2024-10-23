@@ -9,12 +9,12 @@ import {
   login as loginApi,
   logout as logoutApi,
   signup as signupApi,
+  Register,
   forgotPassword as forgotPasswordApi,
   activateUser as activateUserApi,
   getData as getDataApi,
   getDash as getDashApi,
   createproperty,
-  getPropertyData,
   createtenant,
   getOccupancy,
   getReport
@@ -111,6 +111,24 @@ function* logout(): SagaIterator {
     yield put(authApiResponseSuccess(AuthActionTypes.LOGOUT_USER, {}));
   } catch (error: any) {
     yield put(authApiResponseError(AuthActionTypes.LOGOUT_USER, error.message || 'Logout Failed'));
+  }
+}
+
+function* register({ payload: { name = '', email = '', password = '' } }: UserData): SagaIterator {
+  try {
+    if (!name || !email || !password) throw new Error('Fullname, email, and password are required');
+    const response = yield call(() => Register({ name, email, password }));
+    const user = response.data;
+    if(user.result)
+    {
+    
+    yield put(authApiResponseSuccess(AuthActionTypes.SIGNUP_USER, user));
+    }
+    else{
+     yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, user.message ));
+    }
+  } catch (error: any) {
+    yield put(authApiResponseError(AuthActionTypes.SIGNUP_USER, error.message || 'Signup Failed'));
   }
 }
 
@@ -309,7 +327,7 @@ export function* watchLogout(): SagaIterator {
 }
 
 export function* watchSignup(): SagaIterator {
-  yield takeEvery(AuthActionTypes.SIGNUP_USER, signup);
+  yield takeEvery(AuthActionTypes.SIGNUP_USER, register);
 }
 
 export function* watchForgotPassword(): SagaIterator {
@@ -332,8 +350,9 @@ export function* watchPostProperty(): SagaIterator{
   yield takeEvery(AuthActionTypes.POSTPROPERTY, createProperty)
 }
 
-
-
+export function* newUser(): SagaIterator{
+  yield takeEvery(AuthActionTypes.NEWUSER, signup)
+}
 
 export function* watchTenant(): SagaIterator{
   yield takeEvery(AuthActionTypes.POSTTENANT , createTenant)
@@ -364,7 +383,8 @@ function* authSaga(): SagaIterator {
     fork(watchTenant),
     fork( watchgetOccupancy),
     fork(watchgetOccupancyReport),
-    fork(watchgetTenantList)
+    fork(watchgetTenantList),
+    fork(newUser)
   ]);
 }
 

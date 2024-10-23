@@ -7,7 +7,7 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 
 //actions
-import { resetAuth, signupUser } from "../../redux/actions";
+import { resetAuth, register } from "../../redux/actions";
 
 import { RootState, AppDispatch } from "../../redux/store";
 
@@ -74,7 +74,9 @@ const Register = () => {
    * handle form submission
    */
   const onSubmit = (formData: UserData) => {
-
+    dispatch(
+      register(formData["name"], formData["email"], formData["password"])
+    );
   };
 
   return (
