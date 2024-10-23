@@ -23,10 +23,10 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
 
  
   const stats = useMemo(() => {
-    const totalProperties = OccupancyReportType.totalProperties;
-    const totalUnits = OccupancyReportType.totalunits;
-    const overallOccupancyRate = OccupancyReportType.averageOccupancyRate;
-    const totalRentCollected = OccupancyReportType.totalRentCollected;
+    const totalProperties = OccupancyReportType?.totalProperties;
+    const totalUnits = OccupancyReportType?.totalunits;
+    const overallOccupancyRate = OccupancyReportType?.averageOccupancyRate;
+    const totalRentCollected = OccupancyReportType?.totalRentCollected;
     return {
       totalProperties,
       totalUnits,
@@ -44,7 +44,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
     }).reverse();
 
     // This is a placeholder. In a real application, you would calculate this from actual data
-    const occupancyTrendsData = OccupancyReportType.occupancyRatesMonthly;
+    const occupancyTrendsData = OccupancyReportType?.occupancyRatesMonthly;
 
     return {
       categories: last12Months,
@@ -85,7 +85,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
         <Col sm={6} xl={3}>
           <StatisticsWidget
             description="Total Properties"
-            stats={stats.totalProperties.toString()}
+            stats={stats?.totalProperties?.toString()}
             icon="fe-home"
             variant="primary"
           />
@@ -96,7 +96,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
               suffix: "%",
               decimals: 2,
             }}
-            stats={stats.overallOccupancyRate.toString()}
+            stats={stats?.overallOccupancyRate?.toString()}
             icon="fe-users"
             variant="success"
           />
@@ -104,7 +104,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
         <Col sm={6} xl={3}>
           <StatisticsWidget
             description="Total Units"
-            stats={stats.totalUnits.toString()}
+            stats={stats?.totalUnits?.toString()}
             icon="fe-grid"
             variant="info"
           />
@@ -115,7 +115,7 @@ const OccupancyReportsOverview: React.FC<OccupancyReportsOverviewProps> = ({
             counterOptions={{
               prefix: "$",
             }}
-            stats={stats.totalRentCollected.toString()}
+            stats={stats?.totalRentCollected?.toString()}
             icon="fe-dollar-sign"
             variant="warning"
           />

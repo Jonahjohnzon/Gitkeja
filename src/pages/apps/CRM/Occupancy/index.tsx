@@ -19,10 +19,7 @@ import { APICore } from '../../../../helpers/api/apiCore';
 // Mock data - replace with API calls in production
 
 
-const mockPropertyOccupancies: PropertyOccupancy[] = [
 
-  // Add more mock data as needed
-];
 
 const OccupancyPage: React.FC = () => {
   const api =new APICore()

@@ -188,15 +188,15 @@ const InvoicingTab: React.FC = () => {
   const series = useMemo(() => [
     {
       name: 'Rent',
-      data: invoiceData.totalRentAmount,
+      data: invoiceData?.totalRentAmount || [0,0,0,0,0,0,0,0,0,0,0,0],
     },
     {
       name: 'Water',
-      data: invoiceData.totalswater,
+      data: invoiceData?.totalswater || [0,0,0,0,0,0,0,0,0,0,0,0],
     },
     {
       name: 'Garbage',
-      data: invoiceData.totalsgarbage,
+      data: invoiceData?.totalsgarbage || [0,0,0,0,0,0,0,0,0,0,0,0],
     },
   ], [invoiceData]);
 
